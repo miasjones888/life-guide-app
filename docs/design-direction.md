@@ -253,7 +253,7 @@ Stack recommendation based on the design direction:
 
 **Typography:** System font stack for body, Georgia for headings. Load nothing from Google Fonts — system fonts are the point.
 
-**Content rendering:** Markdown to HTML. All guide content is in `docs/life-guide-v1.md` — parse and render rather than hardcoding.
+**Content rendering:** Markdown to HTML. All guide content is in `docs/life-guide.md` — parse and render rather than hardcoding.
 
 **State:** Minimal. This is a read-only reference app. localStorage for simple persistence (last section visited, etc.) but no complex state management for v1.
 
