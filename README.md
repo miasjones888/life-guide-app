@@ -45,7 +45,7 @@ life-guide-app/
 
 Claude Code should read the docs in this order:
 
-1. **docs/life-guide-v1.md** — the full content of the life system. This is the source of truth for all text, schedules, reminders, and system logic.
+1. **docs/life-guide.md** — the full content of the life system. This is the source of truth for all text, schedules, reminders, and system logic.
 
 2. **docs/calendar.md** — the complete calendar system. All recurring events, one-time events, color coding, and scheduling logic.
 
@@ -95,19 +95,3 @@ Do not summarize or simplify the content from the docs. The content is intention
 Start with the docs. The source of truth is in the markdown files, not this README.
 
 Claude Code: read the /docs directory first before planning implementation.
-
-## Canonical Documents
-
-Claude Code should read these files first:
-- `docs/life-guide.md`
-- `docs/calendar.md`
-
-Version history is stored in `docs/versions/`.
-
-## Canonical Documents
-
-Claude Code should read these files first:
-- `docs/life-guide.md`
-- `docs/calendar.md`
-
-Version history is stored in `docs/versions/`.
