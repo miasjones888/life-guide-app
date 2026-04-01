@@ -93,3 +93,5 @@ Your task is to:
 Do not summarize or simplify the content from the docs. The content is intentional and specific. Preserve all information, all reminders, and all system logic as documented.
 
 Start with the docs. The source of truth is in the markdown files, not this README.
+
+Claude Code: read the /docs directory first before planning implementation.
