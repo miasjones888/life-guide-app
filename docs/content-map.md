@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document maps the content from the Life Guide (docs/life-guide-v1.md) and Calendar System (docs/calendar.md) to the interface structure of the web application. Use this as the blueprint for deciding what goes where, how content is organized, and what each screen or section should contain.
+This document maps the content from the Life Guide (docs/life-guide.md) and Calendar System (docs/calendar.md) to the interface structure of the web application. Use this as the blueprint for deciding what goes where, how content is organized, and what each screen or section should contain.
 
 Claude Code should read this alongside the source content files before generating the implementation plan.
 
@@ -66,7 +66,7 @@ All daily recurring events from calendar.md, in time order:
 **Display notes:**
 - Vertical timeline layout on mobile
 - Current time highlighted if viewing today
-- Tap to expand full event description (from life-guide-v1.md event descriptions)
+- Tap to expand full event description (from docs/life-guide.md event descriptions)
 - Small "modular" note below the timeline: "Everything except cat meds and personal meds can be rescheduled."
 
 ---
@@ -233,7 +233,7 @@ These are less frequently accessed but important for completeness. Can live unde
 #### 7a. Pet Care System
 
 **Content:**
-- Daily cat schedule (table — from life-guide-v1.md cat care section)
+- Daily cat schedule (table — from docs/life-guide.md cat care section)
 - Weekly cat tasks
 - Monthly cat tasks
 - Vet contacts: Mission Valley Pet Clinic, (619) 281-2934, 4329 Twain Ave
@@ -355,7 +355,7 @@ When in doubt about what to show or hide by default:
 
 ## Content Notes for Implementation
 
-1. **Source of truth:** All content in docs/life-guide-v1.md and docs/calendar.md. Do not invent or paraphrase — use content as written.
+1. **Source of truth:** All content in docs/life-guide.md and docs/calendar.md. Do not invent or paraphrase — use content as written.
 
 2. **Cat med alarms** appear in multiple sections (daily rhythm, pet care, today view). This is intentional — they are the only non-modular daily events.
 
