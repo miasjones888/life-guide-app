@@ -95,3 +95,19 @@ Do not summarize or simplify the content from the docs. The content is intention
 Start with the docs. The source of truth is in the markdown files, not this README.
 
 Claude Code: read the /docs directory first before planning implementation.
+
+## Canonical Documents
+
+Claude Code should read these files first:
+- `docs/life-guide.md`
+- `docs/calendar.md`
+
+Version history is stored in `docs/versions/`.
+
+## Canonical Documents
+
+Claude Code should read these files first:
+- `docs/life-guide.md`
+- `docs/calendar.md`
+
+Version history is stored in `docs/versions/`.
