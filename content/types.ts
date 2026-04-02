@@ -106,3 +106,11 @@ export interface MonthlyBudgetStep {
   title: string;
   description: string;
 }
+
+export interface FlashCard {
+  id: string;
+  content: string;
+  category: CalendarCategory;
+  createdAt: string; // ISO date string
+  note?: string;
+}
