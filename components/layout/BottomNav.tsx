@@ -9,6 +9,7 @@ const navItems = [
   { href: '/weekly', label: 'Weekly', icon: '▦' },
   { href: '/monthly', label: 'Monthly', icon: '▣' },
   { href: '/guide', label: 'Guide', icon: '≡' },
+  { href: '/deck', label: 'Deck', icon: '▭' },
 ];
 
 export default function BottomNav() {

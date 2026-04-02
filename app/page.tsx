@@ -8,6 +8,16 @@ import { dailyEvents, aprilOneTimeEvents } from '@/content/calendar';
 import { priorities, financeUrgentItems, verbatimCopy, modularNote } from '@/content/guide';
 import type { CalendarEvent } from '@/content/types';
 
+const WEEKLY_FOCUS: Record<number, string> = {
+  0: 'life planning reset',
+  1: 'portfolio work',
+  2: 'notion R&D + life admin',
+  3: 'notion R&D + portfolio work',
+  4: 'buffer / life admin',
+  5: 'systems work',
+  6: 'creative exploration',
+};
+
 function getCurrentTime(): { hours: number; minutes: number; display: string } {
   const now = new Date();
   return {
@@ -35,7 +45,7 @@ function getUpcomingEvents(currentMinutes: number): CalendarEvent[] {
     return eventMinutes >= currentMinutes;
   });
   upcoming.sort((a, b) => parseEventTime(a.time!) - parseEventTime(b.time!));
-  return upcoming.slice(0, 5);
+  return upcoming.slice(0, 3);
 }
 
 function getTodayAprilEvents(): CalendarEvent[] {
@@ -66,7 +76,17 @@ export default function TodayPage() {
     year: 'numeric',
   });
 
-  const topPriorities = priorities.slice(0, 3);
+  const weekday = today.getDay();
+  const dailyFocus = WEEKLY_FOCUS[weekday];
+  const nonNegotiables = dailyEvents.filter((e) => e.isNonNegotiable && e.time);
+  const topPriority = priorities.find((p) => !p.isLocked) ?? priorities[0];
+  const groundingPhrase =
+    currentTime.hours < 12
+      ? verbatimCopy.nonNegotiable
+      : currentTime.hours < 18
+      ? verbatimCopy.writtenDown
+      : verbatimCopy.wholeTask;
+
   const urgentFinance = financeUrgentItems.filter((f) => f.isUrgent);
 
   return (
@@ -81,36 +101,62 @@ export default function TodayPage() {
         </div>
       </div>
 
-      <div style={{ marginTop: '8px' }}>
-        <p className="text-micro text-ink-muted">{verbatimCopy.writtenDown}</p>
-      </div>
-
       <hr className="hairline" style={{ margin: '10px 0' }} />
 
-      {/* Urgent Finance Callout */}
-      {urgentFinance.length > 0 && (
-        <div className="urgent-callout" style={{ marginBottom: '10px' }}>
-          <div className="text-micro" style={{ color: 'var(--color-tomato)', marginBottom: '6px', fontWeight: 700 }}>
-            ⚠ URGENT FINANCIAL ITEMS
-          </div>
-          {urgentFinance.map((item, i) => (
-            <div key={i} style={{ paddingBottom: i < urgentFinance.length - 1 ? '6px' : 0, borderBottom: i < urgentFinance.length - 1 ? '1px solid var(--color-ink-ghost)' : 'none' }}>
-              <div className="text-body-sm font-medium" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span>{item.title}</span>
-                {item.amount && <span style={{ color: 'var(--color-tomato)', fontFamily: 'JetBrains Mono, monospace', fontSize: '11px' }}>{item.amount}</span>}
+      {/* Your brief */}
+      <WindowPanel
+        title="your brief"
+        active
+        statusText={`${today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()} · ${dailyFocus}`}
+        style={{ marginBottom: '10px' }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* Anchor points */}
+          <div>
+            <div className="text-micro text-ink-muted" style={{ marginBottom: '5px', letterSpacing: '0.05em' }}>
+              anchor points
+            </div>
+            {nonNegotiables.map((e) => (
+              <div key={e.id} style={{ display: 'flex', gap: '10px', padding: '2px 0' }}>
+                <span
+                  className="text-micro text-ink-muted"
+                  style={{ fontFamily: 'JetBrains Mono, monospace', minWidth: '52px' }}
+                >
+                  {e.time}
+                </span>
+                <span className="text-body-sm">{e.emoji} {e.title}</span>
               </div>
-              <div className="text-micro text-ink-muted">{item.note}</div>
-              {item.action && (
-                <div className="text-micro" style={{ color: 'var(--color-tangerine)', marginTop: '2px' }}>→ {item.action}</div>
+            ))}
+          </div>
+
+          {/* Priority */}
+          <div>
+            <div className="text-micro text-ink-muted" style={{ marginBottom: '5px', letterSpacing: '0.05em' }}>
+              priority
+            </div>
+            <div className="text-body-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>→ {topPriority.title}</span>
+              {topPriority.isUrgent && (
+                <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>
+                  urgent
+                </span>
               )}
             </div>
-          ))}
+          </div>
+
+          {/* Grounding phrase */}
+          <p
+            className="text-micro text-ink-muted"
+            style={{ borderTop: '1px solid var(--color-ink-ghost)', paddingTop: '8px', margin: 0 }}
+          >
+            {groundingPhrase}
+          </p>
         </div>
-      )}
+      </WindowPanel>
 
       {/* Today's special events */}
       {todayEvents.length > 0 && (
-        <WindowPanel title="TODAY'S EVENTS" active style={{ marginBottom: '10px' }}>
+        <WindowPanel title="today" active style={{ marginBottom: '10px' }}>
           {todayEvents.map((event) => (
             <TimeBlock
               key={event.id}
@@ -124,8 +170,8 @@ export default function TodayPage() {
         </WindowPanel>
       )}
 
-      {/* Upcoming Events */}
-      <WindowPanel title="NEXT UP TODAY" active style={{ marginBottom: '10px' }}>
+      {/* Coming up */}
+      <WindowPanel title="coming up" active style={{ marginBottom: '10px' }}>
         {upcomingEvents.length > 0 ? (
           upcomingEvents.map((event) => (
             <TimeBlock
@@ -140,13 +186,13 @@ export default function TodayPage() {
             />
           ))
         ) : (
-          <p className="text-body-sm text-ink-muted">No more scheduled events today.</p>
+          <p className="text-body-sm text-ink-muted">That's everything for today.</p>
         )}
       </WindowPanel>
 
-      {/* Top Priorities */}
-      <WindowPanel title="CURRENT FOCUS" style={{ marginBottom: '10px' }}>
-        {topPriorities.map((p) => (
+      {/* Current Focus */}
+      <WindowPanel title="focus stack" style={{ marginBottom: '10px' }}>
+        {priorities.slice(0, 3).map((p) => (
           <div
             key={p.rank}
             className="priority-item"
@@ -154,10 +200,10 @@ export default function TodayPage() {
           >
             <span className="priority-number">{p.rank}.</span>
             <div style={{ flex: 1 }}>
-              <div className="text-body">
-                {p.title}
-                {p.isLocked && <span className="tag ml-2">locked</span>}
-                {p.isUrgent && <span className="tag ml-2" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>}
+              <div className="text-body" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <span>{p.title}</span>
+                {p.isLocked && <span className="tag">locked</span>}
+                {p.isUrgent && <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>}
               </div>
               <div className="text-body-sm text-ink-muted">{p.status} — {p.nextAction}</div>
             </div>
@@ -165,7 +211,28 @@ export default function TodayPage() {
         ))}
       </WindowPanel>
 
-      {/* Modular task note */}
+      {/* Finance — system dialog register, bottom */}
+      {urgentFinance.length > 0 && (
+        <div className="system-dialog" style={{ marginBottom: '10px' }}>
+          <div className="text-micro text-ink-muted" style={{ marginBottom: '6px', fontWeight: 700 }}>
+            FINANCE — ACTION NEEDED
+          </div>
+          {urgentFinance.map((item, i) => (
+            <div key={i} style={{ paddingBottom: i < urgentFinance.length - 1 ? '6px' : 0, borderBottom: i < urgentFinance.length - 1 ? '1px solid var(--color-ink-ghost)' : 'none' }}>
+              <div className="text-body-sm" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <span>{item.title}</span>
+                {item.amount && <span style={{ color: 'var(--color-ink-muted)', fontFamily: 'JetBrains Mono, monospace', fontSize: '11px' }}>{item.amount}</span>}
+              </div>
+              <div className="text-micro text-ink-muted">{item.note}</div>
+              {item.action && (
+                <div className="text-micro text-ink-muted" style={{ marginTop: '2px' }}>→ {item.action}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Closing phrase */}
       <div style={{ padding: '8px 0' }}>
         <p className="text-micro text-ink-muted">{modularNote}</p>
       </div>

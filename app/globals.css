@@ -169,9 +169,17 @@ body {
   align-items: center;
 }
 
-/* Urgent callout */
+/* Urgent callout — system dialog register */
 .urgent-callout {
-  border: 1px solid var(--color-tomato);
+  border: 1px solid #BBBBBB;
+  background: var(--color-paper);
+  border-radius: 2px;
+  padding: 12px;
+}
+
+/* System dialog — neutral register for info/reference blocks */
+.system-dialog {
+  border: 1px solid #BBBBBB;
   background: var(--color-paper);
   border-radius: 2px;
   padding: 12px;
