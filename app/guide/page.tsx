@@ -4,24 +4,22 @@ import WindowPanel from '@/components/ui/WindowPanel';
 import { priorities, workLocations, pets, vetInfo, financeUrgentItems, verbatimCopy } from '@/content/guide';
 
 export default function GuidePage() {
-  const urgentPriorities = priorities.filter((p) => p.isUrgent);
-  const lockedPriorities = priorities.filter((p) => p.isLocked);
-  const activePriorities = priorities.filter((p) => !p.isLocked && !p.isOngoing);
-  const ongoingPriorities = priorities.filter((p) => p.isOngoing);
-
   return (
     <PageShell>
       <div style={{ padding: '8px 0 4px' }}>
         <h1 className="text-h1">Field Guide</h1>
         <p className="text-body-sm text-ink-muted" style={{ marginTop: '4px' }}>
-          Projects, priorities, reference information.
+          A personal reference system. Read it like a field manual.
         </p>
       </div>
 
       <hr className="hairline" style={{ margin: '10px 0' }} />
 
-      {/* Priorities */}
-      <WindowPanel title="PRIORITY STACK" active style={{ marginBottom: '10px' }}>
+      {/* §01 Priorities */}
+      <div style={{ marginBottom: '4px' }}>
+        <span className="text-micro text-ink-muted">§01</span>
+      </div>
+      <WindowPanel title="priorities" active style={{ marginBottom: '10px' }}>
         <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
           Ranked by urgency and sequencing. Locked items depend on earlier items.
         </div>
@@ -53,9 +51,7 @@ export default function GuidePage() {
                 }}
               >
                 <span>{p.title}</span>
-                {p.isLocked && (
-                  <span className="tag">locked</span>
-                )}
+                {p.isLocked && <span className="tag">locked</span>}
                 {p.isUrgent && (
                   <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>
                 )}
@@ -70,17 +66,23 @@ export default function GuidePage() {
           </div>
         ))}
         <div style={{ paddingTop: '8px', borderTop: '1px solid var(--color-ink-ghost)', marginTop: '4px' }}>
-          <p className="text-micro text-ink-muted italic">{verbatimCopy.wholeTask}</p>
+          <p className="text-micro text-ink-muted">{verbatimCopy.wholeTask}</p>
         </div>
       </WindowPanel>
 
-      {/* Finance */}
-      <WindowPanel title="FINANCE — URGENT" style={{ marginBottom: '10px' }}>
+      {/* §02 Finance */}
+      <div style={{ marginBottom: '4px' }}>
+        <span className="text-micro text-ink-muted">§02</span>
+      </div>
+      <WindowPanel title="finance" style={{ marginBottom: '10px' }}>
+        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
+          Active items requiring action or monitoring.
+        </div>
         {financeUrgentItems.map((item, i) => (
           <div
             key={i}
             className="time-block"
-            style={{ borderLeft: '3px solid var(--color-tomato)', paddingLeft: '10px' }}
+            style={{ borderLeft: '3px solid #BBBBBB', paddingLeft: '10px' }}
           >
             <div style={{ flex: 1 }}>
               <div
@@ -91,7 +93,7 @@ export default function GuidePage() {
                 {item.amount && (
                   <span
                     className="text-micro"
-                    style={{ color: 'var(--color-tomato)', fontFamily: 'JetBrains Mono, monospace' }}
+                    style={{ color: 'var(--color-ink-muted)', fontFamily: 'JetBrains Mono, monospace' }}
                   >
                     {item.amount}
                   </span>
@@ -99,7 +101,7 @@ export default function GuidePage() {
               </div>
               <div className="text-body-sm text-ink-muted">{item.note}</div>
               {item.action && (
-                <div className="text-micro" style={{ color: 'var(--color-tangerine)', marginTop: '2px' }}>
+                <div className="text-micro text-ink-muted" style={{ marginTop: '2px' }}>
                   → {item.action}
                 </div>
               )}
@@ -108,11 +110,18 @@ export default function GuidePage() {
         ))}
       </WindowPanel>
 
-      {/* Pet Care */}
-      <WindowPanel title="PET CARE — REFERENCE" style={{ marginBottom: '10px' }}>
+      {/* §03 Care */}
+      <div style={{ marginBottom: '4px' }}>
+        <span className="text-micro text-ink-muted">§03</span>
+      </div>
+      <WindowPanel title="care" style={{ marginBottom: '10px' }}>
+        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
+          Maisie · Meeko · Jinshi
+        </div>
+
         <div style={{ marginBottom: '12px' }}>
           <div className="text-h2" style={{ marginBottom: '6px' }}>Vet</div>
-          <div className="text-body-sm" style={{ borderLeft: '3px solid var(--color-tomato)', paddingLeft: '10px' }}>
+          <div className="text-body-sm" style={{ borderLeft: '3px solid var(--color-graphite)', paddingLeft: '10px' }}>
             <div style={{ fontWeight: 500 }}>{vetInfo.name}</div>
             <div className="text-body-sm text-ink-muted">{vetInfo.address}</div>
             <div>
@@ -142,9 +151,7 @@ export default function GuidePage() {
               style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               🐱 {pet.name}
-              {pet.gender && (
-                <span className="tag">{pet.gender}</span>
-              )}
+              {pet.gender && <span className="tag">{pet.gender}</span>}
             </div>
             {pet.medications && pet.medications.length > 0 && (
               <div className="text-body-sm" style={{ marginBottom: '4px' }}>
@@ -155,12 +162,8 @@ export default function GuidePage() {
             {pet.urgentItems && pet.urgentItems.length > 0 && (
               <div>
                 {pet.urgentItems.map((item, j) => (
-                  <div
-                    key={j}
-                    className="text-body-sm"
-                    style={{ color: 'var(--color-tomato)' }}
-                  >
-                    ⚠ {item}
+                  <div key={j} className="text-body-sm text-ink-muted">
+                    {item}
                   </div>
                 ))}
               </div>
@@ -176,9 +179,15 @@ export default function GuidePage() {
         ))}
       </WindowPanel>
 
-      {/* Work Locations */}
-      <WindowPanel title="WORK LOCATIONS — SAN DIEGO" statusText="Within 25 min of 92115" style={{ marginBottom: '10px' }}>
-        {workLocations.map((loc, i) => (
+      {/* §04 Field */}
+      <div style={{ marginBottom: '4px' }}>
+        <span className="text-micro text-ink-muted">§04</span>
+      </div>
+      <WindowPanel title="field" statusText="Within 25 min of 92115" style={{ marginBottom: '10px' }}>
+        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
+          Work locations, San Diego. Key phrases for low-energy days.
+        </div>
+        {workLocations.map((loc) => (
           <div
             key={loc.name}
             className="time-block"
@@ -204,10 +213,10 @@ export default function GuidePage() {
             </div>
           </div>
         ))}
-      </WindowPanel>
 
-      {/* Verbatim Reference */}
-      <WindowPanel title="REFERENCE — KEY PHRASES" style={{ marginBottom: '10px' }}>
+        <hr className="hairline" style={{ margin: '10px 0' }} />
+
+        <div className="text-micro text-ink-muted" style={{ marginBottom: '6px', letterSpacing: '0.03em' }}>key phrases</div>
         {Object.entries(verbatimCopy).map(([key, value]) => (
           <div
             key={key}
@@ -216,7 +225,7 @@ export default function GuidePage() {
               borderBottom: '1px solid var(--color-ink-ghost)',
             }}
           >
-            <p className="text-body-sm" style={{ fontStyle: 'italic' }}>"{value}"</p>
+            <p className="text-body-sm text-ink-muted" style={{ fontStyle: 'italic' }}>"{value}"</p>
           </div>
         ))}
       </WindowPanel>

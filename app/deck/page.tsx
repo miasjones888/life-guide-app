@@ -114,6 +114,95 @@ export default function DeckPage() {
     <PageShell>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
+        {/* ── Add form ── */}
+        <WindowPanel title="New Idea">
+          <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Describe the idea..."
+              required
+              rows={3}
+              style={{
+                ...inputStyle,
+                fontSize: '15px',
+                lineHeight: 1.5,
+                resize: 'vertical',
+              }}
+            />
+
+            {/* Category selector */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <span style={{
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '11px',
+                color: 'var(--color-ink-muted)',
+              }}>
+                category
+              </span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {allCategories.map((cat) => {
+                  const color = categoryColorHex[cat];
+                  const isSelected = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat)}
+                      title={cat}
+                      style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        border: isSelected
+                          ? `3px solid var(--color-ink)`
+                          : `2px solid ${color}`,
+                        backgroundColor: isSelected ? color : 'transparent',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <span style={{
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '10px',
+                color: categoryColorHex[selectedCategory],
+              }}>
+                {selectedCategory}
+              </span>
+            </div>
+
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Optional context..."
+              style={{
+                ...inputStyle,
+                fontSize: '13px',
+                lineHeight: 1.4,
+              }}
+            />
+
+            <button
+              type="submit"
+              style={{
+                minHeight: '44px',
+                backgroundColor: 'var(--color-chrome-dark)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '2px',
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '13px',
+                cursor: 'pointer',
+              }}
+            >
+              add to deck
+            </button>
+          </form>
+        </WindowPanel>
+
         {/* ── Card viewer ── */}
         <WindowPanel title="Idea Deck" active statusText={statusText}>
           {cards.length === 0 ? (
@@ -287,94 +376,6 @@ export default function DeckPage() {
           </div>
         )}
 
-        {/* ── Add form ── */}
-        <WindowPanel title="New Idea">
-          <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Describe the idea..."
-              required
-              rows={3}
-              style={{
-                ...inputStyle,
-                fontSize: '15px',
-                lineHeight: 1.5,
-                resize: 'vertical',
-              }}
-            />
-
-            {/* Category selector */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <span style={{
-                fontFamily: 'JetBrains Mono, monospace',
-                fontSize: '11px',
-                color: 'var(--color-ink-muted)',
-              }}>
-                category
-              </span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {allCategories.map((cat) => {
-                  const color = categoryColorHex[cat];
-                  const isSelected = selectedCategory === cat;
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setSelectedCategory(cat)}
-                      title={cat}
-                      style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '50%',
-                        border: isSelected
-                          ? `3px solid var(--color-ink)`
-                          : `2px solid ${color}`,
-                        backgroundColor: isSelected ? color : 'transparent',
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                      }}
-                    />
-                  );
-                })}
-              </div>
-              <span style={{
-                fontFamily: 'JetBrains Mono, monospace',
-                fontSize: '10px',
-                color: categoryColorHex[selectedCategory],
-              }}>
-                {selectedCategory}
-              </span>
-            </div>
-
-            <input
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Optional context..."
-              style={{
-                ...inputStyle,
-                fontSize: '13px',
-                lineHeight: 1.4,
-              }}
-            />
-
-            <button
-              type="submit"
-              style={{
-                minHeight: '44px',
-                backgroundColor: 'var(--color-chrome-dark)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '2px',
-                fontFamily: 'JetBrains Mono, monospace',
-                fontSize: '13px',
-                cursor: 'pointer',
-              }}
-            >
-              add to deck
-            </button>
-          </form>
-        </WindowPanel>
 
       </div>
     </PageShell>
