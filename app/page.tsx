@@ -8,6 +8,16 @@ import { dailyEvents, aprilOneTimeEvents } from '@/content/calendar';
 import { priorities, financeUrgentItems, verbatimCopy, modularNote } from '@/content/guide';
 import type { CalendarEvent } from '@/content/types';
 
+const WEEKLY_FOCUS: Record<number, string> = {
+  0: 'life planning reset',
+  1: 'portfolio work',
+  2: 'notion R&D + life admin',
+  3: 'notion R&D + portfolio work',
+  4: 'buffer / life admin',
+  5: 'systems work',
+  6: 'creative exploration',
+};
+
 function getCurrentTime(): { hours: number; minutes: number; display: string } {
   const now = new Date();
   return {
@@ -66,6 +76,17 @@ export default function TodayPage() {
     year: 'numeric',
   });
 
+  const weekday = today.getDay();
+  const dailyFocus = WEEKLY_FOCUS[weekday];
+  const nonNegotiables = dailyEvents.filter((e) => e.isNonNegotiable && e.time);
+  const topPriority = priorities.find((p) => !p.isLocked) ?? priorities[0];
+  const groundingPhrase =
+    currentTime.hours < 12
+      ? verbatimCopy.nonNegotiable
+      : currentTime.hours < 18
+      ? verbatimCopy.writtenDown
+      : verbatimCopy.wholeTask;
+
   const topPriorities = priorities.slice(0, 3);
   const urgentFinance = financeUrgentItems.filter((f) => f.isUrgent);
 
@@ -86,6 +107,57 @@ export default function TodayPage() {
       </div>
 
       <hr className="hairline" style={{ margin: '10px 0' }} />
+
+      {/* Today's Brief */}
+      <WindowPanel
+        title="TODAY'S BRIEF"
+        active
+        statusText={`${today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()} · ${dailyFocus}`}
+        style={{ marginBottom: '10px' }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* Non-negotiables */}
+          <div>
+            <div className="text-micro text-ink-muted" style={{ marginBottom: '5px', letterSpacing: '0.05em' }}>
+              NON-NEGOTIABLES
+            </div>
+            {nonNegotiables.map((e) => (
+              <div key={e.id} style={{ display: 'flex', gap: '10px', padding: '2px 0' }}>
+                <span
+                  className="text-micro text-ink-muted"
+                  style={{ fontFamily: 'JetBrains Mono, monospace', minWidth: '52px' }}
+                >
+                  {e.time}
+                </span>
+                <span className="text-body-sm">{e.emoji} {e.title}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Current focus */}
+          <div>
+            <div className="text-micro text-ink-muted" style={{ marginBottom: '5px', letterSpacing: '0.05em' }}>
+              CURRENT FOCUS
+            </div>
+            <div className="text-body-sm" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>→ {topPriority.title}</span>
+              {topPriority.isUrgent && (
+                <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>
+                  urgent
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Grounding phrase */}
+          <p
+            className="text-micro text-ink-muted"
+            style={{ borderTop: '1px solid var(--color-ink-ghost)', paddingTop: '8px', margin: 0 }}
+          >
+            {groundingPhrase}
+          </p>
+        </div>
+      </WindowPanel>
 
       {/* Urgent Finance Callout */}
       {urgentFinance.length > 0 && (
