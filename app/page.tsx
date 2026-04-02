@@ -200,10 +200,10 @@ export default function TodayPage() {
           >
             <span className="priority-number">{p.rank}.</span>
             <div style={{ flex: 1 }}>
-              <div className="text-body">
-                {p.title}
-                {p.isLocked && <span className="tag ml-2">locked</span>}
-                {p.isUrgent && <span className="tag ml-2" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>}
+              <div className="text-body" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <span>{p.title}</span>
+                {p.isLocked && <span className="tag">locked</span>}
+                {p.isUrgent && <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>}
               </div>
               <div className="text-body-sm text-ink-muted">{p.status} — {p.nextAction}</div>
             </div>

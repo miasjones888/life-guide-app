@@ -207,7 +207,7 @@ export default function DeckPage() {
         <WindowPanel title="Idea Deck" active statusText={statusText}>
           {cards.length === 0 ? (
             <p style={{ color: 'var(--color-ink-muted)', fontFamily: 'Inter, sans-serif', fontSize: '15px', lineHeight: 1.5, margin: 0 }}>
-              No ideas yet. Add your first below.
+              No ideas yet. Use the form above to add your first card.
             </p>
           ) : currentCard ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
