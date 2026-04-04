@@ -54,7 +54,7 @@ export default function DailyPage() {
         <div>
           <h1 className="text-h1">Daily Rhythm</h1>
           <p className="text-body-sm text-ink-muted" style={{ marginTop: '4px' }}>
-            Your full daily schedule — every recurring event.
+            Every recurring time block. The full daily structure.
           </p>
         </div>
         <button

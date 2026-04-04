@@ -1,6 +1,6 @@
 # Scheduled Brief Agents
 
-Two Claude agents to register via `/schedule` when the claude.ai connection is stable.
+Three Claude agents to register via `/schedule` when the claude.ai connection is stable.
 
 ---
 
@@ -136,13 +136,166 @@ Tone: spare, warm, non-compliance. Reads like a weekly field guide briefing. No 
 
 ---
 
+---
+
+## Agent 3 — Monthly Brief
+**Name:** `life-guide-monthly-brief`
+**Cron:** `0 9 1 * *` (9:00am on the 1st of every month)
+
+### Prompt
+
+```
+Read /home/user/life-guide-app/content/calendar.ts and /home/user/life-guide-app/content/guide.ts.
+
+Today is the 1st of the month. Compute today's date and determine: month name (e.g. "may"), year (e.g. "2026"), number of days in this month.
+
+From monthlyEvents, list every recurring monthly item with its timing rule in plain English:
+- type "nth-weekday": "first [weekday]" (e.g. "first sunday")
+- type "day-of-month": "[ordinal] of the month" (e.g. "2nd of the month")
+- type "last-day": "last day of the month"
+- type "interval" (intervalDays): "every [n] days — check if due this month"
+
+From monthlyBudgetSteps, list all 5 steps in order: [order]. [title] — [description]
+
+Top 3 non-locked priorities from the priorities array.
+
+Check financeUrgentItems for any with isUrgent === true. Include a finance block if any exist.
+
+Use gmail_get_profile to get the user's email address.
+Use gmail_create_draft with To and From set to that address.
+
+Subject: [month name] — the month ahead
+
+Body (plain text, — as section divider, · as bullet):
+
+[month name] [year].
+
+—
+
+this month
+· [title]  ([timing rule])
+(one line per monthlyEvent)
+
+—
+
+monthly reset
+1. [title] — [description]
+2. [title] — [description]
+3. [title] — [description]
+4. [title] — [description]
+5. [title] — [description]
+
+current focus
+→ [priority 1 title]
+→ [priority 2 title]
+→ [priority 3 title]
+
+[ONLY if urgent finance items exist:]
+—
+
+finance
+· [title][  — amount if present]  [action]
+(one line per urgent item)
+
+—
+
+That is the whole task. Nothing else is required.
+
+Tone: spare, warm, non-compliance. Monthly field guide entry — orientation, not instruction. No greeting, no sign-off.
+```
+
+---
+
 ## To register these agents
 
-In a Claude Code session, run:
+The prompts above are AI-agnostic — any tool with Gmail access and scheduling can run them.
+Choose the route that works for your setup.
+
+---
+
+### Route A — Claude Code `/schedule` (preferred)
 
 ```
 /schedule
 ```
 
-Then paste the prompt for each agent when prompted, with the cron and name specified above.
-Or ask Claude: "set up the scheduled brief agents" — the prompts are saved here.
+Register each agent with the name, cron, and prompt from this file.
+Verify via `/schedule list`.
+
+**Status:** Requires `claude login` in a local Claude Code session.
+Fails in sandboxed cloud environments where auth is not persisted.
+
+---
+
+### Route B — Google Apps Script (no AI, no server, free)
+
+1. Go to [script.google.com](https://script.google.com) → New project
+2. Create one function per brief (daily, weekly, monthly)
+3. Each function: hardcodes the brief content as JS objects, assembles the body string
+   using the same format as the prompts above, calls:
+   ```js
+   GmailApp.createDraft(email, subject, body);
+   ```
+4. Add time-based triggers (Extensions → Apps Script → Triggers):
+   - Daily brief: 6–7am, every day
+   - Weekly brief: 6–7pm, day of week = Sunday
+   - Monthly brief: 6–7am, day of month = 1
+5. Content source: translate `content/guide.ts` + `content/calendar.ts` to plain JS objects
+   (same structure, remove TypeScript type annotations)
+
+No API keys. No OAuth. Runs on any Google account. Fully free.
+
+---
+
+### Route C — Manual Gmail MCP (Claude Code, on-demand)
+
+In any Claude Code session with Gmail MCP connected, ask:
+
+> "Run the daily brief using the prompt in docs/scheduled-agents.md"
+
+Claude reads the prompt, assembles the brief, and creates a Gmail draft.
+No scheduling — trigger manually whenever you want a brief.
+
+**Gmail pipe status:** Confirmed working April 4, 2026.
+Draft created: "your brief for saturday, april 4" → miasjones888@gmail.com
+
+---
+
+### Route D — Gemini + Google Cloud Scheduler
+
+1. Create a Google Cloud Function that:
+   - Accepts a trigger from Cloud Scheduler
+   - Sends the brief prompt + content data to Gemini API
+   - Takes Gemini's response and calls Gmail API to create a draft
+2. Set up Cloud Scheduler jobs with the cron times above
+3. Requires: Google Cloud project, billing enabled, Gemini API key
+
+---
+
+### Route E — OpenAI GPT + automation platform (n8n / Zapier / Make)
+
+1. In n8n, Zapier, or Make: create a scheduled workflow
+2. Schedule node fires on cron (times above)
+3. HTTP node sends the brief prompt + content data to OpenAI Assistants API or ChatGPT API
+4. GPT returns formatted brief text
+5. Gmail node creates draft with the response
+
+Lowest code. Easiest to modify without engineering. No server required.
+
+---
+
+### Route F — Any AI via GitHub Actions (free, any AI API)
+
+1. Create `.github/workflows/daily-brief.yml` with a `schedule:` cron trigger
+2. Workflow step calls any AI API (Anthropic, OpenAI, Gemini) with the prompt
+3. Second step calls Gmail API to create the draft
+4. Store API keys as GitHub Actions secrets
+
+Free for public and private repos. No server. Runs in the cloud.
+
+---
+
+## Gmail pipe status
+
+**Tested:** April 4, 2026 — `gmail_create_draft` confirmed working via MCP.
+Draft created: "your brief for saturday, april 4" → miasjones888@gmail.com

@@ -56,6 +56,7 @@ function getTodayAprilEvents(): CalendarEvent[] {
 
 export default function TodayPage() {
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
+  const [anchorTask, setAnchorTask] = useState('');
   const todayEvents = getTodayAprilEvents();
 
   useEffect(() => {
@@ -64,6 +65,18 @@ export default function TodayPage() {
     }, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('anchor-task');
+      if (stored) setAnchorTask(stored);
+    } catch {}
+  }, []);
+
+  function handleAnchorChange(v: string) {
+    setAnchorTask(v);
+    try { localStorage.setItem('anchor-task', v); } catch {}
+  }
 
   const currentTotalMinutes = currentTime.hours * 60 + currentTime.minutes;
   const upcomingEvents = getUpcomingEvents(currentTotalMinutes);
@@ -154,9 +167,33 @@ export default function TodayPage() {
         </div>
       </WindowPanel>
 
+      {/* Anchor task */}
+      <div style={{ marginBottom: '10px' }}>
+        <div className="text-micro text-ink-muted" style={{ marginBottom: '5px', letterSpacing: '0.05em' }}>
+          anchor task
+        </div>
+        <input
+          type="text"
+          value={anchorTask}
+          onChange={(e) => handleAnchorChange(e.target.value)}
+          placeholder="The one thing you're doing today."
+          style={{
+            width: '100%',
+            backgroundColor: 'transparent',
+            border: 'none',
+            borderBottom: '1px solid var(--color-ink-ghost)',
+            padding: '6px 0',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '15px',
+            color: 'var(--color-ink)',
+            outline: 'none',
+          }}
+        />
+      </div>
+
       {/* Today's special events */}
       {todayEvents.length > 0 && (
-        <WindowPanel title="today" active style={{ marginBottom: '10px' }}>
+        <WindowPanel title="today" style={{ marginBottom: '10px' }}>
           {todayEvents.map((event) => (
             <TimeBlock
               key={event.id}
@@ -171,7 +208,7 @@ export default function TodayPage() {
       )}
 
       {/* Coming up */}
-      <WindowPanel title="coming up" active style={{ marginBottom: '10px' }}>
+      <WindowPanel title="coming up" style={{ marginBottom: '10px' }}>
         {upcomingEvents.length > 0 ? (
           upcomingEvents.map((event) => (
             <TimeBlock
@@ -190,8 +227,8 @@ export default function TodayPage() {
         )}
       </WindowPanel>
 
-      {/* Current Focus */}
-      <WindowPanel title="focus stack" style={{ marginBottom: '10px' }}>
+      {/* What matters now */}
+      <WindowPanel title="what matters now" style={{ marginBottom: '10px' }}>
         {priorities.slice(0, 3).map((p) => (
           <div
             key={p.rank}
@@ -214,8 +251,8 @@ export default function TodayPage() {
       {/* Finance — system dialog register, bottom */}
       {urgentFinance.length > 0 && (
         <div className="system-dialog" style={{ marginBottom: '10px' }}>
-          <div className="text-micro text-ink-muted" style={{ marginBottom: '6px', fontWeight: 700 }}>
-            FINANCE — ACTION NEEDED
+          <div className="text-micro text-ink-muted" style={{ marginBottom: '6px' }}>
+            finance
           </div>
           {urgentFinance.map((item, i) => (
             <div key={i} style={{ paddingBottom: i < urgentFinance.length - 1 ? '6px' : 0, borderBottom: i < urgentFinance.length - 1 ? '1px solid var(--color-ink-ghost)' : 'none' }}>

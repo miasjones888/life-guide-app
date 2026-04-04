@@ -112,10 +112,19 @@ export default function DeckPage() {
 
   return (
     <PageShell>
+      <div style={{ padding: '8px 0 4px' }}>
+        <h1 className="text-h1">Idea Deck</h1>
+        <p className="text-body-sm text-ink-muted" style={{ marginTop: '4px' }}>
+          Capture ideas. Review them when you have energy.
+        </p>
+      </div>
+
+      <hr className="hairline" style={{ margin: '10px 0' }} />
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
         {/* ── Add form ── */}
-        <WindowPanel title="New Idea">
+        <WindowPanel title="new idea">
           <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <textarea
               value={content}
@@ -204,7 +213,7 @@ export default function DeckPage() {
         </WindowPanel>
 
         {/* ── Card viewer ── */}
-        <WindowPanel title="Idea Deck" active statusText={statusText}>
+        <WindowPanel title="idea deck" active statusText={statusText}>
           {cards.length === 0 ? (
             <p style={{ color: 'var(--color-ink-muted)', fontFamily: 'Inter, sans-serif', fontSize: '15px', lineHeight: 1.5, margin: 0 }}>
               No ideas yet. Use the form above to add your first card.

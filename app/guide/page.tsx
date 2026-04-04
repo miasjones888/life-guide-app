@@ -16,7 +16,7 @@ export default function GuidePage() {
       <hr className="hairline" style={{ margin: '10px 0' }} />
 
       {/* §01 Priorities */}
-      <div style={{ marginBottom: '4px' }}>
+      <div style={{ marginBottom: '6px', marginTop: '4px' }}>
         <span className="text-micro text-ink-muted">§01</span>
       </div>
       <WindowPanel title="priorities" active style={{ marginBottom: '10px' }}>
@@ -71,7 +71,7 @@ export default function GuidePage() {
       </WindowPanel>
 
       {/* §02 Finance */}
-      <div style={{ marginBottom: '4px' }}>
+      <div style={{ marginBottom: '6px', marginTop: '8px' }}>
         <span className="text-micro text-ink-muted">§02</span>
       </div>
       <WindowPanel title="finance" style={{ marginBottom: '10px' }}>
@@ -111,7 +111,7 @@ export default function GuidePage() {
       </WindowPanel>
 
       {/* §03 Care */}
-      <div style={{ marginBottom: '4px' }}>
+      <div style={{ marginBottom: '6px', marginTop: '8px' }}>
         <span className="text-micro text-ink-muted">§03</span>
       </div>
       <WindowPanel title="care" style={{ marginBottom: '10px' }}>
@@ -180,7 +180,7 @@ export default function GuidePage() {
       </WindowPanel>
 
       {/* §04 Field */}
-      <div style={{ marginBottom: '4px' }}>
+      <div style={{ marginBottom: '6px', marginTop: '8px' }}>
         <span className="text-micro text-ink-muted">§04</span>
       </div>
       <WindowPanel title="field" statusText="Within 25 min of 92115" style={{ marginBottom: '10px' }}>
@@ -214,18 +214,29 @@ export default function GuidePage() {
           </div>
         ))}
 
-        <hr className="hairline" style={{ margin: '10px 0' }} />
+        <hr className="hairline" style={{ margin: '14px 0 10px' }} />
 
-        <div className="text-micro text-ink-muted" style={{ marginBottom: '6px', letterSpacing: '0.03em' }}>key phrases</div>
+        <div className="text-micro text-ink-muted" style={{ marginBottom: '12px', letterSpacing: '0.05em' }}>key phrases</div>
         {Object.entries(verbatimCopy).map(([key, value]) => (
           <div
             key={key}
             style={{
-              padding: '8px 0',
+              padding: '10px 0',
               borderBottom: '1px solid var(--color-ink-ghost)',
             }}
           >
-            <p className="text-body-sm text-ink-muted" style={{ fontStyle: 'italic' }}>"{value}"</p>
+            <p
+              className="text-body"
+              style={{
+                fontStyle: 'italic',
+                color: 'var(--color-ink-muted)',
+                lineHeight: 1.5,
+                paddingLeft: '12px',
+                borderLeft: '2px solid var(--color-ink-ghost)',
+              }}
+            >
+              {value}
+            </p>
           </div>
         ))}
       </WindowPanel>

@@ -28,20 +28,20 @@ export default function MonthlyPage() {
   return (
     <PageShell>
       <div style={{ padding: '8px 0 4px' }}>
-        <h1 className="text-h1">Monthly System</h1>
+        <h1 className="text-h1">Monthly Rhythm</h1>
         <p className="text-body-sm text-ink-muted" style={{ marginTop: '4px' }}>
-          Recurring monthly events, budget process, and April 2026 one-time items.
+          Recurring structure, budget reset, and the month's one-time items.
         </p>
       </div>
 
       <hr className="hairline" style={{ margin: '10px 0' }} />
 
       {/* Monthly recurring */}
-      <WindowPanel title="MONTHLY RECURRING" style={{ marginBottom: '10px' }}>
+      <WindowPanel title="monthly recurring" style={{ marginBottom: '10px' }}>
         {firstSundayEvents.length > 0 && (
           <>
             <div className="text-micro text-ink-muted" style={{ paddingBottom: '4px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '4px' }}>
-              First Sunday
+              first sunday
             </div>
             {firstSundayEvents.map((e) => (
               <TimeBlock key={e.id} time={e.time} title={e.title} emoji={e.emoji} category={e.category} />
@@ -52,7 +52,7 @@ export default function MonthlyPage() {
         {dayOfMonthEvents.length > 0 && (
           <>
             <div className="text-micro text-ink-muted" style={{ paddingTop: '8px', paddingBottom: '4px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '4px' }}>
-              Fixed Dates
+              fixed dates
             </div>
             {dayOfMonthEvents.map((e) => (
               <div key={e.id} className="time-block">
@@ -69,7 +69,7 @@ export default function MonthlyPage() {
             ))}
             {lastDayEvents.map((e) => (
               <div key={e.id} className="time-block">
-                <div className="time-label">Last day</div>
+                <div className="time-label">last day</div>
                 <div style={{ flex: 1, paddingLeft: '10px', borderLeft: '3px solid var(--color-banana)' }}>
                   <div className="text-body">
                     {e.emoji && <span className="mr-1">{e.emoji}</span>}
@@ -84,7 +84,7 @@ export default function MonthlyPage() {
         {firstFridayEvents.length > 0 && (
           <>
             <div className="text-micro text-ink-muted" style={{ paddingTop: '8px', paddingBottom: '4px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '4px' }}>
-              First Friday
+              first friday
             </div>
             {firstFridayEvents.map((e) => (
               <TimeBlock key={e.id} title={e.title} emoji={e.emoji} category={e.category} />
@@ -95,7 +95,7 @@ export default function MonthlyPage() {
         {noRuleMonthly.length > 0 && (
           <>
             <div className="text-micro text-ink-muted" style={{ paddingTop: '8px', paddingBottom: '4px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '4px' }}>
-              Monthly (no fixed date)
+              monthly (no fixed date)
             </div>
             {noRuleMonthly.map((e) => (
               <TimeBlock key={e.id} title={e.title} emoji={e.emoji} category={e.category} />
@@ -106,12 +106,12 @@ export default function MonthlyPage() {
         {intervalEvents.length > 0 && (
           <>
             <div className="text-micro text-ink-muted" style={{ paddingTop: '8px', paddingBottom: '4px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '4px' }}>
-              Recurring Intervals
+              recurring intervals
             </div>
             {intervalEvents.map((e) => (
               <div key={e.id} className="time-block">
                 <div className="time-label text-micro text-ink-muted">
-                  Every {e.intervalDays}d
+                  every {e.intervalDays}d
                 </div>
                 <div style={{ flex: 1, paddingLeft: '10px', borderLeft: '3px solid var(--color-tomato)' }}>
                   <div className="text-body">
@@ -125,8 +125,11 @@ export default function MonthlyPage() {
         )}
       </WindowPanel>
 
-      {/* Budget Hour Steps */}
-      <WindowPanel title="MONTHLY RESET — BUDGET HOUR STEPS" style={{ marginBottom: '10px' }}>
+      {/* Budget Reset Steps */}
+      <WindowPanel title="monthly reset" style={{ marginBottom: '10px' }}>
+        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
+          Budget hour. First Sunday of the month.
+        </div>
         {monthlyBudgetSteps.map((step) => (
           <div key={step.order} className="priority-item">
             <span className="priority-number">{step.order}.</span>
@@ -139,7 +142,10 @@ export default function MonthlyPage() {
       </WindowPanel>
 
       {/* April 2026 One-Time Events */}
-      <WindowPanel title="APRIL 2026 — ONE-TIME EVENTS" style={{ marginBottom: '10px' }}>
+      <WindowPanel title="april 2026" style={{ marginBottom: '10px' }}>
+        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
+          One-time events. Dates with flags require action.
+        </div>
         {sortedDates.map((dateStr) => {
           const events = aprilByDate[dateStr];
           const dateObj = new Date(dateStr + 'T12:00:00');
@@ -158,13 +164,13 @@ export default function MonthlyPage() {
                   paddingBottom: '4px',
                   borderBottom: '1px solid var(--color-ink-ghost)',
                   marginBottom: '4px',
-                  color: hasUrgent ? 'var(--color-tomato)' : 'var(--color-ink-muted)',
+                  color: hasUrgent ? 'var(--color-tangerine)' : 'var(--color-ink-muted)',
                   display: 'flex',
                   justifyContent: 'space-between',
                 }}
               >
                 <span>{dateLabel}</span>
-                {hasUrgent && <span style={{ color: 'var(--color-tomato)' }}>URGENT</span>}
+                {hasUrgent && <span style={{ color: 'var(--color-tangerine)' }}>flag</span>}
               </div>
               {events.map((event) => (
                 <TimeBlock

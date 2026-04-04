@@ -9,14 +9,24 @@ import { weeklyEvents, biweeklyEvents } from '@/content/calendar';
 import { modularNote, verbatimCopy } from '@/content/guide';
 import type { DayOfWeek, CalendarEvent } from '@/content/types';
 
+const WEEKLY_FOCUS: Record<DayOfWeek, string> = {
+  sunday: 'life planning reset',
+  monday: 'portfolio work',
+  tuesday: 'notion R&D + life admin',
+  wednesday: 'notion R&D + portfolio work',
+  thursday: 'buffer / life admin',
+  friday: 'systems work',
+  saturday: 'creative exploration',
+};
+
 const days: { key: DayOfWeek; label: string; note?: string }[] = [
-  { key: 'monday', label: 'Monday', note: 'Rest/recovery — no structured work' },
-  { key: 'tuesday', label: 'Tuesday' },
-  { key: 'wednesday', label: 'Wednesday' },
-  { key: 'thursday', label: 'Thursday' },
-  { key: 'friday', label: 'Friday' },
-  { key: 'saturday', label: 'Saturday' },
-  { key: 'sunday', label: 'Sunday' },
+  { key: 'monday', label: 'monday', note: 'Rest/recovery — no structured work' },
+  { key: 'tuesday', label: 'tuesday' },
+  { key: 'wednesday', label: 'wednesday' },
+  { key: 'thursday', label: 'thursday' },
+  { key: 'friday', label: 'friday' },
+  { key: 'saturday', label: 'saturday' },
+  { key: 'sunday', label: 'sunday' },
 ];
 
 function getEventsForDay(day: DayOfWeek): CalendarEvent[] {
@@ -50,9 +60,9 @@ export default function WeeklyPage() {
   return (
     <PageShell>
       <div style={{ padding: '8px 0 4px' }}>
-        <h1 className="text-h1">Weekly System</h1>
+        <h1 className="text-h1">Weekly Rhythm</h1>
         <p className="text-body-sm text-ink-muted" style={{ marginTop: '4px' }}>
-          Day-by-day structure. Tap a day to expand.
+          Seven-day structure. Each day has a focus, a register, a tempo.
         </p>
       </div>
 
@@ -68,11 +78,12 @@ export default function WeeklyPage() {
         <p className="text-micro text-ink-muted">{modularNote}</p>
       </div>
 
-      <WindowPanel title="WEEKLY SCHEDULE" style={{ marginBottom: '10px' }} noPadding>
+      <WindowPanel title="the week" style={{ marginBottom: '10px' }} noPadding>
         <div style={{ padding: '0' }}>
           {days.map((day) => {
             const events = getEventsForDay(day.key);
             const isToday = day.key === todayKey;
+            const focusLabel = WEEKLY_FOCUS[day.key];
 
             return (
               <div
@@ -85,6 +96,9 @@ export default function WeeklyPage() {
                     defaultOpen={isToday}
                     badge={isToday ? 'today' : undefined}
                   >
+                    <div className="text-micro text-ink-muted" style={{ paddingTop: '4px', paddingBottom: '8px', paddingLeft: '4px', letterSpacing: '0.04em' }}>
+                      {focusLabel}
+                    </div>
                     {day.note && (
                       <p className="text-body-sm text-ink-muted" style={{ paddingBottom: '8px', paddingLeft: '4px', fontStyle: 'italic' }}>
                         {day.note}
@@ -132,7 +146,7 @@ export default function WeeklyPage() {
       </WindowPanel>
 
       {/* Biweekly */}
-      <WindowPanel title="EVERY 2 WEEKS" style={{ marginBottom: '10px' }}>
+      <WindowPanel title="every two weeks" style={{ marginBottom: '10px' }}>
         {biweeklyEvents.map((event) => (
           <div key={event.id} className="time-block">
             <div
