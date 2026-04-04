@@ -12,7 +12,7 @@
   --color-ink: #1A1917;
   --color-ink-muted: #6B6760;
   --color-ink-ghost: rgba(26, 25, 23, 0.07);
-  --color-forest: #3D5C3A;
+  --color-forest: #4A5E3A;
   --color-moss: #7A9B76;
   --color-lichen: #C8D9C6;
   --color-status-bar: #C0C0C0;
@@ -42,7 +42,10 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   background-color: var(--color-chrome);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Ccircle cx='1.5' cy='1.5' r='0.6' fill='%231A1917' fill-opacity='0.05'/%3E%3C/svg%3E");
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Ccircle cx='1.5' cy='1.5' r='0.6' fill='%231A1917' fill-opacity='0.04'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 15% 95%, rgba(74,94,58,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 88% 8%, rgba(74,94,58,0.04) 0%, transparent 45%);
   color: var(--color-ink);
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 15px;
@@ -279,6 +282,13 @@ hr.hairline {
 
 .expandable-trigger:hover {
   background: var(--color-chrome-light);
+}
+
+/* Input placeholder */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-ink-muted);
+  opacity: 1;
 }
 
 /* Scrollbar styling */

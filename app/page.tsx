@@ -56,6 +56,7 @@ function getTodayAprilEvents(): CalendarEvent[] {
 
 export default function TodayPage() {
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
+  const [anchorTask, setAnchorTask] = useState('');
   const todayEvents = getTodayAprilEvents();
 
   useEffect(() => {
@@ -64,6 +65,18 @@ export default function TodayPage() {
     }, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('anchor-task');
+      if (stored) setAnchorTask(stored);
+    } catch {}
+  }, []);
+
+  function handleAnchorChange(v: string) {
+    setAnchorTask(v);
+    try { localStorage.setItem('anchor-task', v); } catch {}
+  }
 
   const currentTotalMinutes = currentTime.hours * 60 + currentTime.minutes;
   const upcomingEvents = getUpcomingEvents(currentTotalMinutes);
@@ -153,6 +166,30 @@ export default function TodayPage() {
           </p>
         </div>
       </WindowPanel>
+
+      {/* Anchor task */}
+      <div style={{ marginBottom: '10px' }}>
+        <div className="text-micro text-ink-muted" style={{ marginBottom: '5px', letterSpacing: '0.05em' }}>
+          anchor task
+        </div>
+        <input
+          type="text"
+          value={anchorTask}
+          onChange={(e) => handleAnchorChange(e.target.value)}
+          placeholder="The one thing you're doing today."
+          style={{
+            width: '100%',
+            backgroundColor: 'transparent',
+            border: 'none',
+            borderBottom: '1px solid var(--color-ink-ghost)',
+            padding: '6px 0',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '15px',
+            color: 'var(--color-ink)',
+            outline: 'none',
+          }}
+        />
+      </div>
 
       {/* Today's special events */}
       {todayEvents.length > 0 && (
