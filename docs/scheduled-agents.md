@@ -1,6 +1,6 @@
 # Scheduled Brief Agents
 
-Two Claude agents to register via `/schedule` when the claude.ai connection is stable.
+Three Claude agents to register via `/schedule` when the claude.ai connection is stable.
 
 ---
 
@@ -136,6 +136,76 @@ Tone: spare, warm, non-compliance. Reads like a weekly field guide briefing. No 
 
 ---
 
+---
+
+## Agent 3 — Monthly Brief
+**Name:** `life-guide-monthly-brief`
+**Cron:** `0 9 1 * *` (9:00am on the 1st of every month)
+
+### Prompt
+
+```
+Read /home/user/life-guide-app/content/calendar.ts and /home/user/life-guide-app/content/guide.ts.
+
+Today is the 1st of the month. Compute today's date and determine: month name (e.g. "may"), year (e.g. "2026"), number of days in this month.
+
+From monthlyEvents, list every recurring monthly item with its timing rule in plain English:
+- type "nth-weekday": "first [weekday]" (e.g. "first sunday")
+- type "day-of-month": "[ordinal] of the month" (e.g. "2nd of the month")
+- type "last-day": "last day of the month"
+- type "interval" (intervalDays): "every [n] days — check if due this month"
+
+From monthlyBudgetSteps, list all 5 steps in order: [order]. [title] — [description]
+
+Top 3 non-locked priorities from the priorities array.
+
+Check financeUrgentItems for any with isUrgent === true. Include a finance block if any exist.
+
+Use gmail_get_profile to get the user's email address.
+Use gmail_create_draft with To and From set to that address.
+
+Subject: [month name] — the month ahead
+
+Body (plain text, — as section divider, · as bullet):
+
+[month name] [year].
+
+—
+
+this month
+· [title]  ([timing rule])
+(one line per monthlyEvent)
+
+—
+
+monthly reset
+1. [title] — [description]
+2. [title] — [description]
+3. [title] — [description]
+4. [title] — [description]
+5. [title] — [description]
+
+current focus
+→ [priority 1 title]
+→ [priority 2 title]
+→ [priority 3 title]
+
+[ONLY if urgent finance items exist:]
+—
+
+finance
+· [title][  — amount if present]  [action]
+(one line per urgent item)
+
+—
+
+That is the whole task. Nothing else is required.
+
+Tone: spare, warm, non-compliance. Monthly field guide entry — orientation, not instruction. No greeting, no sign-off.
+```
+
+---
+
 ## To register these agents
 
 In a Claude Code session, run:
@@ -146,3 +216,9 @@ In a Claude Code session, run:
 
 Then paste the prompt for each agent when prompted, with the cron and name specified above.
 Or ask Claude: "set up the scheduled brief agents" — the prompts are saved here.
+
+## Gmail pipe status
+
+**Tested:** April 4, 2026 — `gmail_create_draft` confirmed working via MCP.
+Draft created: "your brief for saturday, april 4" → miasjones888@gmail.com
+Scheduled triggers pending `/schedule` reconnect.
