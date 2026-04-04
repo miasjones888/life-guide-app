@@ -191,7 +191,7 @@ export default function TodayPage() {
       </WindowPanel>
 
       {/* Current Focus */}
-      <WindowPanel title="focus stack" style={{ marginBottom: '10px' }}>
+      <WindowPanel title="focus stack" active style={{ marginBottom: '10px' }}>
         {priorities.slice(0, 3).map((p) => (
           <div
             key={p.rank}
