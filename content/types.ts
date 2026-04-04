@@ -113,4 +113,6 @@ export interface FlashCard {
   category: CalendarCategory;
   createdAt: string; // ISO date string
   note?: string;
+  updatedAt?: string; // ISO date string
+  isFlagged?: boolean;
 }
