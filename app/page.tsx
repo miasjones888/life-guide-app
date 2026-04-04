@@ -156,7 +156,7 @@ export default function TodayPage() {
 
       {/* Today's special events */}
       {todayEvents.length > 0 && (
-        <WindowPanel title="today" active style={{ marginBottom: '10px' }}>
+        <WindowPanel title="today" style={{ marginBottom: '10px' }}>
           {todayEvents.map((event) => (
             <TimeBlock
               key={event.id}
@@ -171,7 +171,7 @@ export default function TodayPage() {
       )}
 
       {/* Coming up */}
-      <WindowPanel title="coming up" active style={{ marginBottom: '10px' }}>
+      <WindowPanel title="coming up" style={{ marginBottom: '10px' }}>
         {upcomingEvents.length > 0 ? (
           upcomingEvents.map((event) => (
             <TimeBlock
@@ -190,8 +190,8 @@ export default function TodayPage() {
         )}
       </WindowPanel>
 
-      {/* Current Focus */}
-      <WindowPanel title="focus stack" active style={{ marginBottom: '10px' }}>
+      {/* What matters now */}
+      <WindowPanel title="what matters now" style={{ marginBottom: '10px' }}>
         {priorities.slice(0, 3).map((p) => (
           <div
             key={p.rank}
@@ -214,8 +214,8 @@ export default function TodayPage() {
       {/* Finance — system dialog register, bottom */}
       {urgentFinance.length > 0 && (
         <div className="system-dialog" style={{ marginBottom: '10px' }}>
-          <div className="text-micro text-ink-muted" style={{ marginBottom: '6px', fontWeight: 700 }}>
-            FINANCE — ACTION NEEDED
+          <div className="text-micro text-ink-muted" style={{ marginBottom: '6px' }}>
+            finance
           </div>
           {urgentFinance.map((item, i) => (
             <div key={i} style={{ paddingBottom: i < urgentFinance.length - 1 ? '6px' : 0, borderBottom: i < urgentFinance.length - 1 ? '1px solid var(--color-ink-ghost)' : 'none' }}>
