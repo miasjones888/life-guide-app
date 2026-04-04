@@ -14,6 +14,7 @@ const moreItems = [
   { href: '/daily', label: 'daily rhythm' },
   { href: '/monthly', label: 'monthly' },
   { href: '/deck', label: 'deck' },
+  { href: '/reflection', label: 'reflection' },
 ];
 
 const moreHrefs = moreItems.map((i) => i.href);
