@@ -95,3 +95,23 @@ Do not summarize or simplify the content from the docs. The content is intention
 Start with the docs. The source of truth is in the markdown files, not this README.
 
 Claude Code: read the /docs directory first before planning implementation.
+
+---
+
+## GPT Assistant Setup (Phase 2 foundation)
+
+The app now includes a GPT-backed assistant panel on the Today page for:
+- calendar update intent parsing,
+- email draft assistance,
+- lightweight planning support,
+- freeze-mode next-step prompts.
+
+Set these environment variables before running:
+
+```bash
+OPENAI_API_KEY=your_api_key
+# optional (defaults to gpt-4.1-mini)
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+If `OPENAI_API_KEY` is not set, the assistant endpoint returns a clear setup error.

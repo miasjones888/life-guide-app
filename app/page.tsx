@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import PageShell from '@/components/layout/PageShell';
 import WindowPanel from '@/components/ui/WindowPanel';
 import TimeBlock from '@/components/ui/TimeBlock';
+import AssistantPanel from '@/components/ui/AssistantPanel';
 import { dailyEvents, aprilOneTimeEvents } from '@/content/calendar';
 import { priorities, financeUrgentItems, verbatimCopy, modularNote } from '@/content/guide';
 import type { CalendarEvent } from '@/content/types';
@@ -246,6 +247,11 @@ export default function TodayPage() {
             </div>
           </div>
         ))}
+      </WindowPanel>
+
+      {/* GPT assistant */}
+      <WindowPanel title="assistant" style={{ marginBottom: '10px' }}>
+        <AssistantPanel />
       </WindowPanel>
 
       {/* Finance — system dialog register, bottom */}
