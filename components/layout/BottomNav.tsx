@@ -15,6 +15,7 @@ const moreItems = [
   { href: '/monthly', label: 'monthly' },
   { href: '/deck', label: 'deck' },
   { href: '/reflection', label: 'reflection' },
+  { href: '/budget', label: 'budget' },
 ];
 
 const moreHrefs = moreItems.map((i) => i.href);

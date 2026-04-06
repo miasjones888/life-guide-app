@@ -116,3 +116,45 @@ export interface FlashCard {
   updatedAt?: string; // ISO date string
   isFlagged?: boolean;
 }
+
+// ─── Budget ────────────────────────────────────────────────────────────────
+
+export type BudgetCategory =
+  | 'income'
+  | 'housing'
+  | 'food'
+  | 'pets'
+  | 'health'
+  | 'subscriptions'
+  | 'transport'
+  | 'misc';
+
+export interface BudgetLine {
+  id: string;
+  label: string;
+  category: BudgetCategory;
+  /** Always positive. Direction inferred from category === 'income'. */
+  amount: number;
+  isFixed: boolean;        // false = variable; drives §02 vs §03 placement
+  isSubscription: boolean; // true = also appears in §04 subscription audit
+  note?: string;
+}
+
+export interface MonthOverride {
+  id: string;    // matches BudgetLine.id
+  month: string; // "2026-04", "2026-05", etc.
+  amount: number;
+}
+
+export interface BudgetGoal {
+  id: string;
+  label: string;
+  targetAmount?: number;
+  note?: string;
+}
+
+export interface BudgetState {
+  lines: BudgetLine[];
+  overrides: MonthOverride[];
+  goals: BudgetGoal[];
+}
