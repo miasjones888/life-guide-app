@@ -218,7 +218,7 @@ export default function AssistantPanel() {
             color: 'var(--color-ink)',
             padding: '6px 12px',
             fontSize: '13px',
-            fontFamily: 'JetBrains Mono, monospace',
+            fontFamily: 'Courier New, monospace',
             cursor: isLoading || !message.trim() ? 'not-allowed' : 'pointer',
             opacity: isLoading || !message.trim() ? 0.6 : 1,
           }}
@@ -234,7 +234,7 @@ export default function AssistantPanel() {
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'Courier New, monospace',
               fontSize: '11px',
               color: 'var(--color-ink-muted)',
               padding: '6px 0',

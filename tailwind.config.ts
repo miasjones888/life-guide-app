@@ -17,7 +17,7 @@ const config: Config = {
         ink: '#1A1917',
         'ink-muted': '#6B6760',
         'ink-ghost': 'rgba(26,25,23,0.07)',
-        forest: '#3D5C3A',
+        forest: '#4A5E3A',
         moss: '#7A9B76',
         lichen: '#C8D9C6',
         'status-bar': '#C0C0C0',
@@ -35,8 +35,9 @@ const config: Config = {
         sage: '#33B679',
       },
       fontFamily: {
-        mono: ['JetBrains Mono', 'Courier New', 'monospace'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['Courier New', 'monospace'],
+        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        serif: ['Georgia', 'Times New Roman', 'serif'],
       },
       fontSize: {
         display: ['40px', { lineHeight: '1.1', fontWeight: '400' }],

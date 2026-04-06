@@ -8,8 +8,11 @@ import AssistantPanel from '@/components/ui/AssistantPanel';
 import { dailyEvents, aprilOneTimeEvents } from '@/content/calendar';
 import { priorities, financeUrgentItems, verbatimCopy, modularNote } from '@/content/guide';
 import type { CalendarEvent } from '@/content/types';
+import { parseEventTime } from '@/lib/time';
 
-const MORNING_STEPS = [
+type ChecklistStep = { id: string; label: string; note?: string };
+
+const MORNING_STEPS: ChecklistStep[] = [
   { id: 'morning-journal', label: 'Morning pages / journal (20 min)' },
   { id: 'morning-read', label: 'Reading before screens (even 10 min)' },
   { id: 'morning-skincare', label: 'Morning skincare (cleanser + SPF) — on a hard day: just those two. Done.' },
@@ -17,10 +20,10 @@ const MORNING_STEPS = [
   { id: 'morning-breakfast', label: 'Breakfast — no appetite is okay, grab something small from the shelf' },
 ];
 
-const EVENING_STEPS = [
-  { id: 'evening-dinner', label: 'Dinner — no cooking required. Delivery, fridge, frozen, or shelf snacks. You just need to eat something.' },
+const EVENING_STEPS: ChecklistStep[] = [
+  { id: 'evening-dinner', label: "Dinner — delivery, fridge, frozen, or shelf snacks.", note: "You don't have to cook. You just have to eat something." },
   { id: 'evening-catplay', label: 'PM cat playtime (10–15 min). Check on water fountain while you\'re in the zone.' },
-  { id: 'evening-shower', label: 'Shower check-in — get in, warm water, body wash, get out. That is the whole task.' },
+  { id: 'evening-shower', label: 'Shower check-in — get in, warm water, body wash, get out. That is the whole task. Nothing else is required.' },
   { id: 'evening-catmeds', label: 'Cat evening meds + dinner + scoop litter (Maisie + Meeko)' },
   { id: 'evening-meds', label: 'Your bedtime meds (9:30pm). PRN anxiety meds accessible.' },
   { id: 'evening-skincare', label: 'Night skincare — two steps minimum: cleanser + moisturiser.' },
@@ -44,17 +47,6 @@ function getCurrentTime(): { hours: number; minutes: number; display: string } {
     minutes: now.getMinutes(),
     display: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
   };
-}
-
-function parseEventTime(time: string): number {
-  const match = time.match(/^(\d+):(\d+)(am|pm)$/i);
-  if (!match) return 0;
-  let hours = parseInt(match[1]);
-  const minutes = parseInt(match[2]);
-  const meridiem = match[3].toLowerCase();
-  if (meridiem === 'pm' && hours !== 12) hours += 12;
-  if (meridiem === 'am' && hours === 12) hours = 0;
-  return hours * 60 + minutes;
 }
 
 function getUpcomingEvents(currentMinutes: number): CalendarEvent[] {
@@ -185,7 +177,7 @@ export default function TodayPage() {
               <div key={e.id} style={{ display: 'flex', gap: '10px', padding: '2px 0' }}>
                 <span
                   className="text-micro text-ink-muted"
-                  style={{ fontFamily: 'JetBrains Mono, monospace', minWidth: '52px' }}
+                  style={{ fontFamily: 'Courier New, monospace', minWidth: '52px' }}
                 >
                   {e.time}
                 </span>
@@ -235,7 +227,7 @@ export default function TodayPage() {
             border: 'none',
             borderBottom: '1px solid var(--color-ink-ghost)',
             padding: '6px 0',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
             fontSize: '15px',
             color: 'var(--color-ink)',
             outline: 'none',
@@ -262,7 +254,7 @@ export default function TodayPage() {
                     border: 'none',
                     borderBottom: '1px solid var(--color-ink-ghost)',
                     padding: '8px 0',
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
                     fontSize: '15px',
                     color: 'var(--color-ink)',
                     cursor: 'pointer',
@@ -272,6 +264,11 @@ export default function TodayPage() {
                   }}
                 >
                   {step.label}
+                  {step.note && (
+                    <span style={{ display: 'block', fontFamily: 'system-ui, -apple-system, sans-serif', fontSize: '13px', color: 'var(--color-ink-muted)', marginTop: '2px', fontStyle: 'italic' }}>
+                      {step.note}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -351,7 +348,7 @@ export default function TodayPage() {
             <div key={i} style={{ paddingBottom: i < urgentFinance.length - 1 ? '6px' : 0, borderBottom: i < urgentFinance.length - 1 ? '1px solid var(--color-ink-ghost)' : 'none' }}>
               <div className="text-body-sm" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <span>{item.title}</span>
-                {item.amount && <span style={{ color: 'var(--color-ink-muted)', fontFamily: 'JetBrains Mono, monospace', fontSize: '11px' }}>{item.amount}</span>}
+                {item.amount && <span style={{ color: 'var(--color-ink-muted)', fontFamily: 'Courier New, monospace', fontSize: '11px' }}>{item.amount}</span>}
               </div>
               <div className="text-micro text-ink-muted">{item.note}</div>
               {item.action && (

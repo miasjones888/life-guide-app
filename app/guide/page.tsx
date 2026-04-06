@@ -93,7 +93,7 @@ export default function GuidePage() {
                 {item.amount && (
                   <span
                     className="text-micro"
-                    style={{ color: 'var(--color-ink-muted)', fontFamily: 'JetBrains Mono, monospace' }}
+                    style={{ color: 'var(--color-ink-muted)', fontFamily: 'Courier New, monospace' }}
                   >
                     {item.amount}
                   </span>
@@ -127,7 +127,7 @@ export default function GuidePage() {
             <div>
               <a
                 href={`tel:${vetInfo.phone.replace(/\D/g, '')}`}
-                style={{ color: 'var(--color-forest)', fontFamily: 'JetBrains Mono, monospace', fontSize: '13px' }}
+                style={{ color: 'var(--color-forest)', fontFamily: 'Courier New, monospace', fontSize: '13px' }}
               >
                 {vetInfo.phone}
               </a>
