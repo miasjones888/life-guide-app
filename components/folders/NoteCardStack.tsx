@@ -32,7 +32,9 @@ export function NoteCardStack({ notes, onUpdate, onDelete, onMove }: NoteCardSta
     );
   }
 
-  const visibleNote = notes[activeIndex];
+  // Clamp activeIndex so deleting/moving the last card never yields undefined
+  const safeIndex = Math.min(activeIndex, notes.length - 1);
+  const visibleNote = notes[safeIndex];
   const depthCount = Math.min(notes.length - 1, MAX_DEPTH_LAYERS);
 
   function goNext() {

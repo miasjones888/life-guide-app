@@ -5,6 +5,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { FolderNote, FolderId } from '@/content/types';
 import { FORMAT_COLORS, FORMAT_LABELS, FOLDER_DEFINITIONS, getFolderById } from '@/content/folders';
 
+function safeHostname(url: string): string {
+  try {
+    // Prepend scheme if missing so URL() can parse it
+    const normalized = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+    return new URL(normalized).hostname;
+  } catch {
+    return url;
+  }
+}
+
 interface NoteCardItemProps {
   note: FolderNote;
   onUpdate: (id: string, changes: Partial<Pick<FolderNote, 'content' | 'isFlagged'>>) => void;
@@ -95,7 +105,7 @@ export function NoteCardItem({ note, onUpdate, onDelete, onMove }: NoteCardItemP
             {/* Source / URL */}
             {(note.source || note.url) && (
               <p className="text-micro text-ink-muted font-mono truncate">
-                {note.source || new URL(note.url!).hostname} · {formatDate(note.createdAt)}
+                {note.source || safeHostname(note.url!)} · {formatDate(note.createdAt)}
               </p>
             )}
             {!note.source && !note.url && (
