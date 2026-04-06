@@ -7,6 +7,11 @@ import {
 } from '@/content/calendar';
 import { priorities, financeUrgentItems, modularNote } from '@/content/guide';
 import type { DayOfWeek } from '@/content/types';
+import {
+  isGoogleCalendarConfigured,
+  fetchAllEvents,
+  buildLiveCalendarContext,
+} from '@/lib/google-calendar';
 
 interface AssistantAction {
   type: 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'plan_next_steps' | 'freeze_mode';
@@ -166,7 +171,7 @@ Mia is a writer, copywriter, and creative director in San Diego. She lives with 
 This app is her field guide — a read-first, reference-first tool. Not a productivity dashboard. Not a task manager.
 
 Your job:
-1) Help with scheduling and calendar updates. You have full access to her current schedule (provided below). When she asks to add, move, or remove something, check for conflicts and flag any issues with non-negotiable or protected events.
+1) Help with scheduling and calendar updates. You have access to her live Google Calendar (Events, Appointments, Social Life, Time Off) provided below. When she asks to add, move, or remove something, check for conflicts and flag any issues with non-negotiable or protected events. For calendar_create, include calendarName (Events / Appointments / Social Life / Time Off), date (YYYY-MM-DD), startTime (HH:MM 24h), endTime (HH:MM 24h), and title in the payload. For calendar_update or calendar_delete, include eventId and calendarId from the schedule data.
 2) Draft concise, warm emails in Mia's voice.
 3) Organize plans into short, actionable steps — no more than 3 at a time.
 4) Support freeze mode with one tiny, compassionate next action (5–10 min max). One thing. Not a list.
@@ -195,8 +200,22 @@ Rules:
 - Preserve Mia's voice and exact phrasing if she provides copy to use.
 - When proposing a calendar_create or calendar_update, include "time", "title", "category", and "date" in the payload where known.`;
 
-function buildSystemPrompt(): string {
-  return `${BASE_SYSTEM_PROMPT}\n\n---\n\n${buildCalendarContext()}`;
+async function buildSystemPrompt(): Promise<string> {
+  let calendarSection: string;
+
+  if (isGoogleCalendarConfigured()) {
+    try {
+      const events = await fetchAllEvents();
+      calendarSection = buildLiveCalendarContext(events);
+    } catch (err) {
+      // Fall back to static data if live fetch fails
+      calendarSection = `[Google Calendar fetch failed: ${err instanceof Error ? err.message : 'unknown error'}]\n\n${buildCalendarContext()}`;
+    }
+  } else {
+    calendarSection = `[Google Calendar not configured — using static schedule]\n\n${buildCalendarContext()}`;
+  }
+
+  return `${BASE_SYSTEM_PROMPT}\n\n---\n\n${calendarSection}`;
 }
 
 // ── Provider calls ────────────────────────────────────────────────
@@ -322,7 +341,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
   }
 
-  const systemPrompt = buildSystemPrompt();
+  const systemPrompt = await buildSystemPrompt();
 
   const providerPref = process.env.AI_PROVIDER ?? 'auto';
   const openaiKey = process.env.OPENAI_API_KEY;

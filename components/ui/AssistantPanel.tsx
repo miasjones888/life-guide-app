@@ -15,6 +15,10 @@ interface AssistantResponse {
   actions: AssistantAction[];
 }
 
+type ActionStatus = 'idle' | 'loading' | 'done' | 'error';
+
+const CALENDAR_ACTION_TYPES: AssistantActionType[] = ['calendar_create', 'calendar_update', 'calendar_delete'];
+
 const STARTER_PROMPTS = [
   'Add a vet appointment on April 28 at 11am.',
   'Draft an email to my landlord about lease renewal.',
@@ -26,6 +30,8 @@ export default function AssistantPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AssistantResponse | null>(null);
+  const [actionStatuses, setActionStatuses] = useState<Record<number, ActionStatus>>({});
+  const [actionErrors, setActionErrors] = useState<Record<number, string>>({});
 
   async function submit(userMessage?: string) {
     const text = (userMessage ?? message).trim();
@@ -33,20 +39,21 @@ export default function AssistantPanel() {
 
     setIsLoading(true);
     setError(null);
+    setResult(null);
+    setActionStatuses({});
+    setActionErrors({});
 
     try {
       const response = await fetch('/api/assistant', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error ?? 'Something went wrong while contacting GPT.');
+        setError(data.error ?? 'Something went wrong.');
         return;
       }
 
@@ -59,10 +66,34 @@ export default function AssistantPanel() {
     }
   }
 
+  async function executeAction(index: number, action: AssistantAction) {
+    setActionStatuses((prev) => ({ ...prev, [index]: 'loading' }));
+    setActionErrors((prev) => { const next = { ...prev }; delete next[index]; return next; });
+
+    try {
+      const response = await fetch('/api/calendar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: action.type, payload: action.payload }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setActionStatuses((prev) => ({ ...prev, [index]: 'error' }));
+        setActionErrors((prev) => ({ ...prev, [index]: data.error ?? 'Action failed.' }));
+      } else {
+        setActionStatuses((prev) => ({ ...prev, [index]: 'done' }));
+      }
+    } catch {
+      setActionStatuses((prev) => ({ ...prev, [index]: 'error' }));
+      setActionErrors((prev) => ({ ...prev, [index]: 'Could not reach calendar endpoint.' }));
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       <p className="text-body-sm text-ink-muted" style={{ margin: 0 }}>
-        Ask GPT to help with calendar updates, email drafts, planning, or freeze-mode support.
+        Ask for help with scheduling, email drafts, planning, or freeze-mode support.
       </p>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -83,6 +114,7 @@ export default function AssistantPanel() {
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit(); }}
         placeholder="What do you want help with right now?"
         rows={3}
         style={{
@@ -115,7 +147,7 @@ export default function AssistantPanel() {
           opacity: isLoading ? 0.6 : 1,
         }}
       >
-        {isLoading ? 'thinking…' : 'ask gpt'}
+        {isLoading ? 'thinking…' : 'ask'}
       </button>
 
       {error && (
@@ -125,7 +157,7 @@ export default function AssistantPanel() {
       )}
 
       {result && (
-        <div style={{ borderTop: '1px solid var(--color-ink-ghost)', paddingTop: '8px', display: 'grid', gap: '8px' }}>
+        <div style={{ borderTop: '1px solid var(--color-ink-ghost)', paddingTop: '8px', display: 'grid', gap: '12px' }}>
           <div>
             <div className="text-micro text-ink-muted" style={{ marginBottom: '4px' }}>
               assistant
@@ -137,16 +169,64 @@ export default function AssistantPanel() {
 
           {result.actions.length > 0 && (
             <div>
-              <div className="text-micro text-ink-muted" style={{ marginBottom: '4px' }}>
+              <div className="text-micro text-ink-muted" style={{ marginBottom: '6px' }}>
                 proposed actions
               </div>
-              <ul style={{ margin: 0, paddingLeft: '18px', display: 'grid', gap: '4px' }}>
-                {result.actions.map((action, index) => (
-                  <li key={`${action.type}-${index}`} className="text-body-sm">
-                    <strong>{action.title}</strong> <span className="text-ink-muted">({action.type})</span>
-                  </li>
-                ))}
-              </ul>
+              <div style={{ display: 'grid', gap: '8px' }}>
+                {result.actions.map((action, index) => {
+                  const isCalendarAction = CALENDAR_ACTION_TYPES.includes(action.type);
+                  const status = actionStatuses[index] ?? 'idle';
+
+                  return (
+                    <div
+                      key={`${action.type}-${index}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        justifyContent: 'space-between',
+                        gap: '8px',
+                        padding: '8px',
+                        border: '1px solid var(--color-ink-ghost)',
+                        borderRadius: '6px',
+                        opacity: status === 'done' ? 0.6 : 1,
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div className="text-body-sm">
+                          <strong>{action.title}</strong>
+                        </div>
+                        <div className="text-micro text-ink-muted">{action.type}</div>
+                        {actionErrors[index] && (
+                          <div className="text-micro" style={{ color: 'var(--color-tomato)', marginTop: '2px' }}>
+                            {actionErrors[index]}
+                          </div>
+                        )}
+                      </div>
+
+                      {isCalendarAction && (
+                        <button
+                          type="button"
+                          onClick={() => executeAction(index, action)}
+                          disabled={status === 'loading' || status === 'done'}
+                          style={{
+                            flexShrink: 0,
+                            border: '1px solid var(--color-ink-ghost)',
+                            borderRadius: '999px',
+                            background: status === 'done' ? 'var(--color-forest)' : 'transparent',
+                            color: status === 'done' ? '#fff' : 'var(--color-ink)',
+                            padding: '4px 10px',
+                            fontSize: '12px',
+                            cursor: status === 'loading' || status === 'done' ? 'not-allowed' : 'pointer',
+                            opacity: status === 'loading' ? 0.6 : 1,
+                          }}
+                        >
+                          {status === 'loading' ? 'saving…' : status === 'done' ? 'done' : 'confirm'}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
