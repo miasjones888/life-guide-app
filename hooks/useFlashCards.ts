@@ -187,5 +187,21 @@ export function useFlashCards() {
     });
   }, []);
 
-  return { cards, addCard, deleteCard, updateCard, restoreCard };
+  const importCards = useCallback((incoming: FlashCard[]) => {
+    setCards((prev) => {
+      const existingIds = new Set(prev.map((c) => c.id));
+      const newCards = incoming.filter((c) => !existingIds.has(c.id));
+      if (newCards.length === 0) return prev;
+      const updated = [...newCards, ...prev];
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ version: STORAGE_VERSION, cards: updated } satisfies StoredDeckV2)
+        );
+      } catch {}
+      return updated;
+    });
+  }, []);
+
+  return { cards, addCard, deleteCard, updateCard, restoreCard, importCards };
 }
