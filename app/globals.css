@@ -315,3 +315,114 @@ textarea::placeholder {
   padding: 12px;
   border-top: 1px solid var(--color-ink-ghost);
 }
+
+/* ─── Folder System ──────────────────────────────────────────────── */
+
+/* Slot indicator circles (◉ ◉ ◉) */
+.slot-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+}
+.slot-dot-filled {
+  background-color: currentColor;
+}
+
+/* Folder tab strip */
+.folder-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: #fff;
+  padding: 0 10px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 2px 2px 0 0;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Physical notecard */
+.notecard {
+  background: var(--color-paper);
+  border: 1px solid rgba(26, 25, 23, 0.18);
+  border-radius: 2px;
+  padding: 14px;
+  position: relative;
+}
+
+.notecard-front,
+.notecard-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 2px;
+  padding: 14px;
+  background: var(--color-paper);
+  border: 1px solid rgba(26, 25, 23, 0.18);
+}
+
+.notecard-back {
+  transform: rotateY(180deg);
+}
+
+/* Card stack wrapper — gives room for depth layers */
+.notecard-stack-wrapper {
+  position: relative;
+  perspective: 1000px;
+}
+
+/* Format tag pill */
+.format-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  opacity: 0.9;
+}
+
+/* Capture stack fan layers */
+.capture-fan-layer {
+  position: absolute;
+  inset: 0;
+  background: var(--color-paper);
+  border: 1px solid rgba(26, 25, 23, 0.15);
+  border-radius: 2px;
+}
+
+/* Add sheet overlay backdrop */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 25, 23, 0.25);
+  z-index: 40;
+}
+
+/* Move-to-folder selector inside card back */
+.folder-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid rgba(26, 25, 23, 0.25);
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+.folder-chip:hover {
+  background: var(--color-ink-ghost);
+}
+.folder-chip-active {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}

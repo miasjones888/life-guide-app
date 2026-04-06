@@ -265,3 +265,23 @@ export interface IntegrationConfig {
   status: IntegrationStatus;
   description: string;      // what this integration enables
 }
+
+// ── Folder System ─────────────────────────────────────────────────
+
+export type NotecardFormat = 'fragment' | 'question' | 'reference' | 'map' | 'research';
+
+export type FolderId = 'portfolio' | 'field-guide' | 'curriculum' | 'capture' | 'archive';
+
+export interface FolderNote {
+  id: string;
+  folderId: FolderId;
+  format: NotecardFormat;
+  content: string;
+  title?: string;
+  url?: string;
+  source?: string;
+  imageUrl?: string;
+  createdAt: string;
+  updatedAt?: string;
+  isFlagged?: boolean;
+}

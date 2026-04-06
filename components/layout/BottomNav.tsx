@@ -13,6 +13,7 @@ const primaryNav = [
 const moreItems = [
   { href: '/daily', label: 'daily rhythm' },
   { href: '/monthly', label: 'monthly' },
+  { href: '/folders', label: 'folders' },
   { href: '/deck', label: 'deck' },
   { href: '/reflection', label: 'reflection' },
   { href: '/budget', label: 'budget' },
