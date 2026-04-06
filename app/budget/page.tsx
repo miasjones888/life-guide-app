@@ -428,13 +428,19 @@ export default function BudgetPage() {
       </div>
       <WindowPanel title="month view" style={{ marginBottom: '10px' }}>
         <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
-          Based on current baselines. Update income each month to stay accurate.
+          Tap income to set a month-specific actual without changing your baseline.
         </div>
         {projections.map((proj) => {
           const isCurrent = proj.month === currentMonth;
           const projNet = proj.net;
           const projNetPositive = projNet >= 0;
           const projNetDisplay = `${projNetPositive ? '+' : ''}${Math.round(projNet).toLocaleString()}`;
+          // Find the primary income line for per-month override editing
+          const freelanceLine = state.lines.find((l) => l.id === 'income-freelance');
+          const monthIncomeOverride = state.overrides.find(
+            (o) => o.id === 'income-freelance' && o.month === proj.month
+          );
+          const displayIncome = monthIncomeOverride ? monthIncomeOverride.amount : (freelanceLine?.amount ?? proj.income);
           return (
             <div
               key={proj.month}
@@ -456,6 +462,9 @@ export default function BudgetPage() {
                     {isCurrent && (
                       <span className="tag">now</span>
                     )}
+                    {monthIncomeOverride && (
+                      <span className="tag" style={{ borderColor: 'var(--color-moss)', color: 'var(--color-moss)' }}>actual</span>
+                    )}
                   </span>
                   <span
                     style={{
@@ -468,7 +477,20 @@ export default function BudgetPage() {
                   </span>
                 </div>
                 <div className="text-micro text-ink-muted" style={{ marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>{fmt(proj.income)} in · {fmt(proj.expenses)} out</span>
+                  <AmountCell
+                    lineId="income-freelance"
+                    amount={displayIncome}
+                    month={proj.month}
+                    editingId={editingId}
+                    editingMonth={editingMonth}
+                    editValue={editValue}
+                    onStart={startEdit}
+                    onEditChange={setEditValue}
+                    onCommit={commitEdit}
+                    onKey={handleKey}
+                  />
+                  <span style={{ color: 'var(--color-ink-ghost)' }}>in ·</span>
+                  <span>{fmt(proj.expenses)} out</span>
                   {!projNetPositive && (
                     <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>tight</span>
                   )}
