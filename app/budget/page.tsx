@@ -67,7 +67,7 @@ function AmountCell({
         onKeyDown={onKey}
         style={{
           width: '80px',
-          fontFamily: 'JetBrains Mono, monospace',
+          fontFamily: 'Courier New, monospace',
           fontSize: '13px',
           textAlign: 'right',
           backgroundColor: 'var(--color-chrome)',
@@ -89,7 +89,7 @@ function AmountCell({
         if (e.key === 'Enter' || e.key === ' ') onStart(lineId, month, amount);
       }}
       style={{
-        fontFamily: 'JetBrains Mono, monospace',
+        fontFamily: 'Courier New, monospace',
         fontSize: '13px',
         color: 'var(--color-ink-muted)',
         cursor: 'text',
@@ -248,7 +248,7 @@ export default function BudgetPage() {
             gap: '10px',
             alignItems: 'baseline',
             flexWrap: 'wrap',
-            fontFamily: 'JetBrains Mono, monospace',
+            fontFamily: 'Courier New, monospace',
             fontSize: '13px',
           }}
         >
@@ -307,7 +307,7 @@ export default function BudgetPage() {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'Courier New, monospace',
               fontSize: '12px',
               color: 'var(--color-ink-muted)',
             }}
@@ -345,7 +345,7 @@ export default function BudgetPage() {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'Courier New, monospace',
               fontSize: '12px',
               color: 'var(--color-ink-muted)',
             }}
@@ -383,7 +383,7 @@ export default function BudgetPage() {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'Courier New, monospace',
               fontSize: '12px',
               color: 'var(--color-ink-muted)',
             }}
@@ -456,7 +456,7 @@ export default function BudgetPage() {
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}
                 >
                   <span
-                    style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    style={{ fontFamily: 'Courier New, monospace', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}
                   >
                     {formatMonthLabel(proj.month)}
                     {isCurrent && (
@@ -468,7 +468,7 @@ export default function BudgetPage() {
                   </span>
                   <span
                     style={{
-                      fontFamily: 'JetBrains Mono, monospace',
+                      fontFamily: 'Courier New, monospace',
                       fontSize: '12px',
                       color: projNetPositive ? 'var(--color-basil)' : 'var(--color-tomato)',
                     }}

@@ -14,22 +14,11 @@ export default function CulturePage() {
 
       <hr className="hairline" style={{ margin: '10px 0' }} />
 
-      <WindowPanel title="Art Discovery" statusText="coming soon">
-        <p className="text-body-sm text-ink-muted">
-          Surface artworks you may like. Build a personal art history over time.
-        </p>
-      </WindowPanel>
-
-      <WindowPanel title="Media Log" statusText="coming soon" style={{ marginTop: '12px' }}>
-        <p className="text-body-sm text-ink-muted">
-          Track books, essays, films, music, and exhibitions.
-        </p>
-      </WindowPanel>
-
-      <WindowPanel title="Creative Inspiration" statusText="coming soon" style={{ marginTop: '12px' }}>
-        <p className="text-body-sm text-ink-muted">
-          Artists, essays, ideas, and cultural events that catch your eye.
-        </p>
+      <WindowPanel title="culture">
+        <div className="system-dialog">
+          <p className="text-body-sm">This section is not yet built.</p>
+          <p className="text-body-sm text-ink-muted" style={{ marginTop: '4px' }}>Coming in Phase 2.</p>
+        </div>
       </WindowPanel>
     </PageShell>
   );

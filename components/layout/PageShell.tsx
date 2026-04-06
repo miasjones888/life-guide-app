@@ -69,7 +69,7 @@ export default function PageShell({ children }: PageShellProps) {
       <motion.main
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
+        transition={{ duration: 0.08, ease: 'easeOut' }}
         style={{
           maxWidth: '640px',
           margin: '0 auto',

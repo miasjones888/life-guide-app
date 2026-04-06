@@ -53,6 +53,8 @@ export default function BottomNav() {
           />
           {/* Sheet */}
           <div
+            role="navigation"
+            aria-label="More pages"
             style={{
               position: 'fixed',
               bottom: '56px',
@@ -78,7 +80,7 @@ export default function BottomNav() {
                     alignItems: 'center',
                     padding: '12px 20px',
                     textDecoration: 'none',
-                    fontFamily: 'JetBrains Mono, monospace',
+                    fontFamily: 'Courier New, monospace',
                     fontSize: '12px',
                     color: isActive ? 'var(--color-forest)' : 'var(--color-ink)',
                     borderBottom: '1px solid var(--color-ink-ghost)',
@@ -144,7 +146,7 @@ export default function BottomNav() {
               >
                 <span
                   style={{
-                    fontFamily: 'JetBrains Mono, monospace',
+                    fontFamily: 'Courier New, monospace',
                     fontSize: '14px',
                     lineHeight: 1,
                   }}
@@ -153,7 +155,7 @@ export default function BottomNav() {
                 </span>
                 <span
                   style={{
-                    fontFamily: 'JetBrains Mono, monospace',
+                    fontFamily: 'Courier New, monospace',
                     fontSize: '10px',
                     lineHeight: 1,
                   }}
@@ -167,6 +169,9 @@ export default function BottomNav() {
           {/* More button */}
           <button
             onClick={handleMoreToggle}
+            aria-label="More navigation options"
+            aria-expanded={showMore}
+            aria-haspopup="true"
             style={{
               flex: 1,
               display: 'flex',
@@ -189,7 +194,7 @@ export default function BottomNav() {
           >
             <span
               style={{
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 fontSize: '14px',
                 lineHeight: 1,
               }}
@@ -198,7 +203,7 @@ export default function BottomNav() {
             </span>
             <span
               style={{
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 fontSize: '10px',
                 lineHeight: 1,
               }}

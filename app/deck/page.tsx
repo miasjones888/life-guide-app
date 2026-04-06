@@ -307,7 +307,7 @@ export default function DeckPage() {
                 padding: '6px 10px',
                 borderRadius: '2px',
                 fontSize: '11px',
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 cursor: 'pointer',
               }}
             >
@@ -334,7 +334,7 @@ export default function DeckPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <span style={{
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 fontSize: '11px',
                 color: 'var(--color-ink-muted)',
               }}>
@@ -367,7 +367,7 @@ export default function DeckPage() {
                 })}
               </div>
               <span style={{
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 fontSize: '10px',
                 color: categoryColorHex[selectedCategory],
               }}>
@@ -394,7 +394,7 @@ export default function DeckPage() {
                 color: '#fff',
                 border: 'none',
                 borderRadius: '2px',
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 fontSize: '13px',
                 cursor: 'pointer',
               }}
@@ -467,8 +467,8 @@ export default function DeckPage() {
                   ))}
                 </select>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button type="submit" style={{ flex: 1, minHeight: '40px', border: 'none', borderRadius: '2px', background: 'var(--color-chrome-dark)', color: '#fff', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer' }}>save</button>
-                  <button type="button" onClick={cancelEdit} style={{ flex: 1, minHeight: '40px', border: '1px solid var(--color-ink-ghost)', borderRadius: '2px', background: 'transparent', fontFamily: 'JetBrains Mono, monospace', cursor: 'pointer' }}>cancel</button>
+                  <button type="submit" style={{ flex: 1, minHeight: '40px', border: 'none', borderRadius: '2px', background: 'var(--color-chrome-dark)', color: '#fff', fontFamily: 'Courier New, monospace', cursor: 'pointer' }}>save</button>
+                  <button type="button" onClick={cancelEdit} style={{ flex: 1, minHeight: '40px', border: '1px solid var(--color-ink-ghost)', borderRadius: '2px', background: 'transparent', fontFamily: 'Courier New, monospace', cursor: 'pointer' }}>cancel</button>
                 </div>
               </form>
             ) : (
@@ -501,7 +501,7 @@ export default function DeckPage() {
                 )}
                 <p style={{
                   color: 'var(--color-ink-muted)',
-                  fontFamily: 'JetBrains Mono, monospace',
+                  fontFamily: 'Courier New, monospace',
                   fontSize: '11px',
                   lineHeight: 1.3,
                   margin: 0,
@@ -518,7 +518,7 @@ export default function DeckPage() {
                       border: '1px solid var(--color-ink-ghost)',
                       borderRadius: '2px',
                       background: 'transparent',
-                      fontFamily: 'JetBrains Mono, monospace',
+                      fontFamily: 'Courier New, monospace',
                       cursor: 'pointer',
                       fontSize: '12px',
                     }}
@@ -534,7 +534,7 @@ export default function DeckPage() {
                       border: `1px solid ${currentCard.isFlagged ? '#b26a00' : 'var(--color-ink-ghost)'}`,
                       borderRadius: '2px',
                       background: currentCard.isFlagged ? '#fff5e6' : 'transparent',
-                      fontFamily: 'JetBrains Mono, monospace',
+                      fontFamily: 'Courier New, monospace',
                       cursor: 'pointer',
                       fontSize: '12px',
                     }}
@@ -564,7 +564,7 @@ export default function DeckPage() {
               style={{
                 flexShrink: 0,
                 padding: '4px 10px',
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 fontSize: '10px',
                 lineHeight: 1.3,
                 border: '1px solid',
@@ -589,7 +589,7 @@ export default function DeckPage() {
                   style={{
                     flexShrink: 0,
                     padding: '4px 10px',
-                    fontFamily: 'JetBrains Mono, monospace',
+                    fontFamily: 'Courier New, monospace',
                     fontSize: '10px',
                     lineHeight: 1.3,
                     border: '1px solid',
@@ -614,7 +614,7 @@ export default function DeckPage() {
             disabled={filteredCards.length < 2}
             style={{
               minHeight: '44px',
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'Courier New, monospace',
               fontSize: '13px',
               backgroundColor: 'var(--color-chrome)',
               border: '1px solid var(--color-ink-ghost)',
@@ -634,7 +634,7 @@ export default function DeckPage() {
                 style={{
                   flex: 1,
                   minHeight: '44px',
-                  fontFamily: 'JetBrains Mono, monospace',
+                  fontFamily: 'Courier New, monospace',
                   fontSize: '13px',
                   backgroundColor: 'var(--color-chrome)',
                   border: '1px solid var(--color-ink-ghost)',
@@ -652,7 +652,7 @@ export default function DeckPage() {
                 style={{
                   flex: 1,
                   minHeight: '44px',
-                  fontFamily: 'JetBrains Mono, monospace',
+                  fontFamily: 'Courier New, monospace',
                   fontSize: '13px',
                   backgroundColor: 'var(--color-chrome)',
                   border: '1px solid var(--color-ink-ghost)',
@@ -676,7 +676,7 @@ export default function DeckPage() {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: 'Courier New, monospace',
                 fontSize: '11px',
                 color: 'var(--color-ink-muted)',
                 minHeight: '44px',
@@ -705,7 +705,7 @@ export default function DeckPage() {
                   border: '1px solid var(--color-ink-ghost)',
                   borderRadius: '2px',
                   background: 'transparent',
-                  fontFamily: 'JetBrains Mono, monospace',
+                  fontFamily: 'Courier New, monospace',
                   fontSize: '12px',
                   cursor: cards.length === 0 ? 'not-allowed' : 'pointer',
                   opacity: cards.length === 0 ? 0.4 : 1,
@@ -722,7 +722,7 @@ export default function DeckPage() {
                   border: '1px solid var(--color-ink-ghost)',
                   borderRadius: '2px',
                   background: 'transparent',
-                  fontFamily: 'JetBrains Mono, monospace',
+                  fontFamily: 'Courier New, monospace',
                   fontSize: '12px',
                   cursor: 'pointer',
                 }}
