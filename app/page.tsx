@@ -9,6 +9,24 @@ import { dailyEvents, aprilOneTimeEvents } from '@/content/calendar';
 import { priorities, financeUrgentItems, verbatimCopy, modularNote } from '@/content/guide';
 import type { CalendarEvent } from '@/content/types';
 
+const MORNING_STEPS = [
+  { id: 'morning-journal', label: 'Morning pages / journal (20 min)' },
+  { id: 'morning-read', label: 'Reading before screens (even 10 min)' },
+  { id: 'morning-skincare', label: 'Morning skincare (cleanser + SPF) — on a hard day: just those two. Done.' },
+  { id: 'morning-catmeds', label: 'Cat morning meds (Maisie + Meeko) + wet food by 10am' },
+  { id: 'morning-breakfast', label: 'Breakfast — no appetite is okay, grab something small from the shelf' },
+];
+
+const EVENING_STEPS = [
+  { id: 'evening-dinner', label: 'Dinner — no cooking required. Delivery, fridge, frozen, or shelf snacks. You just need to eat something.' },
+  { id: 'evening-catplay', label: 'PM cat playtime (10–15 min). Check on water fountain while you\'re in the zone.' },
+  { id: 'evening-shower', label: 'Shower check-in — get in, warm water, body wash, get out. That is the whole task.' },
+  { id: 'evening-catmeds', label: 'Cat evening meds + dinner + scoop litter (Maisie + Meeko)' },
+  { id: 'evening-meds', label: 'Your bedtime meds (9:30pm). PRN anxiety meds accessible.' },
+  { id: 'evening-skincare', label: 'Night skincare — two steps minimum: cleanser + moisturiser.' },
+  { id: 'evening-anchor', label: 'Write tomorrow\'s anchor task in your notebook' },
+];
+
 const WEEKLY_FOCUS: Record<number, string> = {
   0: 'life planning reset',
   1: 'portfolio work',
@@ -58,6 +76,7 @@ function getTodayAprilEvents(): CalendarEvent[] {
 export default function TodayPage() {
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
   const [anchorTask, setAnchorTask] = useState('');
+  const [dimmedSteps, setDimmedSteps] = useState<Set<string>>(new Set());
   const todayEvents = getTodayAprilEvents();
 
   useEffect(() => {
@@ -73,6 +92,33 @@ export default function TodayPage() {
       if (stored) setAnchorTask(stored);
     } catch {}
   }, []);
+
+  useEffect(() => {
+    const key = 'checklist-' + new Date().toDateString();
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        const ids = JSON.parse(stored) as string[];
+        setDimmedSteps(new Set(ids));
+      }
+    } catch {}
+  }, []);
+
+  function toggleStep(id: string) {
+    const key = 'checklist-' + new Date().toDateString();
+    setDimmedSteps((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      try {
+        localStorage.setItem(key, JSON.stringify(Array.from(next)));
+      } catch {}
+      return next;
+    });
+  }
 
   function handleAnchorChange(v: string) {
     setAnchorTask(v);
@@ -102,6 +148,11 @@ export default function TodayPage() {
       : verbatimCopy.wholeTask;
 
   const urgentFinance = financeUrgentItems.filter((f) => f.isUrgent);
+
+  const isMorning = currentTime.hours >= 7 && currentTime.hours < 12;
+  const isEvening = currentTime.hours >= 18 && currentTime.hours <= 22;
+  const checklistSteps = isMorning ? MORNING_STEPS : isEvening ? EVENING_STEPS : null;
+  const checklistTitle = isMorning ? 'morning' : 'evening';
 
   return (
     <PageShell>
@@ -191,6 +242,42 @@ export default function TodayPage() {
           }}
         />
       </div>
+
+      {/* Morning / Evening position tracking */}
+      {checklistSteps && (
+        <WindowPanel title={checklistTitle} style={{ marginBottom: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {checklistSteps.map((step) => {
+              const isDimmed = dimmedSteps.has(step.id);
+              return (
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => toggleStep(step.id)}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: '1px solid var(--color-ink-ghost)',
+                    padding: '8px 0',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '15px',
+                    color: 'var(--color-ink)',
+                    cursor: 'pointer',
+                    opacity: isDimmed ? 0.4 : 1,
+                    lineHeight: 1.5,
+                    transition: 'opacity 0.2s ease',
+                  }}
+                >
+                  {step.label}
+                </button>
+              );
+            })}
+          </div>
+        </WindowPanel>
+      )}
 
       {/* Today's special events */}
       {todayEvents.length > 0 && (

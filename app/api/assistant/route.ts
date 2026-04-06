@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server';
-
-interface AssistantAction {
-  type: 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'plan_next_steps' | 'freeze_mode';
-  title: string;
-  payload: Record<string, string>;
-}
+import { priorities } from '@/content/guide';
 
 interface AssistantResult {
   reply: string;
-  actions: AssistantAction[];
 }
 
 interface ProviderError {
@@ -17,53 +11,46 @@ interface ProviderError {
   retryable: boolean;
 }
 
-const SYSTEM_PROMPT = `You are the Life Guide copilot.
+type ApiMessage = { role: string; content: string };
 
-Your job:
-1) Help with scheduling and calendar updates.
-2) Draft concise, warm emails.
-3) Organize plans into short actionable steps.
-4) Support freeze mode with tiny, compassionate next actions.
+function buildSystemPrompt(): string {
+  const top3 = priorities
+    .slice(0, 3)
+    .map((p) => `${p.rank}. ${p.title} — ${p.nextAction}${p.isUrgent ? ' (urgent)' : ''}`)
+    .join('\n');
+
+  return `You are a care-centered companion inside Mia's personal field guide. You accompany — you do not direct, score, or measure.
+
+Current context:
+${top3}
+Non-negotiables today: cat meds (Maisie + Meeko, morning and evening), personal meds (morning + bedtime)
+Location: San Diego, CA (92115)
+Moving research: ongoing — she is actively researching relocation in the area
+
+Rules:
+- Always offer one concrete next step, not a list. One thing. Under 10 minutes.
+- When she says she is frozen or overwhelmed: do not respond with a plan. Give her one physical or sensory step that breaks the lock. Under 5 minutes.
+- You do not optimize, score, or judge. You do not track completion. You do not reference what she "should have" done. You offer options. She decides.
+- Do not suggest she work more. Do not reframe rest as failure. Do not add to her list unprompted.
+- Never claim actions were executed. Propose only.
+- Keep reply under 150 words.
 
 Return strict JSON with this exact shape:
 {
-  "reply": "string",
-  "actions": [
-    {
-      "type": "calendar_create | calendar_update | calendar_delete | email_draft | plan_next_steps | freeze_mode",
-      "title": "string",
-      "payload": { "key": "value" }
-    }
-  ]
+  "reply": "string"
+}`;
 }
-
-Rules:
-- Keep reply under 120 words.
-- If user seems emotionally stuck, include one immediate 5-10 minute action.
-- Never claim actions were executed; propose actions only.`;
-
-const ANTHROPIC_SYSTEM_PROMPT =
-  SYSTEM_PROMPT + '\n\nIMPORTANT: Respond with raw JSON only. No markdown, no code blocks, no extra text.';
 
 function safeParseAssistantResponse(input: string): AssistantResult {
   const parsed = JSON.parse(input) as Partial<AssistantResult>;
-  const reply = typeof parsed.reply === 'string' ? parsed.reply : 'I can help with that. Tell me what you want to do first.';
-  const actions = Array.isArray(parsed.actions)
-    ? parsed.actions.filter(
-        (action): action is AssistantAction =>
-          typeof action === 'object' &&
-          action !== null &&
-          typeof (action as AssistantAction).type === 'string' &&
-          typeof (action as AssistantAction).title === 'string' &&
-          typeof (action as AssistantAction).payload === 'object' &&
-          (action as AssistantAction).payload !== null,
-      )
-    : [];
-
-  return { reply, actions };
+  const reply =
+    typeof parsed.reply === 'string'
+      ? parsed.reply
+      : "I'm here. Tell me what's going on right now.";
+  return { reply };
 }
 
-async function callOpenAI(message: string, apiKey: string): Promise<AssistantResult | ProviderError> {
+async function callOpenAI(messages: ApiMessage[], apiKey: string): Promise<AssistantResult | ProviderError> {
   const model = process.env.OPENAI_MODEL ?? 'gpt-4.1-mini';
 
   try {
@@ -75,10 +62,10 @@ async function callOpenAI(message: string, apiKey: string): Promise<AssistantRes
       },
       body: JSON.stringify({
         model,
-        temperature: 0.4,
+        temperature: 0.5,
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: message },
+          { role: 'system', content: buildSystemPrompt() },
+          ...messages.slice(-10),
         ],
         response_format: { type: 'json_object' },
       }),
@@ -108,8 +95,9 @@ async function callOpenAI(message: string, apiKey: string): Promise<AssistantRes
   }
 }
 
-async function callAnthropic(message: string, apiKey: string): Promise<AssistantResult | ProviderError> {
+async function callAnthropic(messages: ApiMessage[], apiKey: string): Promise<AssistantResult | ProviderError> {
   const model = process.env.ANTHROPIC_MODEL ?? 'claude-sonnet-4-6';
+  const systemPrompt = buildSystemPrompt() + '\n\nIMPORTANT: Respond with raw JSON only. No markdown, no code blocks, no extra text.';
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -122,8 +110,8 @@ async function callAnthropic(message: string, apiKey: string): Promise<Assistant
       body: JSON.stringify({
         model,
         max_tokens: 1024,
-        system: ANTHROPIC_SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: message }],
+        system: systemPrompt,
+        messages: messages.slice(-10),
       }),
     });
 
@@ -156,18 +144,17 @@ function isProviderError(result: AssistantResult | ProviderError): result is Pro
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as { message?: string };
-  const message = body.message?.trim();
+  const body = (await request.json()) as { messages?: ApiMessage[] };
+  const incomingMessages = body.messages;
 
-  if (!message) {
-    return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
+  if (!Array.isArray(incomingMessages) || incomingMessages.length === 0) {
+    return NextResponse.json({ error: 'messages array is required.' }, { status: 400 });
   }
 
   const providerPref = process.env.AI_PROVIDER ?? 'auto';
   const openaiKey = process.env.OPENAI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
-  // Build ordered list of providers to try based on preference
   type ProviderEntry = { name: string; call: () => Promise<AssistantResult | ProviderError> };
   let providers: ProviderEntry[] = [];
 
@@ -178,7 +165,7 @@ export async function POST(request: Request) {
         { status: 503 },
       );
     }
-    providers = [{ name: 'OpenAI', call: () => callOpenAI(message, openaiKey) }];
+    providers = [{ name: 'OpenAI', call: () => callOpenAI(incomingMessages, openaiKey) }];
   } else if (providerPref === 'anthropic') {
     if (!anthropicKey) {
       return NextResponse.json(
@@ -186,11 +173,11 @@ export async function POST(request: Request) {
         { status: 503 },
       );
     }
-    providers = [{ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey) }];
+    providers = [{ name: 'Anthropic', call: () => callAnthropic(incomingMessages, anthropicKey) }];
   } else {
     // auto: try available providers in order (OpenAI first, then Anthropic)
-    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(message, openaiKey) });
-    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey) });
+    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(incomingMessages, openaiKey) });
+    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(incomingMessages, anthropicKey) });
 
     if (providers.length === 0) {
       return NextResponse.json(
