@@ -1,4 +1,12 @@
 import { NextResponse } from 'next/server';
+import {
+  dailyEvents,
+  weeklyEvents,
+  biweeklyEvents,
+  aprilOneTimeEvents,
+} from '@/content/calendar';
+import { priorities, financeUrgentItems, modularNote } from '@/content/guide';
+import type { DayOfWeek } from '@/content/types';
 
 interface AssistantAction {
   type: 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'plan_next_steps' | 'freeze_mode';
@@ -17,14 +25,148 @@ interface ProviderError {
   retryable: boolean;
 }
 
-const SYSTEM_PROMPT = `You are the Life Guide copilot for Mia.
+// ── Calendar context ──────────────────────────────────────────────
 
-Mia is a writer, copywriter, and creative director in San Diego. She lives with her partner Dar and three cats (Maisie, Meeko, and a third). She has depression, anxiety, CPTSD, and ADHD. She has significant task initiation difficulty and variable energy day to day. She has built her own life system to work with her neurodivergence, not against it.
+const WEEKLY_FOCUS: Record<number, string> = {
+  0: 'life planning reset',
+  1: 'portfolio work',
+  2: 'notion R&D + life admin',
+  3: 'notion R&D + portfolio work',
+  4: 'buffer / life admin',
+  5: 'systems work',
+  6: 'creative exploration',
+};
+
+const DAY_NAMES: DayOfWeek[] = [
+  'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
+];
+
+function buildCalendarContext(): string {
+  const now = new Date();
+  const todayISO = now.toISOString().split('T')[0];
+  const dayIndex = now.getDay();
+  const dayName = DAY_NAMES[dayIndex];
+  const monthName = now.toLocaleString('en-US', { month: 'long' }).toLowerCase();
+  const dayOfMonth = now.getDate();
+  const weekFocus = WEEKLY_FOCUS[dayIndex];
+
+  const lines: string[] = [];
+
+  lines.push(`TODAY: ${dayName}, ${monthName} ${dayOfMonth} (${todayISO})`);
+  lines.push(`TODAY'S FOCUS: ${weekFocus}`);
+  lines.push('');
+
+  // Daily recurring schedule
+  lines.push("DAILY SCHEDULE (every day):");
+  for (const e of dailyEvents) {
+    const flag = e.isNonNegotiable ? ' [NON-NEGOTIABLE — never move]' : '';
+    lines.push(`  ${e.time ?? 'anytime'} — ${e.emoji ?? ''} ${e.title}${flag}`);
+    if (e.note) lines.push(`    "${e.note}"`);
+  }
+  lines.push('');
+
+  // Today's weekly events
+  const todayWeekly = weeklyEvents.filter(e => e.days?.includes(dayName));
+  if (todayWeekly.length > 0) {
+    lines.push("TODAY'S WEEKLY EVENTS:");
+    for (const e of todayWeekly) {
+      const isProtected = e.note?.toLowerCase().includes('protected') ? ' [PROTECTED TIME — do not schedule over]' : '';
+      lines.push(`  ${e.time ?? 'anytime'} — ${e.emoji ?? ''} ${e.title}${isProtected}`);
+      if (e.note) lines.push(`    "${e.note}"`);
+    }
+    lines.push('');
+  }
+
+  // Biweekly events (check if any fall in the next 14 days)
+  const upcomingBiweekly = biweeklyEvents.filter(e => {
+    if (!e.startDate) return false;
+    const start = new Date(e.startDate + 'T12:00:00');
+    const diffMs = start.getTime() - now.getTime();
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    // Check if any 14-day interval from startDate lands within next 14 days
+    const cyclePosition = ((diffDays % 14) + 14) % 14;
+    return cyclePosition <= 14;
+  });
+  if (upcomingBiweekly.length > 0) {
+    lines.push('BIWEEKLY EVENTS (coming up):');
+    for (const e of upcomingBiweekly) {
+      lines.push(`  · ${e.title}`);
+    }
+    lines.push('');
+  }
+
+  // Upcoming one-time events (next 14 days)
+  const upcoming = aprilOneTimeEvents.filter(e => {
+    if (!e.date) return false;
+    const eventDate = new Date(e.date + 'T12:00:00');
+    const diffDays = (eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    return diffDays >= -1 && diffDays <= 14;
+  });
+  if (upcoming.length > 0) {
+    lines.push('UPCOMING ONE-TIME EVENTS (next 14 days):');
+    for (const e of upcoming) {
+      const urgent = e.isUrgent ? ' [URGENT]' : '';
+      const timeStr = e.time ? ` ${e.time}` : '';
+      lines.push(`  ${e.date}${timeStr} — ${e.title}${urgent}`);
+      if (e.note) lines.push(`    note: ${e.note}`);
+    }
+    lines.push('');
+  }
+
+  // Current priorities
+  const active = priorities.filter(p => !p.isLocked);
+  lines.push('CURRENT PRIORITIES:');
+  for (const p of active) {
+    const urgent = p.isUrgent ? ' [URGENT]' : '';
+    const ongoing = p.isOngoing ? ' [ongoing]' : '';
+    lines.push(`  ${p.rank}. ${p.title} — next action: ${p.nextAction}${urgent}${ongoing}`);
+  }
+  lines.push('');
+
+  // Urgent finance items
+  if (financeUrgentItems.length > 0) {
+    lines.push('URGENT FINANCE ITEMS:');
+    for (const f of financeUrgentItems) {
+      const amt = f.amount ? ` (${f.amount})` : '';
+      lines.push(`  · ${f.title}${amt} — ${f.action ?? f.note}`);
+    }
+    lines.push('');
+  }
+
+  // Scheduling rules
+  lines.push('SCHEDULING RULES:');
+  lines.push(`  · ${modularNote}`);
+  lines.push('  · Non-negotiable events (cat meds, personal meds, financial deadlines) cannot be moved or removed.');
+  lines.push('  · Wednesday 10am Deep Focus and Thursday 2pm Outside Time are protected — do not schedule over them.');
+  lines.push('  · When suggesting a new event, check for conflicts with the schedule above.');
+  lines.push('');
+
+  // Category legend
+  lines.push('CATEGORY LEGEND:');
+  lines.push('  tomato    = cat care');
+  lines.push('  flamingo  = personal / relationships / self-care');
+  lines.push('  banana    = food / finance');
+  lines.push('  sage      = routines / grounding');
+  lines.push('  blueberry = work / deep focus');
+  lines.push('  basil     = outdoor / nature');
+  lines.push('  graphite  = maintenance / admin / home');
+  lines.push('  grape     = planning / creative direction');
+  lines.push('  tangerine = urgent / deadlines');
+  lines.push('  peacock   = spiritual / optional');
+
+  return lines.join('\n');
+}
+
+// ── System prompt ─────────────────────────────────────────────────
+
+const BASE_SYSTEM_PROMPT = `You are the Life Guide copilot for Mia.
+
+Mia is a writer, copywriter, and creative director in San Diego. She lives with her partner Dar and three cats (Maisie, Meeko, and a third named Jinshi). She has depression, anxiety, CPTSD, and ADHD. She has significant task initiation difficulty and variable energy day to day. She has built her own life system to work with her neurodivergence, not against it.
 
 This app is her field guide — a read-first, reference-first tool. Not a productivity dashboard. Not a task manager.
 
 Your job:
-1) Help with scheduling and calendar updates.
+1) Help with scheduling and calendar updates. You have full access to her current schedule (provided below). When she asks to add, move, or remove something, check for conflicts and flag any issues with non-negotiable or protected events.
 2) Draft concise, warm emails in Mia's voice.
 3) Organize plans into short, actionable steps — no more than 3 at a time.
 4) Support freeze mode with one tiny, compassionate next action (5–10 min max). One thing. Not a list.
@@ -50,10 +192,14 @@ Rules:
 - If user seems emotionally stuck or frozen, return exactly one immediate action (5–10 minutes). Not a list. One thing.
 - Never claim actions were executed; propose actions only.
 - Never add greetings or sign-offs to replies.
-- Preserve Mia's voice and exact phrasing if she provides copy to use.`;
+- Preserve Mia's voice and exact phrasing if she provides copy to use.
+- When proposing a calendar_create or calendar_update, include "time", "title", "category", and "date" in the payload where known.`;
 
-const ANTHROPIC_SYSTEM_PROMPT =
-  SYSTEM_PROMPT + '\n\nIMPORTANT: Respond with raw JSON only. No markdown, no code blocks, no extra text. The "reply" field must follow the tone guidelines above.';
+function buildSystemPrompt(): string {
+  return `${BASE_SYSTEM_PROMPT}\n\n---\n\n${buildCalendarContext()}`;
+}
+
+// ── Provider calls ────────────────────────────────────────────────
 
 function safeParseAssistantResponse(input: string): AssistantResult {
   const parsed = JSON.parse(input) as Partial<AssistantResult>;
@@ -73,7 +219,7 @@ function safeParseAssistantResponse(input: string): AssistantResult {
   return { reply, actions };
 }
 
-async function callOpenAI(message: string, apiKey: string): Promise<AssistantResult | ProviderError> {
+async function callOpenAI(message: string, apiKey: string, systemPrompt: string): Promise<AssistantResult | ProviderError> {
   const model = process.env.OPENAI_MODEL ?? 'gpt-4.1-mini';
 
   try {
@@ -87,7 +233,7 @@ async function callOpenAI(message: string, apiKey: string): Promise<AssistantRes
         model,
         temperature: 0.4,
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: message },
         ],
         response_format: { type: 'json_object' },
@@ -118,8 +264,9 @@ async function callOpenAI(message: string, apiKey: string): Promise<AssistantRes
   }
 }
 
-async function callAnthropic(message: string, apiKey: string): Promise<AssistantResult | ProviderError> {
+async function callAnthropic(message: string, apiKey: string, systemPrompt: string): Promise<AssistantResult | ProviderError> {
   const model = process.env.ANTHROPIC_MODEL ?? 'claude-sonnet-4-6';
+  const anthropicPrompt = systemPrompt + '\n\nIMPORTANT: Respond with raw JSON only. No markdown, no code blocks, no extra text. The "reply" field must follow the tone guidelines above.';
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -132,7 +279,7 @@ async function callAnthropic(message: string, apiKey: string): Promise<Assistant
       body: JSON.stringify({
         model,
         max_tokens: 1024,
-        system: ANTHROPIC_SYSTEM_PROMPT,
+        system: anthropicPrompt,
         messages: [{ role: 'user', content: message }],
       }),
     });
@@ -165,6 +312,8 @@ function isProviderError(result: AssistantResult | ProviderError): result is Pro
   return 'error' in result;
 }
 
+// ── Route handler ─────────────────────────────────────────────────
+
 export async function POST(request: Request) {
   const body = (await request.json()) as { message?: string };
   const message = body.message?.trim();
@@ -173,11 +322,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
   }
 
+  const systemPrompt = buildSystemPrompt();
+
   const providerPref = process.env.AI_PROVIDER ?? 'auto';
   const openaiKey = process.env.OPENAI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
-  // Build ordered list of providers to try based on preference
   type ProviderEntry = { name: string; call: () => Promise<AssistantResult | ProviderError> };
   let providers: ProviderEntry[] = [];
 
@@ -188,7 +338,7 @@ export async function POST(request: Request) {
         { status: 503 },
       );
     }
-    providers = [{ name: 'OpenAI', call: () => callOpenAI(message, openaiKey) }];
+    providers = [{ name: 'OpenAI', call: () => callOpenAI(message, openaiKey, systemPrompt) }];
   } else if (providerPref === 'anthropic') {
     if (!anthropicKey) {
       return NextResponse.json(
@@ -196,11 +346,10 @@ export async function POST(request: Request) {
         { status: 503 },
       );
     }
-    providers = [{ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey) }];
+    providers = [{ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey, systemPrompt) }];
   } else {
-    // auto: try available providers in order (OpenAI first, then Anthropic)
-    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(message, openaiKey) });
-    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey) });
+    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(message, openaiKey, systemPrompt) });
+    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey, systemPrompt) });
 
     if (providers.length === 0) {
       return NextResponse.json(
@@ -221,7 +370,6 @@ export async function POST(request: Request) {
 
     lastError = result;
 
-    // Only fall back to next provider on quota/rate-limit errors
     if (!result.retryable) break;
   }
 
