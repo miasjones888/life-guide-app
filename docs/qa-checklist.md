@@ -3,8 +3,8 @@
 **App:** Field Guide to Yourself (mobile-first personal life guide PWA)
 **User:** Mia
 **Phase:** 1 (Today View, Morning/Evening Routines, Guide Index, PWA foundation)
-**Last Updated:** 2026-03-31
-**Status:** Ready for QA
+**Last Updated:** 2026-04-06
+**Status:** Updated — Phase 2 items marked below; Phase 1 checklist reflects current implementation
 
 ---
 
@@ -63,39 +63,39 @@ This checklist is designed for manual QA testing of Phase 1, Phase 2, and Phase 
 
 ### Today View — Morning Checklist
 
-- [ ] Morning checklist renders when active block is "Morning"
-- [ ] Morning checklist contains exactly 6 items in this order:
-  1. Coffee
-  2. Morning pages
-  3. Meditation
-  4. Reading
-  5. Skincare
-  6. Cat meds
-- [ ] All 6 items are checkboxes (tap-to-toggle)
-- [ ] Checking a box toggles visual state (strikethrough or opacity change)
-- [ ] Unchecking a box toggles back
-- [ ] Emoji render correctly on iOS Safari (no mojibake, no blank boxes)
-- [ ] Checklist state resets on new calendar day (clear localStorage time-based state or refresh at midnight)
-- [ ] Checklist state persists within same day (refresh page, boxes remain checked)
-- [ ] "Morning Routine" link navigates to Morning Routine section
+- [ ] Morning checklist renders when time is 7:00am–11:59am (not visible outside these hours)
+- [ ] Morning checklist contains exactly 5 items in this order:
+  1. Morning pages / journal (20 min)
+  2. Reading before screens (even 10 min)
+  3. Morning skincare (cleanser + SPF) — on a hard day: just those two. Done.
+  4. Cat morning meds (Maisie + Meeko) + wet food by 10am
+  5. Breakfast — no appetite is okay, grab something small from the shelf
+- [ ] Each item is a tap target (the full row is tappable)
+- [ ] Tapping an item dims it to approximately 40% opacity (no checkmark, no counter, no strikethrough)
+- [ ] Tapping a dimmed item restores it to full opacity
+- [ ] No "all done!" state, no counter, no progress bar — dimming only
+- [ ] Checklist state resets on new calendar day (date-keyed localStorage key changes at midnight)
+- [ ] Checklist state persists within same day (refresh page, dimmed items remain dimmed)
+- [ ] "Morning Routine" link navigates to Morning Routine section — **[Phase 2: dedicated section not yet built]**
 
 ### Today View — Evening Checklist
 
-- [ ] Evening checklist renders when active block is "Evening"
-- [ ] Evening checklist contains exactly 6 items in this order:
-  1. Cat meds
-  2. Bedtime meds
-  3. Skincare
-  4. Anchor task
-  5. Reading
-  6. Lights out
-- [ ] All 6 items are checkboxes (tap-to-toggle)
-- [ ] Checking a box toggles visual state
-- [ ] Unchecking a box toggles back
-- [ ] Emoji render correctly
+- [ ] Evening checklist renders when time is 6:00pm–10:59pm (not visible outside these hours)
+- [ ] Evening checklist contains exactly 7 items in this order:
+  1. Dinner — no cooking required. Delivery, fridge, frozen, or shelf snacks. You just need to eat something.
+  2. PM cat playtime (10–15 min). Check on water fountain while you're in the zone.
+  3. Shower check-in — get in, warm water, body wash, get out. That is the whole task.
+  4. Cat evening meds + dinner + scoop litter (Maisie + Meeko)
+  5. Your bedtime meds (9:30pm). PRN anxiety meds accessible.
+  6. Night skincare — two steps minimum: cleanser + moisturiser.
+  7. Write tomorrow's anchor task in your notebook
+- [ ] Each item is a tap target (the full row is tappable)
+- [ ] Tapping an item dims it to approximately 40% opacity (no checkmark, no counter, no strikethrough)
+- [ ] Tapping a dimmed item restores it to full opacity
+- [ ] No "all done!" state, no counter, no progress bar — dimming only
 - [ ] Checklist state resets on new calendar day
 - [ ] Checklist state persists within same day
-- [ ] "Evening Routine" link navigates to Evening Routine section
+- [ ] "Evening Routine" link navigates to Evening Routine section — **[Phase 2: dedicated section not yet built]**
 
 ### Today View — Anchor Task
 
@@ -120,7 +120,9 @@ This checklist is designed for manual QA testing of Phase 1, Phase 2, and Phase 
 - [ ] Tab transitions are smooth (no flicker, Framer Motion easing applied)
 - [ ] Safe area is respected at bottom (tab bar does not overlap home indicator)
 
-### Morning Routine Section
+### Morning Routine Section — [Phase 2: dedicated Guide section not yet built]
+
+> These items test a dedicated Morning Routine page under Guide navigation. That section is not yet implemented. Test when built.
 
 - [ ] Morning Routine section is accessible from Guide > Morning Routine
 - [ ] Section heading: "Morning Routine"
@@ -150,7 +152,9 @@ This checklist is designed for manual QA testing of Phase 1, Phase 2, and Phase 
 - [ ] Tap-to-check works on both versions
 - [ ] State persists when toggling between versions (checked items stay checked)
 
-### Evening Routine Section
+### Evening Routine Section — [Phase 2: dedicated Guide section not yet built]
+
+> These items test a dedicated Evening Routine page under Guide navigation. That section is not yet implemented. Test when built.
 
 - [ ] Evening Routine section is accessible from Guide > Evening Routine
 - [ ] Section heading: "Evening Routine"
@@ -306,7 +310,9 @@ This checklist is designed for manual QA testing of Phase 1, Phase 2, and Phase 
 - [ ] Evening meds at 9pm and 9:30pm mentioned in Evening Routine
 - [ ] Cat meds are in checklist items
 
-### Content Fidelity — Routines
+### Content Fidelity — Routines — [Phase 2: dedicated routine sections not yet built]
+
+> Test when Morning Routine and Evening Routine Guide sections are implemented.
 
 - [ ] Morning Routine section lists all steps in correct order
 - [ ] Evening Routine section lists all steps in correct order
@@ -328,7 +334,9 @@ This checklist is designed for manual QA testing of Phase 1, Phase 2, and Phase 
 - [ ] Subscriptions review mentioned
 - [ ] Gap gift cards mentioned
 
-### Content Fidelity — Outside Time
+### Content Fidelity — Outside Time — [Phase 2: content not yet surfaced in UI]
+
+> Outside Time content is documented in docs/content-source.md but not yet rendered in the app. Test when the relevant guide section or Daily Snapshot (Feature A) is built.
 
 - [ ] Hiking mentioned as outside activity
 - [ ] Paddleboarding mentioned

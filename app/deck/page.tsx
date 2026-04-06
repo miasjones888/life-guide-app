@@ -37,7 +37,9 @@ function formatDate(iso: string): string {
 }
 
 export default function DeckPage() {
-  const { cards, addCard, deleteCard, updateCard, restoreCard } = useFlashCards();
+  const { cards, addCard, deleteCard, updateCard, restoreCard, importCards } = useFlashCards();
+  const importRef = useRef<HTMLInputElement | null>(null);
+  const [importStatus, setImportStatus] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState<CalendarCategory | 'all'>('all');
   const [search, setSearch] = useState('');
@@ -207,6 +209,55 @@ export default function DeckPage() {
       }
       return next;
     });
+  }
+
+  function handleExport() {
+    const date = new Date().toISOString().split('T')[0];
+    const json = JSON.stringify({ version: 2, cards }, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `deck-export-${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string) as unknown;
+        let incoming: unknown[] = [];
+        if (Array.isArray(parsed)) {
+          incoming = parsed;
+        } else if (parsed && typeof parsed === 'object' && 'cards' in parsed && Array.isArray((parsed as { cards: unknown[] }).cards)) {
+          incoming = (parsed as { cards: unknown[] }).cards;
+        }
+        const valid = incoming
+          .map((c) => {
+            if (!c || typeof c !== 'object') return null;
+            const maybe = c as Partial<FlashCard>;
+            if (
+              typeof maybe.id !== 'string' ||
+              typeof maybe.content !== 'string' ||
+              typeof maybe.createdAt !== 'string'
+            ) return null;
+            return maybe as FlashCard;
+          })
+          .filter((c): c is FlashCard => c !== null);
+        importCards(valid);
+        setImportStatus(`Imported ${valid.length} card${valid.length !== 1 ? 's' : ''}.`);
+        setTimeout(() => setImportStatus(null), 4000);
+      } catch {
+        setImportStatus('Could not read file — is it a valid deck export?');
+        setTimeout(() => setImportStatus(null), 4000);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   }
 
   const inputStyle: React.CSSProperties = {
@@ -637,6 +688,62 @@ export default function DeckPage() {
             </button>
           </div>
         )}
+
+        <WindowPanel title="backup">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <p className="text-body-sm text-ink-muted" style={{ margin: 0 }}>
+              Export your deck as JSON to keep a copy safe. Import a previous export to restore cards.
+            </p>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={handleExport}
+                disabled={cards.length === 0}
+                style={{
+                  flex: 1,
+                  minHeight: '40px',
+                  border: '1px solid var(--color-ink-ghost)',
+                  borderRadius: '2px',
+                  background: 'transparent',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '12px',
+                  cursor: cards.length === 0 ? 'not-allowed' : 'pointer',
+                  opacity: cards.length === 0 ? 0.4 : 1,
+                }}
+              >
+                export JSON
+              </button>
+              <button
+                type="button"
+                onClick={() => importRef.current?.click()}
+                style={{
+                  flex: 1,
+                  minHeight: '40px',
+                  border: '1px solid var(--color-ink-ghost)',
+                  borderRadius: '2px',
+                  background: 'transparent',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                }}
+              >
+                import JSON
+              </button>
+            </div>
+            <input
+              ref={importRef}
+              type="file"
+              accept=".json"
+              onChange={handleImportFile}
+              style={{ display: 'none' }}
+            />
+            {importStatus && (
+              <p className="text-micro text-ink-muted" style={{ margin: 0 }}>
+                {importStatus}
+              </p>
+            )}
+          </div>
+        </WindowPanel>
       </div>
     </PageShell>
   );
