@@ -12,6 +12,7 @@ interface ProviderError {
 }
 
 type ApiMessage = { role: string; content: string };
+type Provider = 'anthropic' | 'openai' | 'gemini';
 
 function buildSystemPrompt(): string {
   const top3 = priorities
@@ -139,21 +140,76 @@ async function callAnthropic(messages: ApiMessage[], apiKey: string): Promise<As
   }
 }
 
+async function callGemini(messages: ApiMessage[], apiKey: string): Promise<AssistantResult | ProviderError> {
+  const model = process.env.GEMINI_MODEL ?? 'gemini-2.0-flash';
+  const systemPrompt = buildSystemPrompt() + '\n\nIMPORTANT: Respond with raw JSON only. No markdown, no code blocks, no extra text.';
+
+  // Gemini uses "model" role instead of "assistant"
+  const contents = messages.slice(-10).map((m) => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.5,
+            maxOutputTokens: 1024,
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const text = await response.text();
+      return {
+        error: `Gemini request failed: ${text}`,
+        status: 502,
+        retryable: response.status === 429,
+      };
+    }
+
+    const completion = (await response.json()) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    };
+
+    const content = completion.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!content) {
+      return { error: 'Gemini returned an empty response.', status: 502, retryable: false };
+    }
+
+    return safeParseAssistantResponse(content);
+  } catch {
+    return { error: 'Unable to reach Gemini API.', status: 502, retryable: false };
+  }
+}
+
 function isProviderError(result: AssistantResult | ProviderError): result is ProviderError {
   return 'error' in result;
 }
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as { messages?: ApiMessage[] };
+  const body = (await request.json()) as { messages?: ApiMessage[]; provider?: Provider };
   const incomingMessages = body.messages;
 
   if (!Array.isArray(incomingMessages) || incomingMessages.length === 0) {
     return NextResponse.json({ error: 'messages array is required.' }, { status: 400 });
   }
 
-  const providerPref = process.env.AI_PROVIDER ?? 'auto';
   const openaiKey = process.env.OPENAI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+
+  // Priority: per-request provider → AI_PROVIDER env var → default 'anthropic'
+  const providerPref: string = body.provider ?? process.env.AI_PROVIDER ?? 'anthropic';
 
   type ProviderEntry = { name: string; call: () => Promise<AssistantResult | ProviderError> };
   let providers: ProviderEntry[] = [];
@@ -166,7 +222,28 @@ export async function POST(request: Request) {
       );
     }
     providers = [{ name: 'OpenAI', call: () => callOpenAI(incomingMessages, openaiKey) }];
-  } else if (providerPref === 'anthropic') {
+  } else if (providerPref === 'gemini') {
+    if (!geminiKey) {
+      return NextResponse.json(
+        { error: 'Missing GEMINI_API_KEY. Add it to your environment to use Gemini.' },
+        { status: 503 },
+      );
+    }
+    providers = [{ name: 'Gemini', call: () => callGemini(incomingMessages, geminiKey) }];
+  } else if (providerPref === 'auto') {
+    // Try all available providers in order
+    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(incomingMessages, openaiKey) });
+    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(incomingMessages, anthropicKey) });
+    if (geminiKey) providers.push({ name: 'Gemini', call: () => callGemini(incomingMessages, geminiKey) });
+
+    if (providers.length === 0) {
+      return NextResponse.json(
+        { error: 'No AI provider configured. Add OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY to your environment.' },
+        { status: 503 },
+      );
+    }
+  } else {
+    // Default: anthropic
     if (!anthropicKey) {
       return NextResponse.json(
         { error: 'Missing ANTHROPIC_API_KEY. Add it to your environment to use Anthropic.' },
@@ -174,17 +251,6 @@ export async function POST(request: Request) {
       );
     }
     providers = [{ name: 'Anthropic', call: () => callAnthropic(incomingMessages, anthropicKey) }];
-  } else {
-    // auto: try available providers in order (OpenAI first, then Anthropic)
-    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(incomingMessages, openaiKey) });
-    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(incomingMessages, anthropicKey) });
-
-    if (providers.length === 0) {
-      return NextResponse.json(
-        { error: 'No AI provider configured. Add OPENAI_API_KEY or ANTHROPIC_API_KEY to your environment.' },
-        { status: 503 },
-      );
-    }
   }
 
   let lastError: ProviderError | null = null;

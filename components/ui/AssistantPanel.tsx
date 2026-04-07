@@ -15,6 +15,18 @@ const STARTER_PROMPTS = [
 ];
 
 const STORAGE_KEY = 'assistant-history';
+const PROVIDER_KEY = 'assistant-provider';
+
+type Provider = 'anthropic' | 'openai' | 'gemini';
+const PROVIDERS: Provider[] = ['anthropic', 'openai', 'gemini'];
+
+function loadProvider(): Provider {
+  try {
+    const stored = localStorage.getItem(PROVIDER_KEY);
+    if (stored === 'anthropic' || stored === 'openai' || stored === 'gemini') return stored;
+  } catch {}
+  return 'anthropic';
+}
 
 function loadHistory(): ConversationTurn[] {
   try {
@@ -39,11 +51,13 @@ export default function AssistantPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [messages, setMessages] = useState<ConversationTurn[]>([]);
+  const [provider, setProvider] = useState<Provider>('anthropic');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const threadRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setMessages(loadHistory());
+    setProvider(loadProvider());
   }, []);
 
   useEffect(() => {
@@ -86,7 +100,7 @@ export default function AssistantPanel() {
       const response = await fetch('/api/assistant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiMessages }),
+        body: JSON.stringify({ messages: apiMessages, provider }),
       });
 
       const data = await response.json();
@@ -121,6 +135,13 @@ export default function AssistantPanel() {
     setMessages([]);
     try {
       localStorage.removeItem(STORAGE_KEY);
+    } catch {}
+  }
+
+  function selectProvider(p: Provider) {
+    setProvider(p);
+    try {
+      localStorage.setItem(PROVIDER_KEY, p);
     } catch {}
   }
 
@@ -185,6 +206,37 @@ export default function AssistantPanel() {
           )}
         </div>
       )}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span
+          style={{
+            fontFamily: 'Courier New, monospace',
+            fontSize: '11px',
+            color: 'var(--color-ink-muted)',
+          }}
+        >
+          via:
+        </span>
+        {PROVIDERS.map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => selectProvider(p)}
+            style={{
+              fontFamily: 'Courier New, monospace',
+              fontSize: '11px',
+              padding: '3px 8px',
+              borderRadius: '999px',
+              border: `1px solid ${p === provider ? 'var(--color-ink)' : 'var(--color-ink-ghost)'}`,
+              background: 'transparent',
+              color: p === provider ? 'var(--color-ink)' : 'var(--color-ink-muted)',
+              cursor: 'pointer',
+            }}
+          >
+            {p}
+          </button>
+        ))}
+      </div>
 
       <textarea
         value={message}
