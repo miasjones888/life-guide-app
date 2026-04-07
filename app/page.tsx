@@ -9,6 +9,7 @@ import { dailyEvents, aprilOneTimeEvents } from '@/content/calendar';
 import { priorities, financeUrgentItems, verbatimCopy, modularNote } from '@/content/guide';
 import type { CalendarEvent } from '@/content/types';
 import { parseEventTime } from '@/lib/time';
+import { usePriorityStatus } from '@/hooks/usePriorityStatus';
 
 type ChecklistStep = { id: string; label: string; note?: string };
 
@@ -69,6 +70,7 @@ export default function TodayPage() {
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
   const [anchorTask, setAnchorTask] = useState('');
   const [dimmedSteps, setDimmedSteps] = useState<Set<string>>(new Set());
+  const { getStatus, cycleStatus } = usePriorityStatus();
   const todayEvents = getTodayAprilEvents();
 
   useEffect(() => {
@@ -314,23 +316,52 @@ export default function TodayPage() {
 
       {/* What matters now */}
       <WindowPanel title="what matters now" style={{ marginBottom: '10px' }}>
-        {priorities.slice(0, 3).map((p) => (
-          <div
-            key={p.rank}
-            className="priority-item"
-            style={{ borderLeft: p.isUrgent ? '3px solid var(--color-tomato)' : '3px solid var(--color-ink-ghost)', paddingLeft: '8px' }}
-          >
-            <span className="priority-number">{p.rank}.</span>
-            <div style={{ flex: 1 }}>
-              <div className="text-body" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                <span>{p.title}</span>
-                {p.isLocked && <span className="tag">locked</span>}
-                {p.isUrgent && <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>}
+        {priorities.slice(0, 3).map((p) => {
+          const status = getStatus(p.rank);
+          const isDone = status === 'done';
+          const isDoing = status === 'doing';
+          return (
+            <button
+              key={p.rank}
+              type="button"
+              onClick={() => cycleStatus(p.rank)}
+              className="priority-item"
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                borderLeft: isDone
+                  ? '3px solid var(--color-ink-ghost)'
+                  : isDoing
+                  ? '3px solid var(--color-moss)'
+                  : p.isUrgent
+                  ? '3px solid var(--color-tomato)'
+                  : '3px solid var(--color-ink-ghost)',
+                paddingLeft: '8px',
+                opacity: isDone ? 0.4 : 1,
+                transition: 'opacity 0.2s ease',
+              }}
+            >
+              <span className="priority-number">{p.rank}.</span>
+              <div style={{ flex: 1 }}>
+                <div className="text-body" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <span style={{ textDecoration: isDone ? 'line-through' : 'none' }}>{p.title}</span>
+                  {p.isLocked && <span className="tag">locked</span>}
+                  {p.isUrgent && <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>}
+                  {isDoing && (
+                    <span className="tag" style={{ borderColor: 'var(--color-moss)', color: 'var(--color-moss)' }}>◉ doing</span>
+                  )}
+                  {isDone && (
+                    <span className="tag" style={{ borderColor: 'var(--color-ink-ghost)', color: 'var(--color-ink-muted)' }}>✓ done</span>
+                  )}
+                </div>
+                <div className="text-body-sm text-ink-muted">{p.status} — {p.nextAction}</div>
               </div>
-              <div className="text-body-sm text-ink-muted">{p.status} — {p.nextAction}</div>
-            </div>
-          </div>
-        ))}
+            </button>
+          );
+        })}
       </WindowPanel>
 
       {/* GPT assistant */}

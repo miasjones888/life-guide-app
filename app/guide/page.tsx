@@ -1,9 +1,14 @@
+'use client';
+
 import React from 'react';
 import PageShell from '@/components/layout/PageShell';
 import WindowPanel from '@/components/ui/WindowPanel';
 import { priorities, workLocations, pets, vetInfo, financeUrgentItems, verbatimCopy } from '@/content/guide';
+import { usePriorityStatus } from '@/hooks/usePriorityStatus';
 
 export default function GuidePage() {
+  const { getStatus, cycleStatus } = usePriorityStatus();
+
   return (
     <PageShell>
       <div style={{ padding: '8px 0 4px' }}>
@@ -23,48 +28,72 @@ export default function GuidePage() {
         <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
           Ranked by urgency and sequencing. Locked items depend on earlier items.
         </div>
-        {priorities.map((p) => (
-          <div
-            key={p.rank}
-            className="priority-item"
-            style={{
-              borderLeft: p.isUrgent
-                ? '3px solid var(--color-tomato)'
-                : p.isLocked
-                ? '3px solid var(--color-graphite)'
-                : p.isOngoing
-                ? '3px solid var(--color-basil)'
-                : '3px solid var(--color-forest)',
-              paddingLeft: '10px',
-            }}
-          >
-            <span className="priority-number">{p.rank}.</span>
-            <div style={{ flex: 1 }}>
-              <div
-                className="text-body"
-                style={{
-                  color: p.isLocked ? 'var(--color-ink-muted)' : 'var(--color-ink)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <span>{p.title}</span>
-                {p.isLocked && <span className="tag">locked</span>}
-                {p.isUrgent && (
-                  <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>
-                )}
-                {p.isOngoing && (
-                  <span className="tag" style={{ borderColor: 'var(--color-basil)', color: 'var(--color-basil)' }}>ongoing</span>
-                )}
+        {priorities.map((p) => {
+          const status = getStatus(p.rank);
+          const isDone = status === 'done';
+          const isDoing = status === 'doing';
+          return (
+            <button
+              key={p.rank}
+              type="button"
+              onClick={() => cycleStatus(p.rank)}
+              className="priority-item"
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                borderLeft: isDone
+                  ? '3px solid var(--color-ink-ghost)'
+                  : isDoing
+                  ? '3px solid var(--color-moss)'
+                  : p.isUrgent
+                  ? '3px solid var(--color-tomato)'
+                  : p.isLocked
+                  ? '3px solid var(--color-graphite)'
+                  : p.isOngoing
+                  ? '3px solid var(--color-basil)'
+                  : '3px solid var(--color-forest)',
+                paddingLeft: '10px',
+                opacity: isDone ? 0.4 : 1,
+                transition: 'opacity 0.2s ease',
+              }}
+            >
+              <span className="priority-number">{p.rank}.</span>
+              <div style={{ flex: 1 }}>
+                <div
+                  className="text-body"
+                  style={{
+                    color: p.isLocked ? 'var(--color-ink-muted)' : 'var(--color-ink)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <span style={{ textDecoration: isDone ? 'line-through' : 'none' }}>{p.title}</span>
+                  {p.isLocked && <span className="tag">locked</span>}
+                  {p.isUrgent && (
+                    <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>urgent</span>
+                  )}
+                  {p.isOngoing && (
+                    <span className="tag" style={{ borderColor: 'var(--color-basil)', color: 'var(--color-basil)' }}>ongoing</span>
+                  )}
+                  {isDoing && (
+                    <span className="tag" style={{ borderColor: 'var(--color-moss)', color: 'var(--color-moss)' }}>◉ doing</span>
+                  )}
+                  {isDone && (
+                    <span className="tag" style={{ borderColor: 'var(--color-ink-ghost)', color: 'var(--color-ink-muted)' }}>✓ done</span>
+                  )}
+                </div>
+                <div className="text-body-sm" style={{ color: 'var(--color-ink-muted)', marginTop: '1px' }}>
+                  {p.status} — {p.nextAction}
+                </div>
               </div>
-              <div className="text-body-sm" style={{ color: 'var(--color-ink-muted)', marginTop: '1px' }}>
-                {p.status} — {p.nextAction}
-              </div>
-            </div>
-          </div>
-        ))}
+            </button>
+          );
+        })}
         <div style={{ paddingTop: '8px', borderTop: '1px solid var(--color-ink-ghost)', marginTop: '4px' }}>
           <p className="text-micro text-ink-muted">{verbatimCopy.wholeTask}</p>
         </div>
