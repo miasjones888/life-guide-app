@@ -237,6 +237,13 @@ export default function TodayPage() {
         />
       </div>
 
+      {/* Fold signal */}
+      <div style={{ borderTop: '1px solid var(--color-ink-ghost)', padding: '8px 0 12px 0' }}>
+        <p className="text-micro text-ink-muted" style={{ margin: 0 }}>
+          You have your anchor. The rest is reference.
+        </p>
+      </div>
+
       {/* Morning / Evening position tracking */}
       {checklistSteps && (
         <WindowPanel title={checklistTitle} style={{ marginBottom: '10px' }}>
@@ -391,8 +398,15 @@ export default function TodayPage() {
       )}
 
       {/* Closing phrase */}
-      <div style={{ padding: '8px 0' }}>
+      <div style={{ padding: '8px 0 20px 0' }}>
         <p className="text-micro text-ink-muted">{modularNote}</p>
+        <p className="text-micro text-ink-muted" style={{ marginTop: '8px', fontStyle: 'italic' }}>
+          {currentTime.hours < 12
+            ? 'You have what you need. Go.'
+            : currentTime.hours < 18
+            ? verbatimCopy.writtenDown
+            : verbatimCopy.wholeTask}
+        </p>
       </div>
     </PageShell>
   );
