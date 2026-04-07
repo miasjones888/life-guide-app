@@ -68,8 +68,8 @@ export default function AssistantPanel() {
   }
 
   async function executeAction(index: number, action: AssistantAction) {
-    setActionStatuses((prev) => ({ ...prev, [index]: 'loading' }));
-    setActionErrors((prev) => { const next = { ...prev }; delete next[index]; return next; });
+    setActionStatuses((prev: Record<number, ActionStatus>) => ({ ...prev, [index]: 'loading' }));
+    setActionErrors((prev: Record<number, string>) => { const next = { ...prev }; delete next[index]; return next; });
 
     const endpoint = EMAIL_ACTION_TYPES.includes(action.type) ? '/api/email' : '/api/calendar';
 
@@ -82,14 +82,14 @@ export default function AssistantPanel() {
       const data = await response.json();
 
       if (!response.ok) {
-        setActionStatuses((prev) => ({ ...prev, [index]: 'error' }));
-        setActionErrors((prev) => ({ ...prev, [index]: data.error ?? 'Action failed.' }));
+        setActionStatuses((prev: Record<number, ActionStatus>) => ({ ...prev, [index]: 'error' }));
+        setActionErrors((prev: Record<number, string>) => ({ ...prev, [index]: data.error ?? 'Action failed.' }));
       } else {
-        setActionStatuses((prev) => ({ ...prev, [index]: 'done' }));
+        setActionStatuses((prev: Record<number, ActionStatus>) => ({ ...prev, [index]: 'done' }));
       }
     } catch {
-      setActionStatuses((prev) => ({ ...prev, [index]: 'error' }));
-      setActionErrors((prev) => ({ ...prev, [index]: `Could not reach ${endpoint}.` }));
+      setActionStatuses((prev: Record<number, ActionStatus>) => ({ ...prev, [index]: 'error' }));
+      setActionErrors((prev: Record<number, string>) => ({ ...prev, [index]: `Could not reach ${endpoint}.` }));
     }
   }
 
