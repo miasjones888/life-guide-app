@@ -194,3 +194,193 @@ export const verbatimCopy = {
 };
 
 export const modularNote = 'Tasks are modular. Everything except cat meds, your meds, and financial deadlines can be rescheduled.';
+
+// ─── §05 Body ─────────────────────────────────────────────────────────────────
+
+export const bodySection = {
+  morningSkincare: {
+    steps: ['Cleanser', 'Moisturiser', 'SPF'],
+    fallback: 'On a hard day: just those two. Done.',
+    timing: 'Do before looking at phone if possible.',
+  },
+  nightSkincare: {
+    steps: ['Cleanser', 'Moisturiser / night cream'],
+    fullRoutine: 'On a good day: full routine.',
+    fallback: 'Two steps minimum: 1. Cleanser | 2. Moisturiser / night cream. On a good day: full routine. On a hard day: even just washing your face and applying moisturiser counts.',
+  },
+  shower: {
+    frequency: 'Every 2 days minimum',
+    minimumViable: 'Minimum viable shower. Get in. Warm water. Body wash. Get out. That is the whole task. Nothing else is required. On a better day it can be more. Today it just needs to happen.',
+  },
+  movement: {
+    framing: 'Protected outdoor block. Non-negotiable on whether, flexible on which. Choose one: hiking / paddleboarding / birdwatching / long walk. Merlin app for birdwatching. This is body + spirituality + feedstock in one block. Don\'t plan it to death. Just go outside.',
+    options: ['Hiking', 'Paddleboarding', 'Birdwatching (Merlin app)', 'Long walk'],
+  },
+  sleep: {
+    target: '7–8 hours',
+    lightsOut: '11pm',
+    note: 'Put the phone down. No TikTok or Instagram. You are aiming for 7–8 hours of sleep. Reading is fine. Screens are done.',
+  },
+  meals: {
+    breakfast: 'No appetite is okay — grab something small from the shelf.',
+    midday: 'Check in with yourself — have you eaten anything today? If no: go to the always-available shelf. Grab something. Anything. You do not need to cook. You do not need to make a good choice. You just need to eat something.',
+    dinner: 'Have you eaten dinner? No cooking required. Options: Delivery from a saved favourite order | Something from the fridge that needs no prep | Trader Joe\'s frozen meal | Shelf snacks if that\'s all you can manage. You just need to eat something.',
+    shelfItems: ['Yogurt', 'Fruit', 'Nut butter + crackers', 'Hard-boiled egg', 'Anything shelf-available'],
+  },
+  grounding: {
+    technique: '5-4-3-2-1 Sensory Reset',
+    steps: ['5 things you see', '4 things you hear', '3 things you touch', '2 things you smell', '1 thing you taste'],
+    alternative: '5-minute sit/meditation (morning)',
+  },
+};
+
+// ─── §06 Home ─────────────────────────────────────────────────────────────────
+
+export const homeSection = {
+  roomReset: {
+    frequency: 'Daily',
+    duration: '20 minutes maximum',
+    instruction: 'One small cleaning or unpacking task. 20 minutes maximum. Timer on.',
+    phases: [
+      {
+        label: 'Phase 1 — Surfaces + Floor',
+        note: 'Do first, repeat until clear.',
+        steps: [
+          'One bag: trash and anything obviously disposable',
+          'One bag: things that live somewhere else',
+          'Stop when timer goes off. Not the task.',
+        ],
+      },
+      {
+        label: 'Phase 2 — Boxes',
+        note: 'After surfaces are clear.',
+        steps: [
+          'Open one box',
+          'Sort: keep, donate, trash, relocate',
+          'Close the box if time runs out',
+        ],
+      },
+      {
+        label: 'Phase 3 — Specific Zones',
+        note: 'Rotate through these.',
+        steps: ['Bathroom', 'Kitchen', 'Desk/work area', 'Wardrobe corner'],
+      },
+    ],
+  },
+  laundry: {
+    frequency: 'Weekly',
+    minimumViable: 'Minimum viable action: gather → put in machine → start it. Priority: underwear + basics first, towels second, everything else third. You do not have to sort perfectly. You do not have to fold immediately. You just have to start a load.',
+  },
+};
+
+// ─── §07 Health ───────────────────────────────────────────────────────────────
+
+export const healthSection = {
+  medications: {
+    bedtimeMeds: {
+      timing: '9:30pm nightly',
+      note: 'Take bedtime medication.',
+    },
+    prnAnxiety: {
+      storage: 'Keep somewhere physically accessible.',
+      guidance: 'PRN anxiety meds: keep them somewhere physically accessible. Take when anxiety is interfering with function, not just present.',
+    },
+  },
+  therapy: {
+    frequency: 'Standing Sunday task',
+    minimumViable: 'Minimum viable action: pick the first name on the list, send one email or make one call.',
+    framing: 'Outreach-based, not emergency-based.',
+  },
+  psychiatry: {
+    status: 'No appointment — flagged for review',
+    action: 'Schedule at regular intervals.',
+  },
+  framingNote: 'No judgment on hard days. PRN meds described in terms of function, not as emergency or failure indicators. Therapy framed as outreach, not as emergency or sign of crisis.',
+};
+
+// ─── §08 System ───────────────────────────────────────────────────────────────
+
+export const systemSection = {
+  sundayReset: {
+    label: 'Sunday Reset',
+    steps: [
+      { title: 'Taxes + Finances', note: 'Financial review — see budget section.' },
+      { title: 'Scheduling', note: 'Review upcoming week. Set focus themes.' },
+      { title: 'Moving Research', note: 'Ongoing relocation planning.' },
+      { title: 'Therapy Outreach', note: 'Minimum viable action: one email or call.' },
+      { title: 'Self-Care Block', note: '45–60 minutes — hair, nails, face mask, personal care deferred during the week.' },
+      { title: 'Cat Full Groom', note: 'Nails, teeth, ears, full brush-out for all three cats.' },
+      { title: 'Anchor for the Week', note: 'Identify one overarching theme or priority.' },
+    ],
+  },
+  monthlyReview: {
+    questions: [
+      'Financial review complete?',
+      'Cat supplies ordered?',
+      'Psychiatry scheduled?',
+      'Subscriptions to cancel?',
+      'System update needed?',
+    ],
+  },
+  fourWeekRule: {
+    rule: 'Try the current version for 4 weeks before changing.',
+    lockNote: 'No system changes until May 1st one-month review.',
+    updateProtocol: [
+      'Wait 4 weeks',
+      'Open new Claude conversation',
+      'Share current guide + prompt describing the change',
+      'Workshop the change together',
+      'Update calendar and guide',
+      'Run new version for 4 weeks',
+    ],
+    warning: 'One change at a time.',
+  },
+};
+
+// ─── §09 Routines ─────────────────────────────────────────────────────────────
+
+export const routinesSection = {
+  morning: {
+    full: {
+      label: 'Full Morning (Version B)',
+      steps: [
+        'Small notebook — morning pages, 20 min',
+        '5-minute sit / meditation',
+        'Reading before screens (even 10 min)',
+        'Morning skincare (cleanser + SPF)',
+        'Cat morning meds',
+        'Eat something',
+      ],
+      descriptor: 'Protected time. No calls, no notifications, no obligations.',
+      guard: 'No scrolling Instagram or TikTok in morning.',
+    },
+    hardDay: {
+      label: 'Hard Day (Version A)',
+      steps: ['Coffee', 'Journal', 'Read (before screens)', 'Plan the day', 'Ground yourself'],
+      note: 'On a hard day: just those two. Done.',
+    },
+  },
+  evening: {
+    full: {
+      label: 'Full Evening Routine',
+      steps: [
+        'Cat evening meds + dinner + litter (9pm)',
+        'Your bedtime meds (9:30pm)',
+        'Night skincare (cleanser + moisturiser)',
+        'Write tomorrow\'s anchor task in main notebook',
+        'Reading before sleep',
+        'No scrolling TikTok or Instagram after this point',
+        'Lights out by 11pm',
+      ],
+    },
+    creative: {
+      label: 'Creative Life Dashboard (Alternative)',
+      steps: [
+        'Brain offload: one thing progressed, one step for tomorrow, anything looping',
+        'Grounding exercise: 5-4-3-2-1 sensory reset',
+        'Gentle creative input: reading, film scene, reflection',
+        'Closing thought: everything for today is written down',
+      ],
+    },
+  },
+};

@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import BottomNav from './BottomNav';
+import SideNav from './SideNav';
 import { systemVersionNote } from '@/content/guide';
 
 // Primary tab order for swipe navigation
@@ -58,31 +59,51 @@ export default function PageShell({ children }: PageShellProps) {
 
   return (
     <div
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
       style={{
         minHeight: '100dvh',
         backgroundColor: 'var(--color-chrome)',
-        paddingBottom: '56px',
+        display: 'flex',
       }}
     >
-      <motion.main
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.08, ease: 'easeOut' }}
+      {/* Desktop sidebar — hidden on mobile via inline style; shown at md+ via CSS class */}
+      <div className="hidden md:block">
+        <SideNav />
+      </div>
+
+      {/* Main content area */}
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         style={{
-          maxWidth: '640px',
-          margin: '0 auto',
-          padding: '8px',
-          paddingBottom: '0',
+          flex: 1,
+          minWidth: 0,
+          // On mobile, bottom padding clears the fixed BottomNav
+          paddingBottom: '56px',
         }}
+        className="md:pb-0"
       >
-        {children}
-        <footer className="version-footer" style={{ marginTop: '16px' }}>
-          {systemVersionNote}
-        </footer>
-      </motion.main>
-      <BottomNav />
+        <motion.main
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.08, ease: 'easeOut' }}
+          style={{
+            maxWidth: '640px',
+            margin: '0 auto',
+            padding: '8px',
+            paddingBottom: '0',
+          }}
+        >
+          {children}
+          <footer className="version-footer md:hidden" style={{ marginTop: '16px' }}>
+            {systemVersionNote}
+          </footer>
+        </motion.main>
+      </div>
+
+      {/* Mobile bottom nav — hidden at md+ */}
+      <div className="md:hidden">
+        <BottomNav />
+      </div>
     </div>
   );
 }

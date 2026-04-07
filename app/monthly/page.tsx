@@ -1,10 +1,32 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import PageShell from '@/components/layout/PageShell';
 import WindowPanel from '@/components/ui/WindowPanel';
 import TimeBlock from '@/components/ui/TimeBlock';
+import AddEventSheet from '@/components/calendar/AddEventSheet';
 import { monthlyEvents, aprilOneTimeEvents, monthlyBudgetSteps } from '@/content/calendar';
+import { useUserEvents } from '@/hooks/useUserEvents';
+import type { CalendarCategory } from '@/content/types';
+
+// Map CalendarCategory → CSS variable color
+const CATEGORY_COLORS: Record<CalendarCategory, string> = {
+  tomato: 'var(--color-tomato)',
+  grape: 'var(--color-grape)',
+  blueberry: 'var(--color-blueberry)',
+  basil: 'var(--color-basil)',
+  banana: 'var(--color-banana)',
+  flamingo: 'var(--color-flamingo)',
+  graphite: 'var(--color-graphite)',
+  tangerine: 'var(--color-tangerine)',
+  peacock: 'var(--color-peacock)',
+  sage: 'var(--color-sage)',
+};
 
 export default function MonthlyPage() {
+  const [addOpen, setAddOpen] = useState(false);
+  const { events: userEvents, addEvent, deleteEvent } = useUserEvents();
+
   const firstSundayEvents = monthlyEvents.filter(
     (e) => e.monthlyRule?.type === 'nth-weekday' && e.monthlyRule.weekday === 'sunday' && e.monthlyRule.nth === 1
   );
@@ -23,7 +45,19 @@ export default function MonthlyPage() {
     if (!aprilByDate[d]) aprilByDate[d] = [];
     aprilByDate[d].push(event);
   });
-  const sortedDates = Object.keys(aprilByDate).sort();
+
+  // User events grouped by date (merged alongside april events)
+  const userByDate: Record<string, typeof userEvents> = {};
+  userEvents.forEach((event) => {
+    const d = event.date || 'unknown';
+    if (!userByDate[d]) userByDate[d] = [];
+    userByDate[d].push(event);
+  });
+
+  // Combined sorted dates from both static april events and user events
+  const allDates = Array.from(
+    new Set([...Object.keys(aprilByDate), ...Object.keys(userByDate)])
+  ).sort();
 
   return (
     <PageShell>
@@ -141,20 +175,51 @@ export default function MonthlyPage() {
         ))}
       </WindowPanel>
 
-      {/* April 2026 One-Time Events */}
-      <WindowPanel title="april 2026" style={{ marginBottom: '10px' }}>
-        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
-          One-time events. Dates with flags require action.
+      {/* One-Time Events (static + user-created) */}
+      <WindowPanel title="one-time events" style={{ marginBottom: '10px' }}>
+        <div
+          style={{
+            paddingBottom: '6px',
+            borderBottom: '1px solid var(--color-ink-ghost)',
+            marginBottom: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <span className="text-micro text-ink-muted">Dates with flags require action.</span>
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            style={{
+              fontFamily: 'Courier New, monospace',
+              fontSize: '10px',
+              color: 'var(--color-forest)',
+              background: 'none',
+              border: '1px solid var(--color-forest)',
+              borderRadius: '2px',
+              padding: '3px 8px',
+              cursor: 'pointer',
+            }}
+          >
+            + add event
+          </button>
         </div>
-        {sortedDates.map((dateStr) => {
-          const events = aprilByDate[dateStr];
+
+        {allDates.length === 0 && (
+          <p className="text-body-sm text-ink-muted">No one-time events.</p>
+        )}
+
+        {allDates.map((dateStr) => {
+          const staticEvents = aprilByDate[dateStr] ?? [];
+          const customEvents = userByDate[dateStr] ?? [];
           const dateObj = new Date(dateStr + 'T12:00:00');
           const dateLabel = dateObj.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             weekday: 'short',
           });
-          const hasUrgent = events.some((e) => e.isUrgent);
+          const hasUrgent = staticEvents.some((e) => e.isUrgent);
 
           return (
             <div key={dateStr} style={{ marginBottom: '8px' }}>
@@ -172,7 +237,8 @@ export default function MonthlyPage() {
                 <span>{dateLabel}</span>
                 {hasUrgent && <span style={{ color: 'var(--color-tangerine)' }}>flag</span>}
               </div>
-              {events.map((event) => (
+
+              {staticEvents.map((event) => (
                 <TimeBlock
                   key={event.id}
                   time={event.time}
@@ -182,10 +248,62 @@ export default function MonthlyPage() {
                   isUrgent={event.isUrgent}
                 />
               ))}
+
+              {customEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="time-block"
+                  style={{ borderLeft: `3px solid ${CATEGORY_COLORS[event.category]}`, paddingLeft: '10px' }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div
+                      className="text-body"
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}
+                    >
+                      {event.time && (
+                        <span className="time-label" style={{ marginRight: '4px' }}>{event.time}</span>
+                      )}
+                      <span>{event.title}</span>
+                      <span
+                        className="tag"
+                        style={{ borderColor: 'var(--color-ink-ghost)', color: 'var(--color-ink-muted)' }}
+                      >
+                        custom
+                      </span>
+                    </div>
+                    {event.note && (
+                      <div className="text-body-sm text-ink-muted">{event.note}</div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => deleteEvent(event.id)}
+                    aria-label={`Delete ${event.title}`}
+                    style={{
+                      fontFamily: 'Courier New, monospace',
+                      fontSize: '10px',
+                      color: 'var(--color-ink-ghost)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '2px 4px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
           );
         })}
       </WindowPanel>
+
+      <AddEventSheet
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onAdd={addEvent}
+      />
     </PageShell>
   );
 }
