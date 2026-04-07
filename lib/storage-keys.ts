@@ -7,6 +7,9 @@ export const STORAGE_KEYS = {
   REFLECTION: 'reflection-text',
   ANCHOR_TASK: 'anchor-task',
 
+  // Wishlist
+  WISHLIST: 'life-guide-wishlist',           // WishlistItem[]
+
   // Cultural Discovery (future)
   MEDIA_LOG: 'culture-media-log',         // MediaItem[]
   ART_HISTORY: 'culture-art-history',     // ArtworkEntry[]

@@ -242,6 +242,23 @@ export interface CommunityEvent {
   saved: boolean;
 }
 
+// ── Wishlist (TikTok-sourced + manual) ───────────────────────────
+
+export type WishlistCategory = 'want' | 'experience' | 'movie' | 'show' | 'book' | 'other';
+
+export interface WishlistItem {
+  id: string;
+  title: string;
+  url?: string;
+  thumbnail?: string;
+  author?: string;         // TikTok creator handle or manual source
+  category: WishlistCategory;
+  addedAt: string;         // ISO date
+  done: boolean;
+  note?: string;
+  source: 'tiktok' | 'manual';
+}
+
 // ── Integrations ─────────────────────────────────────────────────
 
 export type IntegrationService =
