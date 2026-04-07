@@ -12,9 +12,10 @@ import {
   fetchAllEvents,
   buildLiveCalendarContext,
 } from '@/lib/google-calendar';
+import { fetchRecentEmails, buildEmailContext } from '@/lib/gmail';
 
 interface AssistantAction {
-  type: 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'plan_next_steps' | 'freeze_mode';
+  type: 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'email_send' | 'plan_next_steps' | 'freeze_mode';
   title: string;
   payload: Record<string, string>;
 }
@@ -172,7 +173,7 @@ This app is her field guide — a read-first, reference-first tool. Not a produc
 
 Your job:
 1) Help with scheduling and calendar updates. You have access to her live Google Calendar (Events, Appointments, Social Life, Time Off) provided below. When she asks to add, move, or remove something, check for conflicts and flag any issues with non-negotiable or protected events. For calendar_create, include calendarName (Events / Appointments / Social Life / Time Off), date (YYYY-MM-DD), startTime (HH:MM 24h), endTime (HH:MM 24h), and title in the payload. For calendar_update or calendar_delete, include eventId and calendarId from the schedule data.
-2) Draft concise, warm emails in Mia's voice.
+2) Read, draft, and send emails. You have access to her recent inbox (provided below). For email_draft (saves to Gmail drafts) or email_send (sends immediately — user must confirm), include to, subject, and body in the payload. For replies, also include inReplyToMessageId from the inbox data. Write in Mia's voice: spare, warm, direct. Never formal or corporate.
 3) Organize plans into short, actionable steps — no more than 3 at a time.
 4) Support freeze mode with one tiny, compassionate next action (5–10 min max). One thing. Not a list.
 
@@ -202,20 +203,29 @@ Rules:
 
 async function buildSystemPrompt(): Promise<string> {
   let calendarSection: string;
+  let emailSection: string;
 
   if (isGoogleCalendarConfigured()) {
-    try {
-      const events = await fetchAllEvents();
-      calendarSection = buildLiveCalendarContext(events);
-    } catch (err) {
-      // Fall back to static data if live fetch fails
-      calendarSection = `[Google Calendar fetch failed: ${err instanceof Error ? err.message : 'unknown error'}]\n\n${buildCalendarContext()}`;
-    }
+    const [eventsResult, emailsResult] = await Promise.allSettled([
+      fetchAllEvents(),
+      fetchRecentEmails(8),
+    ]);
+
+    calendarSection =
+      eventsResult.status === 'fulfilled'
+        ? buildLiveCalendarContext(eventsResult.value)
+        : `[Google Calendar fetch failed: ${eventsResult.reason instanceof Error ? eventsResult.reason.message : 'unknown error'}]\n\n${buildCalendarContext()}`;
+
+    emailSection =
+      emailsResult.status === 'fulfilled'
+        ? buildEmailContext(emailsResult.value)
+        : `[Gmail fetch failed: ${emailsResult.reason instanceof Error ? emailsResult.reason.message : 'unknown error'}]`;
   } else {
     calendarSection = `[Google Calendar not configured — using static schedule]\n\n${buildCalendarContext()}`;
+    emailSection = '[Gmail not configured — email features unavailable]';
   }
 
-  return `${BASE_SYSTEM_PROMPT}\n\n---\n\n${calendarSection}`;
+  return `${BASE_SYSTEM_PROMPT}\n\n---\n\n${calendarSection}\n---\n\n${emailSection}`;
 }
 
 // ── Provider calls ────────────────────────────────────────────────

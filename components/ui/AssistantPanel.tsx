@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-type AssistantActionType = 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'plan_next_steps' | 'freeze_mode';
+type AssistantActionType = 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'email_send' | 'plan_next_steps' | 'freeze_mode';
 
 interface AssistantAction {
   type: AssistantActionType;
@@ -18,6 +18,7 @@ interface AssistantResponse {
 type ActionStatus = 'idle' | 'loading' | 'done' | 'error';
 
 const CALENDAR_ACTION_TYPES: AssistantActionType[] = ['calendar_create', 'calendar_update', 'calendar_delete'];
+const EMAIL_ACTION_TYPES: AssistantActionType[] = ['email_draft', 'email_send'];
 
 const STARTER_PROMPTS = [
   'Add a vet appointment on April 28 at 11am.',
@@ -70,8 +71,10 @@ export default function AssistantPanel() {
     setActionStatuses((prev) => ({ ...prev, [index]: 'loading' }));
     setActionErrors((prev) => { const next = { ...prev }; delete next[index]; return next; });
 
+    const endpoint = EMAIL_ACTION_TYPES.includes(action.type) ? '/api/email' : '/api/calendar';
+
     try {
-      const response = await fetch('/api/calendar', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: action.type, payload: action.payload }),
@@ -86,7 +89,7 @@ export default function AssistantPanel() {
       }
     } catch {
       setActionStatuses((prev) => ({ ...prev, [index]: 'error' }));
-      setActionErrors((prev) => ({ ...prev, [index]: 'Could not reach calendar endpoint.' }));
+      setActionErrors((prev) => ({ ...prev, [index]: `Could not reach ${endpoint}.` }));
     }
   }
 
@@ -175,7 +178,20 @@ export default function AssistantPanel() {
               <div style={{ display: 'grid', gap: '8px' }}>
                 {result.actions.map((action, index) => {
                   const isCalendarAction = CALENDAR_ACTION_TYPES.includes(action.type);
+                  const isEmailAction = EMAIL_ACTION_TYPES.includes(action.type);
+                  const isExecutable = isCalendarAction || isEmailAction;
+                  const isDestructive = action.type === 'email_send';
                   const status = actionStatuses[index] ?? 'idle';
+
+                  const confirmLabel =
+                    action.type === 'email_draft' ? 'save draft'
+                    : action.type === 'email_send' ? 'send'
+                    : 'confirm';
+
+                  const doneLabel =
+                    action.type === 'email_draft' ? 'drafted'
+                    : action.type === 'email_send' ? 'sent'
+                    : 'done';
 
                   return (
                     <div
@@ -196,6 +212,11 @@ export default function AssistantPanel() {
                           <strong>{action.title}</strong>
                         </div>
                         <div className="text-micro text-ink-muted">{action.type}</div>
+                        {action.payload.body && (
+                          <div className="text-micro text-ink-muted" style={{ marginTop: '4px', whiteSpace: 'pre-wrap' }}>
+                            {action.payload.body.slice(0, 200)}{action.payload.body.length > 200 ? '…' : ''}
+                          </div>
+                        )}
                         {actionErrors[index] && (
                           <div className="text-micro" style={{ color: 'var(--color-tomato)', marginTop: '2px' }}>
                             {actionErrors[index]}
@@ -203,24 +224,24 @@ export default function AssistantPanel() {
                         )}
                       </div>
 
-                      {isCalendarAction && (
+                      {isExecutable && (
                         <button
                           type="button"
                           onClick={() => executeAction(index, action)}
                           disabled={status === 'loading' || status === 'done'}
                           style={{
                             flexShrink: 0,
-                            border: '1px solid var(--color-ink-ghost)',
+                            border: `1px solid ${isDestructive && status === 'idle' ? 'var(--color-tomato)' : 'var(--color-ink-ghost)'}`,
                             borderRadius: '999px',
                             background: status === 'done' ? 'var(--color-forest)' : 'transparent',
-                            color: status === 'done' ? '#fff' : 'var(--color-ink)',
+                            color: status === 'done' ? '#fff' : isDestructive && status === 'idle' ? 'var(--color-tomato)' : 'var(--color-ink)',
                             padding: '4px 10px',
                             fontSize: '12px',
                             cursor: status === 'loading' || status === 'done' ? 'not-allowed' : 'pointer',
                             opacity: status === 'loading' ? 0.6 : 1,
                           }}
                         >
-                          {status === 'loading' ? 'saving…' : status === 'done' ? 'done' : 'confirm'}
+                          {status === 'loading' ? 'working…' : status === 'done' ? doneLabel : confirmLabel}
                         </button>
                       )}
                     </div>
