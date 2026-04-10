@@ -22,7 +22,7 @@ interface AssistantAction {
 
 interface AssistantResult {
   reply: string;
-  actions: AssistantAction[];
+  actions?: AssistantAction[];
 }
 
 interface ProviderError {
@@ -30,6 +30,9 @@ interface ProviderError {
   status: number;
   retryable: boolean;
 }
+
+type ApiMessage = { role: string; content: string };
+type Provider = 'anthropic' | 'openai' | 'gemini';
 
 // ── Calendar context ──────────────────────────────────────────────
 
@@ -62,7 +65,6 @@ function buildCalendarContext(): string {
   lines.push(`TODAY'S FOCUS: ${weekFocus}`);
   lines.push('');
 
-  // Daily recurring schedule
   lines.push("DAILY SCHEDULE (every day):");
   for (const e of dailyEvents) {
     const flag = e.isNonNegotiable ? ' [NON-NEGOTIABLE — never move]' : '';
@@ -71,7 +73,6 @@ function buildCalendarContext(): string {
   }
   lines.push('');
 
-  // Today's weekly events
   const todayWeekly = weeklyEvents.filter(e => e.days?.includes(dayName));
   if (todayWeekly.length > 0) {
     lines.push("TODAY'S WEEKLY EVENTS:");
@@ -83,13 +84,11 @@ function buildCalendarContext(): string {
     lines.push('');
   }
 
-  // Biweekly events (check if any fall in the next 14 days)
   const upcomingBiweekly = biweeklyEvents.filter(e => {
     if (!e.startDate) return false;
     const start = new Date(e.startDate + 'T12:00:00');
     const diffMs = start.getTime() - now.getTime();
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    // Check if any 14-day interval from startDate lands within next 14 days
     const cyclePosition = ((diffDays % 14) + 14) % 14;
     return cyclePosition <= 14;
   });
@@ -101,7 +100,6 @@ function buildCalendarContext(): string {
     lines.push('');
   }
 
-  // Upcoming one-time events (next 14 days)
   const upcoming = aprilOneTimeEvents.filter(e => {
     if (!e.date) return false;
     const eventDate = new Date(e.date + 'T12:00:00');
@@ -119,7 +117,6 @@ function buildCalendarContext(): string {
     lines.push('');
   }
 
-  // Current priorities
   const active = priorities.filter(p => !p.isLocked);
   lines.push('CURRENT PRIORITIES:');
   for (const p of active) {
@@ -129,7 +126,6 @@ function buildCalendarContext(): string {
   }
   lines.push('');
 
-  // Urgent finance items
   if (financeUrgentItems.length > 0) {
     lines.push('URGENT FINANCE ITEMS:');
     for (const f of financeUrgentItems) {
@@ -139,7 +135,6 @@ function buildCalendarContext(): string {
     lines.push('');
   }
 
-  // Scheduling rules
   lines.push('SCHEDULING RULES:');
   lines.push(`  · ${modularNote}`);
   lines.push('  · Non-negotiable events (cat meds, personal meds, financial deadlines) cannot be moved or removed.');
@@ -147,7 +142,6 @@ function buildCalendarContext(): string {
   lines.push('  · When suggesting a new event, check for conflicts with the schedule above.');
   lines.push('');
 
-  // Category legend
   lines.push('CATEGORY LEGEND:');
   lines.push('  tomato    = cat care');
   lines.push('  flamingo  = personal / relationships / self-care');
@@ -186,7 +180,7 @@ Return strict JSON with this exact shape:
   "reply": "string",
   "actions": [
     {
-      "type": "calendar_create | calendar_update | calendar_delete | email_draft | plan_next_steps | freeze_mode",
+      "type": "calendar_create | calendar_update | calendar_delete | email_draft | email_send | plan_next_steps | freeze_mode",
       "title": "string",
       "payload": { "key": "value" }
     }
@@ -231,24 +225,27 @@ async function buildSystemPrompt(): Promise<string> {
 // ── Provider calls ────────────────────────────────────────────────
 
 function safeParseAssistantResponse(input: string): AssistantResult {
-  const parsed = JSON.parse(input) as Partial<AssistantResult>;
-  const reply = typeof parsed.reply === 'string' ? parsed.reply : 'I can help with that. Tell me what you want to do first.';
-  const actions = Array.isArray(parsed.actions)
-    ? parsed.actions.filter(
-        (action): action is AssistantAction =>
-          typeof action === 'object' &&
-          action !== null &&
-          typeof (action as AssistantAction).type === 'string' &&
-          typeof (action as AssistantAction).title === 'string' &&
-          typeof (action as AssistantAction).payload === 'object' &&
-          (action as AssistantAction).payload !== null,
-      )
-    : [];
-
-  return { reply, actions };
+  try {
+    const parsed = JSON.parse(input) as Partial<AssistantResult>;
+    const reply = typeof parsed.reply === 'string' ? parsed.reply : 'I can help with that. Tell me what you want to do first.';
+    const actions = Array.isArray(parsed.actions)
+      ? parsed.actions.filter(
+          (action): action is AssistantAction =>
+            typeof action === 'object' &&
+            action !== null &&
+            typeof (action as AssistantAction).type === 'string' &&
+            typeof (action as AssistantAction).title === 'string' &&
+            typeof (action as AssistantAction).payload === 'object' &&
+            (action as AssistantAction).payload !== null,
+        )
+      : [];
+    return { reply, actions: actions.length > 0 ? actions : undefined };
+  } catch {
+    return { reply: 'I can help with that. Tell me what you want to do first.' };
+  }
 }
 
-async function callOpenAI(message: string, apiKey: string, systemPrompt: string): Promise<AssistantResult | ProviderError> {
+async function callOpenAI(messages: ApiMessage[], apiKey: string, systemPrompt: string): Promise<AssistantResult | ProviderError> {
   const model = process.env.OPENAI_MODEL ?? 'gpt-4.1-mini';
 
   try {
@@ -263,7 +260,7 @@ async function callOpenAI(message: string, apiKey: string, systemPrompt: string)
         temperature: 0.4,
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: message },
+          ...messages.slice(-10),
         ],
         response_format: { type: 'json_object' },
       }),
@@ -293,7 +290,7 @@ async function callOpenAI(message: string, apiKey: string, systemPrompt: string)
   }
 }
 
-async function callAnthropic(message: string, apiKey: string, systemPrompt: string): Promise<AssistantResult | ProviderError> {
+async function callAnthropic(messages: ApiMessage[], apiKey: string, systemPrompt: string): Promise<AssistantResult | ProviderError> {
   const model = process.env.ANTHROPIC_MODEL ?? 'claude-sonnet-4-6';
   const anthropicPrompt = systemPrompt + '\n\nIMPORTANT: Respond with raw JSON only. No markdown, no code blocks, no extra text. The "reply" field must follow the tone guidelines above.';
 
@@ -309,7 +306,7 @@ async function callAnthropic(message: string, apiKey: string, systemPrompt: stri
         model,
         max_tokens: 1024,
         system: anthropicPrompt,
-        messages: [{ role: 'user', content: message }],
+        messages: messages.slice(-10),
       }),
     });
 
@@ -337,6 +334,57 @@ async function callAnthropic(message: string, apiKey: string, systemPrompt: stri
   }
 }
 
+async function callGemini(messages: ApiMessage[], apiKey: string, systemPrompt: string): Promise<AssistantResult | ProviderError> {
+  const model = process.env.GEMINI_MODEL ?? 'gemini-2.0-flash';
+  const geminiPrompt = systemPrompt + '\n\nIMPORTANT: Respond with raw JSON only. No markdown, no code blocks, no extra text.';
+
+  const contents = messages.slice(-10).map((m) => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: geminiPrompt }] },
+          contents,
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.4,
+            maxOutputTokens: 1024,
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      const text = await response.text();
+      return {
+        error: `Gemini request failed: ${text}`,
+        status: 502,
+        retryable: response.status === 429,
+      };
+    }
+
+    const completion = (await response.json()) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    };
+
+    const content = completion.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!content) {
+      return { error: 'Gemini returned an empty response.', status: 502, retryable: false };
+    }
+
+    return safeParseAssistantResponse(content);
+  } catch {
+    return { error: 'Unable to reach Gemini API.', status: 502, retryable: false };
+  }
+}
+
 function isProviderError(result: AssistantResult | ProviderError): result is ProviderError {
   return 'error' in result;
 }
@@ -344,18 +392,21 @@ function isProviderError(result: AssistantResult | ProviderError): result is Pro
 // ── Route handler ─────────────────────────────────────────────────
 
 export async function POST(request: Request) {
-  const body = (await request.json()) as { message?: string };
-  const message = body.message?.trim();
+  const body = (await request.json()) as { messages?: ApiMessage[]; provider?: Provider };
+  const incomingMessages = body.messages;
 
-  if (!message) {
-    return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
+  if (!Array.isArray(incomingMessages) || incomingMessages.length === 0) {
+    return NextResponse.json({ error: 'messages array is required.' }, { status: 400 });
   }
 
   const systemPrompt = await buildSystemPrompt();
 
-  const providerPref = process.env.AI_PROVIDER ?? 'auto';
   const openaiKey = process.env.OPENAI_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+
+  // Priority: per-request provider → AI_PROVIDER env var → default 'anthropic'
+  const providerPref: string = body.provider ?? process.env.AI_PROVIDER ?? 'anthropic';
 
   type ProviderEntry = { name: string; call: () => Promise<AssistantResult | ProviderError> };
   let providers: ProviderEntry[] = [];
@@ -367,25 +418,35 @@ export async function POST(request: Request) {
         { status: 503 },
       );
     }
-    providers = [{ name: 'OpenAI', call: () => callOpenAI(message, openaiKey, systemPrompt) }];
-  } else if (providerPref === 'anthropic') {
+    providers = [{ name: 'OpenAI', call: () => callOpenAI(incomingMessages, openaiKey, systemPrompt) }];
+  } else if (providerPref === 'gemini') {
+    if (!geminiKey) {
+      return NextResponse.json(
+        { error: 'Missing GEMINI_API_KEY. Add it to your environment to use Gemini.' },
+        { status: 503 },
+      );
+    }
+    providers = [{ name: 'Gemini', call: () => callGemini(incomingMessages, geminiKey, systemPrompt) }];
+  } else if (providerPref === 'auto') {
+    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(incomingMessages, openaiKey, systemPrompt) });
+    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(incomingMessages, anthropicKey, systemPrompt) });
+    if (geminiKey) providers.push({ name: 'Gemini', call: () => callGemini(incomingMessages, geminiKey, systemPrompt) });
+
+    if (providers.length === 0) {
+      return NextResponse.json(
+        { error: 'No AI provider configured. Add OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY to your environment.' },
+        { status: 503 },
+      );
+    }
+  } else {
+    // Default: anthropic
     if (!anthropicKey) {
       return NextResponse.json(
         { error: 'Missing ANTHROPIC_API_KEY. Add it to your environment to use Anthropic.' },
         { status: 503 },
       );
     }
-    providers = [{ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey, systemPrompt) }];
-  } else {
-    if (openaiKey) providers.push({ name: 'OpenAI', call: () => callOpenAI(message, openaiKey, systemPrompt) });
-    if (anthropicKey) providers.push({ name: 'Anthropic', call: () => callAnthropic(message, anthropicKey, systemPrompt) });
-
-    if (providers.length === 0) {
-      return NextResponse.json(
-        { error: 'No AI provider configured. Add OPENAI_API_KEY or ANTHROPIC_API_KEY to your environment.' },
-        { status: 503 },
-      );
-    }
+    providers = [{ name: 'Anthropic', call: () => callAnthropic(incomingMessages, anthropicKey, systemPrompt) }];
   }
 
   let lastError: ProviderError | null = null;
