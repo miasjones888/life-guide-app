@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { executeCalendarAction, executeEmailAction } from '@/app/actions/execute-action';
 
 type AssistantActionType = 'calendar_create' | 'calendar_update' | 'calendar_delete' | 'email_draft' | 'email_send' | 'plan_next_steps' | 'freeze_mode';
 
@@ -174,28 +175,23 @@ export default function AssistantPanel() {
       return next;
     });
 
-    const endpoint = EMAIL_ACTION_TYPES.includes(action.type) ? '/api/email' : '/api/calendar';
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    const writeSecret = process.env.NEXT_PUBLIC_WRITE_SECRET;
-    if (writeSecret) headers['x-write-secret'] = writeSecret;
-
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ type: action.type, payload: action.payload }),
-      });
-      const data = await response.json();
+      const result = EMAIL_ACTION_TYPES.includes(action.type)
+        ? await executeEmailAction(action.type as 'email_draft' | 'email_send', action.payload)
+        : await executeCalendarAction(
+            action.type as 'calendar_create' | 'calendar_update' | 'calendar_delete',
+            action.payload,
+          );
 
-      if (!response.ok) {
+      if (result.error) {
         setActionStatuses((prev: Record<string, ActionStatus>) => ({ ...prev, [key]: 'error' }));
-        setActionErrors((prev: Record<string, string>) => ({ ...prev, [key]: data.error ?? 'Action failed.' }));
+        setActionErrors((prev: Record<string, string>) => ({ ...prev, [key]: result.error! }));
       } else {
         setActionStatuses((prev: Record<string, ActionStatus>) => ({ ...prev, [key]: 'done' }));
       }
     } catch {
       setActionStatuses((prev: Record<string, ActionStatus>) => ({ ...prev, [key]: 'error' }));
-      setActionErrors((prev: Record<string, string>) => ({ ...prev, [key]: `Could not reach ${endpoint}.` }));
+      setActionErrors((prev: Record<string, string>) => ({ ...prev, [key]: 'Action failed. Please try again.' }));
     }
   }
 

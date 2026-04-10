@@ -13,7 +13,7 @@ interface EmailActionBody {
 }
 
 export async function POST(request: Request) {
-  const expectedSecret = process.env.NEXT_PUBLIC_WRITE_SECRET;
+  const expectedSecret = process.env.WRITE_SECRET;
   if (expectedSecret && request.headers.get('x-write-secret') !== expectedSecret) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
