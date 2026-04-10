@@ -13,6 +13,11 @@ interface EmailActionBody {
 }
 
 export async function POST(request: Request) {
+  const expectedSecret = process.env.NEXT_PUBLIC_WRITE_SECRET;
+  if (expectedSecret && request.headers.get('x-write-secret') !== expectedSecret) {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
+
   if (!isGoogleCalendarConfigured()) {
     return NextResponse.json(
       { error: 'Google credentials are not configured. Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_REFRESH_TOKEN to your environment.' },

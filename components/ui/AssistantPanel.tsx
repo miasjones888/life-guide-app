@@ -175,11 +175,14 @@ export default function AssistantPanel() {
     });
 
     const endpoint = EMAIL_ACTION_TYPES.includes(action.type) ? '/api/email' : '/api/calendar';
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const writeSecret = process.env.NEXT_PUBLIC_WRITE_SECRET;
+    if (writeSecret) headers['x-write-secret'] = writeSecret;
 
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ type: action.type, payload: action.payload }),
       });
       const data = await response.json();

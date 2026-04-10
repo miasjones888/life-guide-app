@@ -17,14 +17,20 @@ function toISO(date: string, time: string): string {
   return `${date}T${time}:00`;
 }
 
-function defaultEndTime(startTime: string): string {
-  // Default to 1 hour after start
-  const [h, m] = startTime.split(':').map(Number);
-  const endH = String((h + 1) % 24).padStart(2, '0');
-  return `${endH}:${String(m).padStart(2, '0')}`;
+function defaultEndISO(date: string, startTime: string): string {
+  const dt = new Date(`${date}T${startTime}:00`);
+  dt.setHours(dt.getHours() + 1);
+  const d = dt.toISOString().split('T')[0];
+  const t = `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
+  return `${d}T${t}:00`;
 }
 
 export async function POST(request: Request) {
+  const expectedSecret = process.env.NEXT_PUBLIC_WRITE_SECRET;
+  if (expectedSecret && request.headers.get('x-write-secret') !== expectedSecret) {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
+
   if (!isGoogleCalendarConfigured()) {
     return NextResponse.json(
       { error: 'Google Calendar is not configured. Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_REFRESH_TOKEN to your environment.' },
@@ -48,7 +54,7 @@ export async function POST(request: Request) {
 
       const calendarId = CALENDAR_NAME_TO_ID[calendarName] ?? CALENDAR_NAME_TO_ID['Events'];
       const start = toISO(date, startTime);
-      const end = toISO(date, endTime ?? defaultEndTime(startTime));
+      const end = endTime ? toISO(date, endTime) : defaultEndISO(date, startTime);
 
       const created = await createEvent(calendarId, title, start, end, description);
       return NextResponse.json({ success: true, eventId: created.id, htmlLink: created.htmlLink });

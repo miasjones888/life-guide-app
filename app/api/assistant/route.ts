@@ -193,7 +193,7 @@ Rules:
 - Never claim actions were executed; propose actions only.
 - Never add greetings or sign-offs to replies.
 - Preserve Mia's voice and exact phrasing if she provides copy to use.
-- When proposing a calendar_create or calendar_update, include "time", "title", "category", and "date" in the payload where known.`;
+- Calendar payload fields: calendarName, date (YYYY-MM-DD), startTime (HH:MM 24h), endTime (HH:MM 24h), title. For update/delete: eventId and calendarId (from schedule data above).`;
 
 async function buildSystemPrompt(): Promise<string> {
   let calendarSection: string;
