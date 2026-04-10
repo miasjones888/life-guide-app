@@ -4,24 +4,36 @@ import React, { useState } from 'react';
 import PageShell from '@/components/layout/PageShell';
 import WindowPanel from '@/components/ui/WindowPanel';
 import TimeBlock from '@/components/ui/TimeBlock';
+import AddEventSheet from '@/components/calendar/AddEventSheet';
 import { monthlyEvents, aprilOneTimeEvents, monthlyBudgetSteps } from '@/content/calendar';
 import { useLocalEvents } from '@/hooks/useLocalEvents';
 import type { CalendarCategory } from '@/content/types';
 
-const CATEGORIES: CalendarCategory[] = ['flamingo', 'banana', 'tomato', 'blueberry', 'basil', 'grape', 'tangerine', 'graphite', 'peacock', 'sage'];
+// Map CalendarCategory → CSS variable color
+const CATEGORY_COLORS: Record<CalendarCategory, string> = {
+  tomato: 'var(--color-tomato)',
+  grape: 'var(--color-grape)',
+  blueberry: 'var(--color-blueberry)',
+  basil: 'var(--color-basil)',
+  banana: 'var(--color-banana)',
+  flamingo: 'var(--color-flamingo)',
+  graphite: 'var(--color-graphite)',
+  tangerine: 'var(--color-tangerine)',
+  peacock: 'var(--color-peacock)',
+  sage: 'var(--color-sage)',
+};
+
+/** Parse an ISO date string (YYYY-MM-DD) as local time to avoid UTC offset issues. */
+function formatLocalDateLabel(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  const d = new Date(year, month - 1, day);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
+}
 
 export default function MonthlyPage() {
+  const [addOpen, setAddOpen] = useState(false);
   const { localEvents, addEvent, deleteEvent } = useLocalEvents();
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: '', date: '', time: '', category: 'flamingo' as CalendarCategory, note: '', isUrgent: false });
 
-  function handleAddEvent(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.title.trim() || !form.date) return;
-    addEvent({ title: form.title.trim(), date: form.date, time: form.time || undefined, category: form.category, note: form.note.trim() || undefined, isUrgent: form.isUrgent });
-    setForm({ title: '', date: '', time: '', category: 'flamingo', note: '', isUrgent: false });
-    setShowForm(false);
-  }
   const firstSundayEvents = monthlyEvents.filter(
     (e) => e.monthlyRule?.type === 'nth-weekday' && e.monthlyRule.weekday === 'sunday' && e.monthlyRule.nth === 1
   );
@@ -40,7 +52,19 @@ export default function MonthlyPage() {
     if (!aprilByDate[d]) aprilByDate[d] = [];
     aprilByDate[d].push(event);
   });
-  const sortedDates = Object.keys(aprilByDate).sort();
+
+  // User events grouped by date
+  const userByDate: Record<string, typeof localEvents> = {};
+  localEvents.forEach((event) => {
+    const d = event.date || 'unknown';
+    if (!userByDate[d]) userByDate[d] = [];
+    userByDate[d].push(event);
+  });
+
+  // Combined sorted dates
+  const allDates = Array.from(
+    new Set([...Object.keys(aprilByDate), ...Object.keys(userByDate)])
+  ).sort();
 
   return (
     <PageShell>
@@ -158,20 +182,46 @@ export default function MonthlyPage() {
         ))}
       </WindowPanel>
 
-      {/* April 2026 One-Time Events */}
-      <WindowPanel title="april 2026" style={{ marginBottom: '10px' }}>
-        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
-          One-time events. Dates with flags require action.
+      {/* One-Time Events (static + user-created) */}
+      <WindowPanel title="one-time events" style={{ marginBottom: '10px' }}>
+        <div
+          style={{
+            paddingBottom: '6px',
+            borderBottom: '1px solid var(--color-ink-ghost)',
+            marginBottom: '6px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <span className="text-micro text-ink-muted">Dates with flags require action.</span>
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            style={{
+              fontFamily: 'Courier New, monospace',
+              fontSize: '10px',
+              color: 'var(--color-forest)',
+              background: 'none',
+              border: '1px solid var(--color-forest)',
+              borderRadius: '2px',
+              padding: '3px 8px',
+              cursor: 'pointer',
+            }}
+          >
+            + add event
+          </button>
         </div>
-        {sortedDates.map((dateStr) => {
-          const events = aprilByDate[dateStr];
-          const dateObj = new Date(dateStr + 'T12:00:00');
-          const dateLabel = dateObj.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            weekday: 'short',
-          });
-          const hasUrgent = events.some((e) => e.isUrgent);
+
+        {allDates.length === 0 && (
+          <p className="text-body-sm text-ink-muted">No one-time events.</p>
+        )}
+
+        {allDates.map((dateStr) => {
+          const staticEvents = aprilByDate[dateStr] ?? [];
+          const customEvents = userByDate[dateStr] ?? [];
+          const dateLabel = formatLocalDateLabel(dateStr);
+          const hasUrgent = staticEvents.some((e) => e.isUrgent);
 
           return (
             <div key={dateStr} style={{ marginBottom: '8px' }}>
@@ -189,7 +239,8 @@ export default function MonthlyPage() {
                 <span>{dateLabel}</span>
                 {hasUrgent && <span style={{ color: 'var(--color-tangerine)' }}>flag</span>}
               </div>
-              {events.map((event) => (
+
+              {staticEvents.map((event) => (
                 <TimeBlock
                   key={event.id}
                   time={event.time}
@@ -199,90 +250,59 @@ export default function MonthlyPage() {
                   isUrgent={event.isUrgent}
                 />
               ))}
+
+              {customEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="time-block"
+                  style={{ borderLeft: `3px solid ${CATEGORY_COLORS[event.category]}`, paddingLeft: '10px' }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div
+                      className="text-body"
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}
+                    >
+                      {event.time && (
+                        <span className="time-label" style={{ marginRight: '4px' }}>{event.time}</span>
+                      )}
+                      <span>{event.title}</span>
+                      <span className="tag" style={{ borderColor: 'var(--color-ink-ghost)', color: 'var(--color-ink-muted)' }}>
+                        custom
+                      </span>
+                    </div>
+                    {event.note && (
+                      <div className="text-body-sm text-ink-muted">{event.note}</div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => deleteEvent(event.id)}
+                    aria-label={`Delete ${event.title}`}
+                    style={{
+                      fontFamily: 'Courier New, monospace',
+                      fontSize: '10px',
+                      color: 'var(--color-ink-ghost)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '2px 4px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
           );
         })}
       </WindowPanel>
 
-      {/* User-added events */}
-      <WindowPanel title="add event" style={{ marginBottom: '10px' }}>
-        <div className="text-micro text-ink-muted" style={{ paddingBottom: '6px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '6px' }}>
-          One-time events saved on this device. No redeploy needed.
-        </div>
-
-        {localEvents.length > 0 && (
-          <div style={{ marginBottom: '10px' }}>
-            {localEvents.sort((a, b) => (a.date ?? '') < (b.date ?? '') ? -1 : 1).map((ev) => (
-              <div key={ev.id} className="time-block" style={{ alignItems: 'center' }}>
-                <div style={{ flex: 1 }}>
-                  <div className="text-body-sm" style={{ fontWeight: 500 }}>{ev.title}</div>
-                  <div className="text-micro text-ink-muted">{ev.date}{ev.time ? ` · ${ev.time}` : ''}</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => deleteEvent(ev.id)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Courier New, monospace', fontSize: '11px', color: 'var(--color-ink-muted)', padding: '4px 8px', minHeight: '44px' }}
-                >
-                  remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {!showForm ? (
-          <button
-            type="button"
-            onClick={() => setShowForm(true)}
-            style={{ border: '1px solid var(--color-ink-ghost)', borderRadius: '2px', background: 'transparent', color: 'var(--color-ink-muted)', padding: '8px 14px', fontFamily: 'Courier New, monospace', fontSize: '12px', cursor: 'pointer', minHeight: '44px' }}
-          >
-            + Add event
-          </button>
-        ) : (
-          <form onSubmit={handleAddEvent} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {[
-              { label: 'title', type: 'text', key: 'title', placeholder: 'Event title', required: true },
-              { label: 'date', type: 'date', key: 'date', placeholder: '', required: true },
-              { label: 'time', type: 'time', key: 'time', placeholder: '', required: false },
-              { label: 'note', type: 'text', key: 'note', placeholder: 'Optional note', required: false },
-            ].map(({ label, type, key, placeholder, required }) => (
-              <div key={key}>
-                <div className="text-micro text-ink-muted" style={{ marginBottom: '4px' }}>{label}</div>
-                <input
-                  type={type}
-                  required={required}
-                  placeholder={placeholder}
-                  value={String((form as Record<string, unknown>)[key] ?? '')}
-                  onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                  style={{ width: '100%', backgroundColor: 'transparent', border: '1px solid var(--color-ink-ghost)', borderRadius: '2px', padding: '6px 8px', fontFamily: 'system-ui', fontSize: '14px', color: 'var(--color-ink)', outline: 'none' }}
-                />
-              </div>
-            ))}
-            <div>
-              <div className="text-micro text-ink-muted" style={{ marginBottom: '4px' }}>category</div>
-              <select
-                value={form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as CalendarCategory }))}
-                style={{ width: '100%', backgroundColor: 'var(--color-chrome)', border: '1px solid var(--color-ink-ghost)', borderRadius: '2px', padding: '6px 8px', fontFamily: 'Courier New, monospace', fontSize: '12px', color: 'var(--color-ink)', outline: 'none' }}
-              >
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', minHeight: '44px' }}>
-              <input type="checkbox" checked={form.isUrgent} onChange={(e) => setForm((f) => ({ ...f, isUrgent: e.target.checked }))} />
-              <span className="text-body-sm text-ink-muted">Mark as urgent</span>
-            </label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="submit" style={{ border: '1px solid var(--color-ink-ghost)', borderRadius: '2px', background: 'transparent', color: 'var(--color-ink)', padding: '8px 16px', fontFamily: 'Courier New, monospace', fontSize: '12px', cursor: 'pointer', minHeight: '44px' }}>
-                save event
-              </button>
-              <button type="button" onClick={() => setShowForm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Courier New, monospace', fontSize: '11px', color: 'var(--color-ink-muted)', padding: '8px', minHeight: '44px' }}>
-                cancel
-              </button>
-            </div>
-          </form>
-        )}
-      </WindowPanel>
+      <AddEventSheet
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onAdd={addEvent}
+      />
     </PageShell>
   );
 }

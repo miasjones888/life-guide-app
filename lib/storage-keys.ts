@@ -29,6 +29,9 @@ export const STORAGE_KEYS = {
   JOURNAL_ENTRIES: 'growth-journal',      // JournalEntry[]
   REFLECTION_SUMMARIES: 'growth-summaries', // ReflectionSummary[]
   COMMUNITY_SAVED: 'growth-community',    // CommunityEvent[]
+
+  // Calendar write-path
+  USER_EVENTS: 'life-guide-user-events',  // UserEvent[]
 } as const;
 
 export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS];
