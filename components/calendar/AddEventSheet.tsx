@@ -24,11 +24,18 @@ const CATEGORIES: { value: CalendarCategory; label: string; color: string }[] = 
   { value: 'graphite', label: 'cleaning', color: 'var(--color-graphite)' },
 ];
 
-const TODAY = new Date().toISOString().split('T')[0];
+/** Returns today's date as "YYYY-MM-DD" in the user's local timezone. */
+function getLocalDateString(): string {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 export default function AddEventSheet({ open, onClose, onAdd }: AddEventSheetProps) {
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState(TODAY);
+  const [date, setDate] = useState(getLocalDateString);
   const [time, setTime] = useState('');
   const [category, setCategory] = useState<CalendarCategory>('tangerine');
   const [note, setNote] = useState('');
@@ -37,7 +44,7 @@ export default function AddEventSheet({ open, onClose, onAdd }: AddEventSheetPro
   useEffect(() => {
     if (open) {
       setTitle('');
-      setDate(TODAY);
+      setDate(getLocalDateString());
       setTime('');
       setCategory('tangerine');
       setNote('');
@@ -80,7 +87,7 @@ export default function AddEventSheet({ open, onClose, onAdd }: AddEventSheetPro
             style={{
               position: 'fixed',
               inset: 0,
-              zIndex: 48,
+              zIndex: 110,
               backgroundColor: 'rgba(0,0,0,0.25)',
             }}
           />
@@ -96,7 +103,7 @@ export default function AddEventSheet({ open, onClose, onAdd }: AddEventSheetPro
               bottom: 0,
               left: 0,
               right: 0,
-              zIndex: 49,
+              zIndex: 111,
               backgroundColor: 'var(--color-paper)',
               borderTop: '1px solid var(--color-ink-ghost)',
               borderRadius: '4px 4px 0 0',
