@@ -11,6 +11,7 @@ interface TimeBlockProps {
   note?: string;
   isOptional?: boolean;
   isUrgent?: boolean;
+  isSafetyCritical?: boolean;
 }
 
 const categoryColorMap: Record<CalendarCategory, string> = {
@@ -49,44 +50,48 @@ export default function TimeBlock({
   note,
   isOptional,
   isUrgent,
+  isSafetyCritical,
 }: TimeBlockProps) {
-  const borderClass = categoryColorMap[category];
+  const borderClass = isSafetyCritical ? undefined : categoryColorMap[category];
+  const borderStyle = isSafetyCritical
+    ? { borderLeft: '3px solid var(--color-tomato)', paddingLeft: '10px' }
+    : { paddingLeft: '10px' };
 
   return (
-    <div className={`time-block`}>
-      {time && (
-        <div className="time-label">{time}</div>
-      )}
-      <div className={`time-block-content ${borderClass}`} style={{ paddingLeft: '10px' }}>
+    <div
+      className="time-block"
+      style={isSafetyCritical ? { backgroundColor: 'rgba(213,0,0,0.03)' } : undefined}
+    >
+      {time && <div className="time-label">{time}</div>}
+      <div className={`time-block-content${borderClass ? ` ${borderClass}` : ''}`} style={borderStyle}>
         <div className="flex items-start gap-2">
           <span className="text-body leading-snug flex-1">
             {emoji && <span className="mr-1">{emoji}</span>}
-            <span className={isNonNegotiable ? 'font-medium' : ''}>{title}</span>
-            {isOptional && (
-              <span className="text-micro text-ink-muted ml-2">(optional)</span>
-            )}
+            <span className={isNonNegotiable || isSafetyCritical ? 'font-medium' : ''}>{title}</span>
+            {isOptional && <span className="text-micro text-ink-muted ml-2">(optional)</span>}
           </span>
           <div className="flex items-center gap-1 flex-shrink-0">
-            {isNonNegotiable && (
+            {isSafetyCritical && (
               <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>
-                !!
+                critical
               </span>
+            )}
+            {isNonNegotiable && !isSafetyCritical && (
+              <span className="tag" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>!!</span>
             )}
             {doubleAlarm && (
               <span className="tag text-micro" style={{ borderColor: 'var(--color-tomato)', color: 'var(--color-tomato)' }}>
                 2x alarm
               </span>
             )}
-            {isUrgent && !isNonNegotiable && (
+            {isUrgent && !isNonNegotiable && !isSafetyCritical && (
               <span className="tag" style={{ borderColor: 'var(--color-tangerine)', color: 'var(--color-tangerine)' }}>
                 urgent
               </span>
             )}
           </div>
         </div>
-        {note && (
-          <p className="text-body-sm text-ink-muted mt-1 italic">{note}</p>
-        )}
+        {note && <p className="text-body-sm text-ink-muted mt-1 italic">{note}</p>}
       </div>
     </div>
   );
