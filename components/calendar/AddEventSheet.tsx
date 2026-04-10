@@ -3,12 +3,19 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CalendarCategory } from '@/content/types';
-import type { UserEvent } from '@/hooks/useUserEvents';
+
+interface AddEventDraft {
+  title: string;
+  date: string;
+  time?: string;
+  category: CalendarCategory;
+  note?: string;
+}
 
 interface AddEventSheetProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (draft: Omit<UserEvent, 'id' | 'createdAt'>) => void;
+  onAdd: (draft: AddEventDraft) => void;
 }
 
 const CATEGORIES: { value: CalendarCategory; label: string; color: string }[] = [

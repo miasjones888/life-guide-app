@@ -167,6 +167,34 @@ export function useFolderSystem() {
 
   const flaggedNotes = notes.filter((n) => n.isFlagged);
 
+  const exportData = useCallback((): string => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) ?? JSON.stringify({ version: STORAGE_VERSION, notes });
+    } catch {
+      return JSON.stringify({ version: STORAGE_VERSION, notes });
+    }
+  }, [notes]);
+
+  const importData = useCallback((json: string): { ok: boolean; error?: string } => {
+    try {
+      const parsed = JSON.parse(json) as unknown;
+      if (
+        !parsed ||
+        typeof parsed !== 'object' ||
+        !('notes' in parsed) ||
+        !Array.isArray((parsed as StoredFolders).notes)
+      ) {
+        return { ok: false, error: 'Invalid folder data format.' };
+      }
+      const imported = parseStored(json);
+      setNotes(imported);
+      persist(imported);
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Could not parse folder data.' };
+    }
+  }, []);
+
   return {
     notes,
     addNote,
@@ -176,5 +204,7 @@ export function useFolderSystem() {
     notesForFolder,
     notesByFormat,
     flaggedNotes,
+    exportData,
+    importData,
   };
 }

@@ -27,6 +27,10 @@ export type DayOfWeek =
   | 'saturday'
   | 'sunday';
 
+export type Criticality = 'safety-critical' | 'high' | 'normal';
+export type CapacityLevel = 'all' | 'low-capacity-only' | 'full-capacity-only';
+export type TimeSensitivity = 'fixed' | 'flexible';
+
 export interface CalendarEvent {
   id: string;
   time?: string; // "7:30am", "9:00pm", etc.
@@ -44,6 +48,11 @@ export interface CalendarEvent {
   date?: string; // for one-time events
   isUrgent?: boolean;
   isOptional?: boolean;
+  // Capacity-aware metadata
+  criticality?: Criticality;
+  capacityLevel?: CapacityLevel;
+  hardDayMinimum?: boolean;
+  timeSensitivity?: TimeSensitivity;
 }
 
 export interface MonthlyRule {
@@ -99,6 +108,8 @@ export interface FinanceItem {
   note: string;
   isUrgent?: boolean;
   action?: string;
+  criticality?: Criticality;
+  hardDate?: string; // ISO date of hard deadline
 }
 
 export interface MonthlyBudgetStep {
@@ -240,6 +251,23 @@ export interface CommunityEvent {
   url?: string;
   note?: string;
   saved: boolean;
+}
+
+// ── Wishlist (TikTok-sourced + manual) ───────────────────────────
+
+export type WishlistCategory = 'want' | 'experience' | 'movie' | 'show' | 'book' | 'other';
+
+export interface WishlistItem {
+  id: string;
+  title: string;
+  url?: string;
+  thumbnail?: string;
+  author?: string;         // TikTok creator handle or manual source
+  category: WishlistCategory;
+  addedAt: string;         // ISO date
+  done: boolean;
+  note?: string;
+  source: 'tiktok' | 'manual';
 }
 
 // ── Integrations ─────────────────────────────────────────────────

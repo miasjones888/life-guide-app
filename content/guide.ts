@@ -159,6 +159,7 @@ export const financeUrgentItems: FinanceItem[] = [
     note: 'Resolve now',
     isUrgent: true,
     action: 'Log in and update payment method',
+    criticality: 'safety-critical',
   },
   {
     title: 'Shop Pay — Tao of Clay',
@@ -166,18 +167,22 @@ export const financeUrgentItems: FinanceItem[] = [
     note: 'Pay with different card NOW',
     isUrgent: true,
     action: 'Use alternative card immediately',
+    criticality: 'safety-critical',
   },
   {
     title: 'Taxes',
     note: 'April 15 deadline — file by April 10',
     isUrgent: true,
     action: 'FILE TAXES',
+    criticality: 'safety-critical',
+    hardDate: '2026-04-15',
   },
   {
     title: 'Capital One Double Charge',
     note: '$10 from ANTHROPIC x2 on Venture X 6457 — verify and dispute if needed',
     isUrgent: true,
     action: 'Log in to Capital One and check Apr 1–2',
+    criticality: 'high',
   },
 ];
 
@@ -384,3 +389,39 @@ export const routinesSection = {
     },
   },
 };
+
+// ─── Emergency grounding + changelog (from main) ──────────────────────────────
+
+export const groundingPhrases: string[] = [
+  'Right now, you are safe.',
+  'This is temporary.',
+  'One thing at a time. One step at a time.',
+  'You have what you need to get through this moment.',
+  verbatimCopy.nonNegotiable,
+  verbatimCopy.writtenDown,
+];
+
+export const groundingBreathing = {
+  label: 'Box breathing',
+  steps: ['Breathe in — 4 counts', 'Hold — 4 counts', 'Breathe out — 4 counts', 'Hold — 4 counts'],
+  note: 'Repeat 3–4 times. You do not have to do all four. Even one cycle counts.',
+};
+
+export interface ChangeLogEntry {
+  date: string;
+  version: string;
+  summary: string;
+}
+
+export const changeLog: ChangeLogEntry[] = [
+  {
+    date: '2026-04-07',
+    version: 'v1.1',
+    summary: 'Added §05–10 guide sections (Body, Home, Health, System, Routines, Rhythm). Added Hard Day Mode, Now/Next/Later strip, Emergency Grounding Card, safety-critical visual layer, collapsible AI panel, Quick Capture widget, calendar event form, change log, If/Then rescue prompts, desktop sidebar nav, data export/import for all stores.',
+  },
+  {
+    date: '2026-04-01',
+    version: 'v1.0',
+    summary: 'Initial build: Today view, §01–04 (Priorities, Finance, Care, Field), weekly/daily/monthly rhythm views, budget planner, folder system, flashcard deck, reflection journaling, AI assistant (multi-provider).',
+  },
+];

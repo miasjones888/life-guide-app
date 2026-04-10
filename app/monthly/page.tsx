@@ -6,7 +6,7 @@ import WindowPanel from '@/components/ui/WindowPanel';
 import TimeBlock from '@/components/ui/TimeBlock';
 import AddEventSheet from '@/components/calendar/AddEventSheet';
 import { monthlyEvents, aprilOneTimeEvents, monthlyBudgetSteps } from '@/content/calendar';
-import { useUserEvents } from '@/hooks/useUserEvents';
+import { useLocalEvents } from '@/hooks/useLocalEvents';
 import type { CalendarCategory } from '@/content/types';
 
 // Map CalendarCategory → CSS variable color
@@ -23,9 +23,16 @@ const CATEGORY_COLORS: Record<CalendarCategory, string> = {
   sage: 'var(--color-sage)',
 };
 
+/** Parse an ISO date string (YYYY-MM-DD) as local time to avoid UTC offset issues. */
+function formatLocalDateLabel(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  const d = new Date(year, month - 1, day);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
+}
+
 export default function MonthlyPage() {
   const [addOpen, setAddOpen] = useState(false);
-  const { events: userEvents, addEvent, deleteEvent } = useUserEvents();
+  const { localEvents, addEvent, deleteEvent } = useLocalEvents();
 
   const firstSundayEvents = monthlyEvents.filter(
     (e) => e.monthlyRule?.type === 'nth-weekday' && e.monthlyRule.weekday === 'sunday' && e.monthlyRule.nth === 1
@@ -46,15 +53,15 @@ export default function MonthlyPage() {
     aprilByDate[d].push(event);
   });
 
-  // User events grouped by date (merged alongside april events)
-  const userByDate: Record<string, typeof userEvents> = {};
-  userEvents.forEach((event) => {
+  // User events grouped by date
+  const userByDate: Record<string, typeof localEvents> = {};
+  localEvents.forEach((event) => {
     const d = event.date || 'unknown';
     if (!userByDate[d]) userByDate[d] = [];
     userByDate[d].push(event);
   });
 
-  // Combined sorted dates from both static april events and user events
+  // Combined sorted dates
   const allDates = Array.from(
     new Set([...Object.keys(aprilByDate), ...Object.keys(userByDate)])
   ).sort();
@@ -213,12 +220,7 @@ export default function MonthlyPage() {
         {allDates.map((dateStr) => {
           const staticEvents = aprilByDate[dateStr] ?? [];
           const customEvents = userByDate[dateStr] ?? [];
-          const dateObj = new Date(dateStr + 'T12:00:00');
-          const dateLabel = dateObj.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            weekday: 'short',
-          });
+          const dateLabel = formatLocalDateLabel(dateStr);
           const hasUrgent = staticEvents.some((e) => e.isUrgent);
 
           return (
@@ -264,10 +266,7 @@ export default function MonthlyPage() {
                         <span className="time-label" style={{ marginRight: '4px' }}>{event.time}</span>
                       )}
                       <span>{event.title}</span>
-                      <span
-                        className="tag"
-                        style={{ borderColor: 'var(--color-ink-ghost)', color: 'var(--color-ink-muted)' }}
-                      >
+                      <span className="tag" style={{ borderColor: 'var(--color-ink-ghost)', color: 'var(--color-ink-muted)' }}>
                         custom
                       </span>
                     </div>

@@ -183,6 +183,29 @@ export function useBudget() {
     };
   }, [state]);
 
+  const exportData = useCallback((): string => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) ?? JSON.stringify({ version: STORAGE_VERSION, state });
+    } catch {
+      return JSON.stringify({ version: STORAGE_VERSION, state });
+    }
+  }, [state]);
+
+  const importData = useCallback((json: string): { ok: boolean; error?: string } => {
+    try {
+      const parsed = JSON.parse(json) as unknown;
+      if (!parsed || typeof parsed !== 'object') return { ok: false, error: 'Invalid format.' };
+      const { state: imported } = parsed as StoredBudgetV1;
+      if (!imported || !Array.isArray(imported.lines)) return { ok: false, error: 'Missing budget lines.' };
+      const next = parseBudgetState(json);
+      setState(next);
+      persist(next);
+      return { ok: true };
+    } catch {
+      return { ok: false, error: 'Could not parse budget data.' };
+    }
+  }, [persist]);
+
   return {
     state,
     calculations,
@@ -191,5 +214,7 @@ export function useBudget() {
     setMonthOverride,
     clearMonthOverride,
     updateGoal,
+    exportData,
+    importData,
   };
 }
