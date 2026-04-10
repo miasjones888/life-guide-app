@@ -11,6 +11,7 @@ Three Claude agents to register via `/schedule` when the claude.ai connection is
 ### Prompt
 
 ```
+Read /home/user/life-guide-app/docs/manifesto.md for tone, philosophy, and verbatim copy rules.
 Read /home/user/life-guide-app/content/calendar.ts and /home/user/life-guide-app/content/guide.ts.
 
 Compute today's date and determine:
@@ -69,6 +70,7 @@ Tone: spare, warm, non-compliance. Personal field guide entry, not a productivit
 ### Prompt
 
 ```
+Read /home/user/life-guide-app/docs/manifesto.md for tone, philosophy, and verbatim copy rules.
 Read /home/user/life-guide-app/content/calendar.ts and /home/user/life-guide-app/content/guide.ts.
 
 Today is Sunday. Compute today's date.
@@ -145,6 +147,7 @@ Tone: spare, warm, non-compliance. Reads like a weekly field guide briefing. No 
 ### Prompt
 
 ```
+Read /home/user/life-guide-app/docs/manifesto.md for tone, philosophy, and verbatim copy rules.
 Read /home/user/life-guide-app/content/calendar.ts and /home/user/life-guide-app/content/guide.ts.
 
 Today is the 1st of the month. Compute today's date and determine: month name (e.g. "may"), year (e.g. "2026"), number of days in this month.
