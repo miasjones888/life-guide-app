@@ -307,6 +307,52 @@ textarea::placeholder {
   border-top: 1px solid var(--color-ink-ghost);
 }
 
+/* ─── Desktop Layout (768px+) ───────────────────────────────────── */
+
+.desktop-layout {
+  display: flex;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: 100dvh;
+}
+
+.side-nav {
+  display: none;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 640px;
+  margin: 0 auto;
+  padding-bottom: 56px; /* space for bottom nav on mobile */
+}
+
+@media (min-width: 768px) {
+  .side-nav {
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--color-ink-ghost);
+    background: var(--color-chrome);
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .main-content {
+    margin: 0;
+    padding-bottom: 24px; /* no bottom nav on desktop */
+  }
+
+  /* Hide bottom nav on desktop */
+  .bottom-nav {
+    display: none;
+  }
+}
+
 /* ─── Folder System ──────────────────────────────────────────────── */
 
 /* Slot indicator circles (◉ ◉ ◉) */

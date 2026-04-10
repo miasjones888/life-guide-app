@@ -26,6 +26,9 @@ export const dailyEvents: CalendarEvent[] = [
     isNonNegotiable: true,
     doubleAlarm: true,
     recurrence: 'daily',
+    criticality: 'safety-critical',
+    hardDayMinimum: true,
+    timeSensitivity: 'fixed',
   },
   {
     id: 'breakfast',
@@ -34,6 +37,9 @@ export const dailyEvents: CalendarEvent[] = [
     emoji: '🍳',
     category: 'banana',
     recurrence: 'daily',
+    criticality: 'high',
+    hardDayMinimum: true,
+    timeSensitivity: 'flexible',
   },
   {
     id: 'am-cat-playtime',
@@ -93,6 +99,9 @@ export const dailyEvents: CalendarEvent[] = [
     isNonNegotiable: true,
     doubleAlarm: true,
     recurrence: 'daily',
+    criticality: 'safety-critical',
+    hardDayMinimum: true,
+    timeSensitivity: 'fixed',
   },
   {
     id: 'bedtime-meds',
@@ -104,6 +113,9 @@ export const dailyEvents: CalendarEvent[] = [
     doubleAlarm: true,
     recurrence: 'daily',
     note: 'On a hard day: just those two. Done.',
+    criticality: 'safety-critical',
+    hardDayMinimum: true,
+    timeSensitivity: 'fixed',
   },
   {
     id: 'night-skincare',

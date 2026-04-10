@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { HardDayProvider } from '@/context/HardDayContext';
 
 export const metadata: Metadata = {
   title: 'Field Guide to Yourself',
@@ -40,7 +41,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className="bg-chrome min-h-screen">
-        {children}
+        <HardDayProvider>
+          {children}
+        </HardDayProvider>
       </body>
     </html>
   );

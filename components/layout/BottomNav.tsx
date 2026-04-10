@@ -19,6 +19,7 @@ const moreItems = [
   { href: '/budget', label: 'budget' },
   { href: '/culture', label: 'culture' },
   { href: '/growth', label: 'life navigation' },
+  { href: '/backup', label: 'backup & restore' },
 ];
 
 const moreHrefs = moreItems.map((i) => i.href);
@@ -98,8 +99,9 @@ export default function BottomNav() {
         </>
       )}
 
-      {/* Nav bar */}
+      {/* Nav bar — hidden on desktop via CSS */}
       <nav
+        className="bottom-nav"
         style={{
           position: 'fixed',
           bottom: 0,
