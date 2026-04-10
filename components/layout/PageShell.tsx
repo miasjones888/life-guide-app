@@ -4,7 +4,10 @@ import React, { useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import BottomNav from './BottomNav';
+import SideNav from './SideNav';
 import { systemVersionNote } from '@/content/guide';
+import { useHardDay } from '@/context/HardDayContext';
+import QuickCapture from '@/components/ui/QuickCapture';
 
 // Primary tab order for swipe navigation
 const PRIMARY_TABS = ['/', '/guide', '/weekly'];
@@ -16,6 +19,7 @@ interface PageShellProps {
 export default function PageShell({ children }: PageShellProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { isHardDay, toggle: toggleHardDay } = useHardDay();
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
@@ -60,28 +64,63 @@ export default function PageShell({ children }: PageShellProps) {
     <div
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      style={{
-        minHeight: '100dvh',
-        backgroundColor: 'var(--color-chrome)',
-        paddingBottom: '56px',
-      }}
+      style={{ minHeight: '100dvh', backgroundColor: 'var(--color-chrome)' }}
     >
-      <motion.main
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
-        style={{
-          maxWidth: '640px',
-          margin: '0 auto',
-          padding: '8px',
-          paddingBottom: '0',
-        }}
-      >
-        {children}
-        <footer className="version-footer" style={{ marginTop: '16px' }}>
-          {systemVersionNote}
-        </footer>
-      </motion.main>
+      {/* Hard Day Mode banner */}
+      {isHardDay && (
+        <div
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 90,
+            backgroundColor: 'var(--color-paper)',
+            borderBottom: '1px solid var(--color-ink-ghost)',
+            padding: '6px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span className="text-micro text-ink-muted" style={{ fontStyle: 'italic' }}>
+            Hard day mode — minimum view active. You only need to do the minimum. That is enough.
+          </span>
+          <button
+            type="button"
+            onClick={toggleHardDay}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'Courier New, monospace',
+              fontSize: '11px',
+              color: 'var(--color-ink-muted)',
+              padding: '4px 6px',
+              minHeight: '44px',
+            }}
+          >
+            clear
+          </button>
+        </div>
+      )}
+
+      {/* Desktop layout wrapper */}
+      <div className="desktop-layout">
+        <SideNav />
+        <motion.main
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.08, ease: 'easeOut' }}
+          className="main-content"
+          style={{ padding: '8px', paddingBottom: '0' }}
+        >
+          {children}
+          <footer className="version-footer" style={{ marginTop: '16px' }}>
+            {systemVersionNote}
+          </footer>
+        </motion.main>
+      </div>
+
+      <QuickCapture />
       <BottomNav />
     </div>
   );

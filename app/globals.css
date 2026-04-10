@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Inter:wght@400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,7 +45,7 @@ body {
     radial-gradient(ellipse at 15% 95%, rgba(74,94,58,0.06) 0%, transparent 55%),
     radial-gradient(ellipse at 88% 8%, rgba(74,94,58,0.04) 0%, transparent 45%);
   color: var(--color-ink);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -56,50 +54,50 @@ body {
 
 /* Typography */
 .font-mono {
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-family: 'Courier New', monospace;
 }
 
 .font-sans {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 .text-display {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 40px;
   line-height: 1.1;
   font-weight: 400;
 }
 
 .text-h1 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: Georgia, 'Times New Roman', serif;
   font-size: 24px;
   line-height: 1.2;
   font-weight: 700;
 }
 
 .text-h2 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: Georgia, 'Times New Roman', serif;
   font-size: 16px;
   line-height: 1.3;
   font-weight: 400;
 }
 
 .text-body {
-  font-family: 'Inter', sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   font-weight: 400;
 }
 
 .text-body-sm {
-  font-family: 'Inter', sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
   font-size: 13px;
   line-height: 1.4;
   font-weight: 400;
 }
 
 .text-micro {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 11px;
   line-height: 1.3;
   font-weight: 400;
@@ -118,7 +116,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 11px;
   border-bottom: 1px solid var(--color-ink-ghost);
   user-select: none;
@@ -138,7 +136,7 @@ body {
   height: 14px;
   background: var(--color-status-bar);
   border-top: 1px solid var(--color-ink-ghost);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 11px;
   display: flex;
   align-items: center;
@@ -173,16 +171,9 @@ body {
   align-items: center;
 }
 
-/* Urgent callout — system dialog register */
+/* System dialog — neutral register for info/reference blocks, urgency callouts */
+.system-dialog,
 .urgent-callout {
-  border: 1px solid #BBBBBB;
-  background: var(--color-paper);
-  border-radius: 2px;
-  padding: 12px;
-}
-
-/* System dialog — neutral register for info/reference blocks */
-.system-dialog {
   border: 1px solid #BBBBBB;
   background: var(--color-paper);
   border-radius: 2px;
@@ -220,7 +211,7 @@ hr.hairline {
 }
 
 .time-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 11px;
   color: var(--color-ink-muted);
   min-width: 52px;
@@ -243,7 +234,7 @@ hr.hairline {
 }
 
 .priority-number {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 11px;
   color: var(--color-ink-muted);
   min-width: 20px;
@@ -254,7 +245,7 @@ hr.hairline {
 .tag {
   display: inline-flex;
   align-items: center;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 10px;
   padding: 2px 6px;
   border: 1px solid var(--color-ink-ghost);
@@ -308,10 +299,167 @@ textarea::placeholder {
 
 /* Version footer */
 .version-footer {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 10px;
   color: var(--color-ink-muted);
   text-align: center;
   padding: 12px;
   border-top: 1px solid var(--color-ink-ghost);
+}
+
+/* ─── Desktop Layout (768px+) ───────────────────────────────────── */
+
+.desktop-layout {
+  display: flex;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: 100dvh;
+}
+
+.side-nav {
+  display: none;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 640px;
+  margin: 0 auto;
+  padding-bottom: 56px; /* space for bottom nav on mobile */
+}
+
+@media (min-width: 768px) {
+  .side-nav {
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--color-ink-ghost);
+    background: var(--color-chrome);
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .main-content {
+    margin: 0;
+    padding-bottom: 24px; /* no bottom nav on desktop */
+  }
+
+  /* Hide bottom nav on desktop */
+  .bottom-nav {
+    display: none;
+  }
+}
+
+/* ─── Folder System ──────────────────────────────────────────────── */
+
+/* Slot indicator circles (◉ ◉ ◉) */
+.slot-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+}
+.slot-dot-filled {
+  background-color: currentColor;
+}
+
+/* Folder tab strip */
+.folder-tab {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: #fff;
+  padding: 0 10px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 2px 2px 0 0;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Physical notecard */
+.notecard {
+  background: var(--color-paper);
+  border: 1px solid rgba(26, 25, 23, 0.18);
+  border-radius: 2px;
+  padding: 14px;
+  position: relative;
+}
+
+.notecard-front,
+.notecard-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 2px;
+  padding: 14px;
+  background: var(--color-paper);
+  border: 1px solid rgba(26, 25, 23, 0.18);
+}
+
+.notecard-back {
+  transform: rotateY(180deg);
+}
+
+/* Card stack wrapper — gives room for depth layers */
+.notecard-stack-wrapper {
+  position: relative;
+  perspective: 1000px;
+}
+
+/* Format tag pill */
+.format-tag {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  opacity: 0.9;
+}
+
+/* Capture stack fan layers */
+.capture-fan-layer {
+  position: absolute;
+  inset: 0;
+  background: var(--color-paper);
+  border: 1px solid rgba(26, 25, 23, 0.15);
+  border-radius: 2px;
+}
+
+/* Add sheet overlay backdrop */
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 25, 23, 0.25);
+  z-index: 40;
+}
+
+/* Move-to-folder selector inside card back */
+.folder-chip {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid rgba(26, 25, 23, 0.25);
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+.folder-chip:hover {
+  background: var(--color-ink-ghost);
+}
+.folder-chip-active {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
 }

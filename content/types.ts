@@ -27,6 +27,10 @@ export type DayOfWeek =
   | 'saturday'
   | 'sunday';
 
+export type Criticality = 'safety-critical' | 'high' | 'normal';
+export type CapacityLevel = 'all' | 'low-capacity-only' | 'full-capacity-only';
+export type TimeSensitivity = 'fixed' | 'flexible';
+
 export interface CalendarEvent {
   id: string;
   time?: string; // "7:30am", "9:00pm", etc.
@@ -44,6 +48,11 @@ export interface CalendarEvent {
   date?: string; // for one-time events
   isUrgent?: boolean;
   isOptional?: boolean;
+  // Capacity-aware metadata
+  criticality?: Criticality;
+  capacityLevel?: CapacityLevel;
+  hardDayMinimum?: boolean;
+  timeSensitivity?: TimeSensitivity;
 }
 
 export interface MonthlyRule {
@@ -99,6 +108,8 @@ export interface FinanceItem {
   note: string;
   isUrgent?: boolean;
   action?: string;
+  criticality?: Criticality;
+  hardDate?: string; // ISO date of hard deadline
 }
 
 export interface MonthlyBudgetStep {
@@ -115,6 +126,48 @@ export interface FlashCard {
   note?: string;
   updatedAt?: string; // ISO date string
   isFlagged?: boolean;
+}
+
+// ─── Budget ────────────────────────────────────────────────────────────────
+
+export type BudgetCategory =
+  | 'income'
+  | 'housing'
+  | 'food'
+  | 'pets'
+  | 'health'
+  | 'subscriptions'
+  | 'transport'
+  | 'misc';
+
+export interface BudgetLine {
+  id: string;
+  label: string;
+  category: BudgetCategory;
+  /** Always positive. Direction inferred from category === 'income'. */
+  amount: number;
+  isFixed: boolean;        // false = variable; drives §02 vs §03 placement
+  isSubscription: boolean; // true = also appears in §04 subscription audit
+  note?: string;
+}
+
+export interface MonthOverride {
+  id: string;    // matches BudgetLine.id
+  month: string; // "2026-04", "2026-05", etc.
+  amount: number;
+}
+
+export interface BudgetGoal {
+  id: string;
+  label: string;
+  targetAmount?: number;
+  note?: string;
+}
+
+export interface BudgetState {
+  lines: BudgetLine[];
+  overrides: MonthOverride[];
+  goals: BudgetGoal[];
 }
 
 // ── Cultural Discovery ──────────────────────────────────────────
@@ -200,6 +253,23 @@ export interface CommunityEvent {
   saved: boolean;
 }
 
+// ── Wishlist (TikTok-sourced + manual) ───────────────────────────
+
+export type WishlistCategory = 'want' | 'experience' | 'movie' | 'show' | 'book' | 'other';
+
+export interface WishlistItem {
+  id: string;
+  title: string;
+  url?: string;
+  thumbnail?: string;
+  author?: string;         // TikTok creator handle or manual source
+  category: WishlistCategory;
+  addedAt: string;         // ISO date
+  done: boolean;
+  note?: string;
+  source: 'tiktok' | 'manual';
+}
+
 // ── Integrations ─────────────────────────────────────────────────
 
 export type IntegrationService =
@@ -222,4 +292,24 @@ export interface IntegrationConfig {
   label: string;
   status: IntegrationStatus;
   description: string;      // what this integration enables
+}
+
+// ── Folder System ─────────────────────────────────────────────────
+
+export type NotecardFormat = 'fragment' | 'question' | 'reference' | 'map' | 'research';
+
+export type FolderId = 'portfolio' | 'field-guide' | 'curriculum' | 'capture' | 'archive';
+
+export interface FolderNote {
+  id: string;
+  folderId: FolderId;
+  format: NotecardFormat;
+  content: string;
+  title?: string;
+  url?: string;
+  source?: string;
+  imageUrl?: string;
+  createdAt: string;
+  updatedAt?: string;
+  isFlagged?: boolean;
 }

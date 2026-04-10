@@ -2,10 +2,23 @@
 // Add new keys here before using them in hooks or components.
 
 export const STORAGE_KEYS = {
-  // Existing
+  // Core data stores
   DECK: 'life-guide-deck',
   REFLECTION: 'reflection-text',
   ANCHOR_TASK: 'anchor-task',
+  BUDGET: 'life-guide-budget',
+  FOLDERS: 'life-guide-folders',
+
+  // UI state
+  HARD_DAY_MODE: 'hard-day-mode',
+  ASSISTANT_HISTORY: 'assistant-history',
+  ASSISTANT_PROVIDER: 'assistant-provider',
+
+  // Local calendar events (Phase 2 - user-added events)
+  LOCAL_EVENTS: 'local-calendar-events',
+
+  // Wishlist
+  WISHLIST: 'life-guide-wishlist',           // WishlistItem[]
 
   // Cultural Discovery (future)
   MEDIA_LOG: 'culture-media-log',         // MediaItem[]

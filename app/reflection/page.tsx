@@ -80,7 +80,7 @@ export default function ReflectionPage() {
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'Courier New, monospace',
               fontSize: '11px',
               color: 'var(--color-ink-muted)',
               padding: '4px 0',

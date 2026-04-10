@@ -6,17 +6,7 @@ import WindowPanel from '@/components/ui/WindowPanel';
 import TimeBlock from '@/components/ui/TimeBlock';
 import { dailyEvents, everyTwoDaysEvents } from '@/content/calendar';
 import { modularNote, verbatimCopy, priorities } from '@/content/guide';
-
-function parseTime(t: string): number {
-  const m = t.match(/^(\d+):(\d+)(am|pm)$/i);
-  if (!m) return 0;
-  let h = parseInt(m[1]);
-  const min = parseInt(m[2]);
-  const mer = m[3].toLowerCase();
-  if (mer === 'pm' && h !== 12) h += 12;
-  if (mer === 'am' && h === 12) h = 0;
-  return h * 60 + min;
-}
+import { parseEventTime as parseTime } from '@/lib/time';
 
 export default function DailyPage() {
   const [anchorMode, setAnchorMode] = useState(false);
@@ -61,7 +51,7 @@ export default function DailyPage() {
           onClick={() => setAnchorMode((v) => !v)}
           style={{
             marginTop: '4px',
-            fontFamily: 'JetBrains Mono, monospace',
+            fontFamily: 'Courier New, monospace',
             fontSize: '10px',
             padding: '4px 10px',
             border: '1px solid',
@@ -91,7 +81,7 @@ export default function DailyPage() {
               <div key={e.id} style={{ display: 'flex', gap: '10px', padding: '4px 0' }}>
                 <span
                   className="text-micro text-ink-muted"
-                  style={{ fontFamily: 'JetBrains Mono, monospace', minWidth: '52px' }}
+                  style={{ fontFamily: 'Courier New, monospace', minWidth: '52px' }}
                 >
                   {e.time}
                 </span>

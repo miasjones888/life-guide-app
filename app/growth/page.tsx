@@ -14,22 +14,11 @@ export default function GrowthPage() {
 
       <hr className="hairline" style={{ margin: '10px 0' }} />
 
-      <WindowPanel title="Community Discovery" statusText="coming soon">
-        <p className="text-body-sm text-ink-muted">
-          Events, salons, creative meetups, and volunteer opportunities near you.
-        </p>
-      </WindowPanel>
-
-      <WindowPanel title="Philosophy & Reflection" statusText="coming soon" style={{ marginTop: '12px' }}>
-        <p className="text-body-sm text-ink-muted">
-          Prompts on meaning, ethics, creativity, and nature.
-        </p>
-      </WindowPanel>
-
-      <WindowPanel title="Journaling Catalyst" statusText="coming soon" style={{ marginTop: '12px' }}>
-        <p className="text-body-sm text-ink-muted">
-          Writing prompts and periodic reflection summaries.
-        </p>
+      <WindowPanel title="life navigation">
+        <div className="system-dialog">
+          <p className="text-body-sm">This section is not yet built.</p>
+          <p className="text-body-sm text-ink-muted" style={{ marginTop: '4px' }}>Coming in Phase 2.</p>
+        </div>
       </WindowPanel>
     </PageShell>
   );
