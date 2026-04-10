@@ -17,6 +17,9 @@ export const STORAGE_KEYS = {
   // Local calendar events (Phase 2 - user-added events)
   LOCAL_EVENTS: 'local-calendar-events',
 
+  // Wishlist
+  WISHLIST: 'life-guide-wishlist',           // WishlistItem[]
+
   // Cultural Discovery (future)
   MEDIA_LOG: 'culture-media-log',         // MediaItem[]
   ART_HISTORY: 'culture-art-history',     // ArtworkEntry[]
