@@ -81,3 +81,25 @@ The underlying principle: it should feel like a second brain that respects how y
 **A "suggested next action" generated without your input.** AI-generated task suggestions, smart recommendations, nudges about what you should work on — all of this is the app pretending to understand your priorities better than you do. It doesn't. Its job is to hold what you've decided, not to generate new decisions.
 
 The meta-redline underneath all of these: if you ever find yourself doing work for the app rather than the app doing work for you — feeding it data to keep it accurate, maintaining its structure, managing its categories — the whole thing needs to be stripped back to the minimum that actually helps.
+
+---
+
+## Apps and Systems This App Must Be the Opposite Of
+
+**Notion.** Infinite flexibility means infinite setup cost. You can build anything in Notion, which means you will spend significant time building Notion instead of doing work. The blank canvas is an initiation problem dressed up as a feature. Every Notion workspace eventually becomes a monument to a system someone designed and then stopped using. Notion has no opinion about what matters. It holds everything with equal weight, which means you have to bring all the hierarchy yourself, every time.
+
+**Todoist / Any Pure Task Manager.** Reduces everything to a flat list of undone things. The entire visual language is incompleteness — everything on screen is something you haven't done yet. For someone with depression, opening a task manager means opening a list of your own failures to act. Recurring tasks that roll over create an infinite visible backlog of the same undone things. The whole model assumes linear execution of discrete tasks, which maps to almost nothing in your actual creative and intellectual work.
+
+**Habitica.** Gamification taken to its logical extreme. Your life as an RPG: tasks give XP, missing them damages your character, streaks build power. Every low-output period — every depressive episode, every week where initiating is genuinely impossible — is represented as your character getting hurt. The game punishes you for being sick.
+
+**Linear / Jira.** Built for software teams running sprints. The entire model is: work is a series of tickets moving through defined states toward a release. Velocity is tracked. Cycles are time-boxed. Everything has an assignee, a status, a priority. The sprint model is hostile to the way creative projects actually move — nonlinearly, with periods of apparent stasis that are actually gestation, with outputs that can't always be predicted at the start of a two-week window.
+
+**Trello.** The kanban board as life management. Makes everything look like it's the same kind of thing at the same stage of the same kind of process. The visual metaphor is a factory floor: inputs come in, get processed, come out the other side. Creative and intellectual work doesn't move that way. Everything in "Doing" for too long starts to look like failure.
+
+**Asana.** Todoist with more bureaucracy. The workload view is a direct anxiety generator when you're the only person and everything is assigned to you. The whole product is premised on accountability to others, which creates a performance context the moment you're using it solo.
+
+**Any Streak-Based Habit App.** The streak is the feature and the streak is the problem. These apps have no model for the difference between a habit that's appropriate to track daily and one that has natural ebbs. They flatten everything into a binary of done/not done, repeated daily, forever. The apps treat inconsistency as failure by design.
+
+**RescueTime / Any Passive Time Tracker.** "You spent 3 hours on social media and 45 minutes on creative work this week" is not information that produces change — it produces shame. Passive surveillance of your own behavior assumes that awareness of the pattern is what's needed to change it. It isn't. The pattern is structural, not informational.
+
+The through-line across all of these: they were designed for people who are already able to initiate, execute linearly, and maintain consistency — and they add features that assume those capacities. This app needs to be designed from the ground up for someone who can't always do those things, and for whom the cost of the system itself must stay as close to zero as possible.
