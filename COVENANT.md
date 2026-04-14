@@ -129,3 +129,23 @@ On your worst day the enemy isn't laziness or lack of motivation. It's the speci
 **The feeling that you have to earn rest.** If the app has any implicit logic that rest, low output, or absence requires catching up, it will make rest feel dangerous. Rest should be structurally invisible to the system. The app should have no concept of what you didn't do.
 
 The single thing the app should do on your worst day: make it possible to do one true small thing, or to safely do nothing, with equal dignity. The system should not distinguish between those two outcomes in any way that's visible to you.
+
+---
+
+## Language the App Must Never Echo — Negative Self-Talk Audit
+
+These are the specific beliefs the app must be architecturally incapable of reinforcing:
+
+**"I'm behind" / "I can't do anything."** The app should contain no language of progress relative to a standard. No "you're 20% through this project." No timelines that show you where you were supposed to be versus where you are. No implicit comparison between now and a prior plan. Behind relative to what? The app has no timeline for your life. It only knows what you've decided to do next.
+
+**"There's no point in trying."** The app should never require justification for a project's existence. No "why does this matter" fields, no goal-setting prompts, no mission statements attached to your work. Things exist because you're interested in them. That's sufficient.
+
+**"I'm not good enough."** No quality indicators, no ratings, no reflection prompts that ask you to evaluate your own output. No "how did that session go?" No stars, no self-assessments. The app doesn't have an opinion about the quality of your work and should never create a surface where you're invited to render one.
+
+**"I'm evil, I'm a monster, I'm disgusting."** These are echoed by systems that make you feel like a bad or broken user. Every time the app implies you've done something wrong — missed something, broken a streak, failed to maintain the system — it lands on top of these existing beliefs and amplifies them. The app should be constitutionally incapable of implying you've done something wrong by existing in it.
+
+**"I should stay miserable forever" / the numbing pull.** The app should never compete with numbing for your attention. No notifications, no infinite scroll, no feed or stream, no loop. It opens, shows you what's relevant, and closes. It does not try to keep you in it. It has no interest in your engagement.
+
+**The watching-life-pass feeling.** The app should have no concept of wasted time. No time tracking, no session logs, no record of when you last opened it or how long you spent. Time you spent not using the app is not data the app holds.
+
+The design principle that covers all of this: the app should speak to the version of you that is capable, discerning, and moving — even when that version feels very far away. It should never speak to the version that is behind, failing, insufficient, or broken. Not because that version doesn't exist or doesn't matter, but because the app is not equipped to hold it, and it shouldn't try. It should just keep the door open and the lights on for when you're ready to walk back in.
