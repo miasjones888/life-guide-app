@@ -67,9 +67,6 @@ const ALLOWLIST = new Set<string>([
   'app/guide/page.tsx',
   // Phase 1 Step 4 replaces /backup with /settings (Export/Import).
   'app/backup/page.tsx',
-  // Storage-key constant 'anchor-task' — will migrate when the store
-  // name is revisited; left untouched for localStorage stability.
-  'lib/storage-keys.ts',
   // Legacy priority cycle — superseded by the Step 2 anchor model.
   'hooks/usePriorityStatus.ts',
   // Legacy content module referenced by app/guide; follows /guide out.
