@@ -227,3 +227,20 @@ The time blocks need to go entirely, or become completely optional and hidden by
 The growth model should be invisible. Complexity surfaces only when you go looking for it.
 
 The question to ask before any new feature gets added: does it work for the version of you that is barely keeping the basics together? If it only works when you have capacity, it doesn't work.
+
+---
+
+## Core Vocabulary — Language the App Uses
+
+The vocabulary of the app is not negotiable. Every word choice either reinforces or undermines the design philosophy.
+
+**Use:** tending, dormant, resting, growing, seedling, harvest-ready, seasonal, bursting, rooted, overgrown, alive, quiet
+**Never use:** overdue, incomplete, missed, behind, failed, inactive, abandoned, todo, task, productivity, streak, score, completion, deadline (except for genuinely external ones)
+
+Care language over task language throughout. The app speaks to you the way a good gardener thinks about their garden — with patience, attention, and no judgment about the pace of growth.
+
+---
+
+## The Single Underlying Principle
+
+The app should feel like a room that was just waiting for you. Your stuff is where you left it. Nothing accumulated in judgment. Nothing changed except you're here now. It keeps the door open and the lights on. That's all it needs to do.
