@@ -103,3 +103,29 @@ The meta-redline underneath all of these: if you ever find yourself doing work f
 **RescueTime / Any Passive Time Tracker.** "You spent 3 hours on social media and 45 minutes on creative work this week" is not information that produces change — it produces shame. Passive surveillance of your own behavior assumes that awareness of the pattern is what's needed to change it. It isn't. The pattern is structural, not informational.
 
 The through-line across all of these: they were designed for people who are already able to initiate, execute linearly, and maintain consistency — and they add features that assume those capacities. This app needs to be designed from the ground up for someone who can't always do those things, and for whom the cost of the system itself must stay as close to zero as possible.
+
+---
+
+## What the App Must Protect Against on Your Worst Day
+
+On your worst day the enemy isn't laziness or lack of motivation. It's the specific cascade where one thing feeling impossible makes everything feel impossible, and the system becomes part of that cascade instead of a circuit breaker.
+
+**The visibility of everything undone.** On a bad day, seeing the full scope of your life and work is crushing, not orienting. The app should have a mode — not a special button you have to remember to press, but a default low-state view — that collapses everything except the single most essential thing. Not three active projects and their next steps. One thing. The smallest possible true thing.
+
+**The accumulation read as debt.** The parking lot, the ideas, the fragments, the queued projects — on a bad day all of that readable at once becomes evidence of how behind you are. The app should make it structurally impossible to read your backlog as a debt on bad days. Parked things should be genuinely out of sight until you go looking for them.
+
+**The cost of capture.** On your worst days you will still have thoughts worth keeping. A line, an observation, a connection. The capture path needs to be so frictionless it's basically zero — open, type or speak, close. No category selection, no project assignment, no required fields, no decision about where it lives. It goes into an inbox and you deal with it later or you don't.
+
+**The pressure to perform recovery.** Some productivity systems have a "today" view that resets every morning with fresh tasks, which reads on bad days as: here is everything you were supposed to do that you didn't do yesterday, repackaged as today's failures. The app should not generate fresh urgency daily. It should just hold what you put in it and wait.
+
+**The confusion about what actually matters.** On bad days the cognitive load of figuring out what's important is often what stops any movement at all. The weekly setup — done on a better day, on paper — is the answer to this. The app should surface whatever you decided during the last weekly setup as the current directive. Not a recalculation. A reflection of a decision already made.
+
+**The shame of the gap.** Opening the app after three days or two weeks of not opening it should feel neutral. No elapsed time visible, no "last session was X days ago," no implicit record of the absence. The app doesn't know you were gone. It's just there, the same as you left it, without judgment about the interval.
+
+**The spiral into planning instead of doing.** Bad days have a specific failure mode where the response to feeling unable to act is to plan — reorganize the system, recategorize things, redesign the structure. It feels productive. It is avoidance. The app should make planning and reorganizing genuinely harder than doing the one next thing.
+
+**The loss of context that makes starting impossible.** On a bad day you cannot reconstruct where you were on something. If the app always maintains last known state at the project level and surfaces it without you having to navigate to it, the cost of returning after a gap collapses to nearly nothing.
+
+**The feeling that you have to earn rest.** If the app has any implicit logic that rest, low output, or absence requires catching up, it will make rest feel dangerous. Rest should be structurally invisible to the system. The app should have no concept of what you didn't do.
+
+The single thing the app should do on your worst day: make it possible to do one true small thing, or to safely do nothing, with equal dignity. The system should not distinguish between those two outcomes in any way that's visible to you.
