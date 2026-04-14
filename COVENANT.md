@@ -149,3 +149,29 @@ These are the specific beliefs the app must be architecturally incapable of rein
 **The watching-life-pass feeling.** The app should have no concept of wasted time. No time tracking, no session logs, no record of when you last opened it or how long you spent. Time you spent not using the app is not data the app holds.
 
 The design principle that covers all of this: the app should speak to the version of you that is capable, discerning, and moving — even when that version feels very far away. It should never speak to the version that is behind, failing, insufficient, or broken. Not because that version doesn't exist or doesn't matter, but because the app is not equipped to hold it, and it shouldn't try. It should just keep the door open and the lights on for when you're ready to walk back in.
+
+---
+
+## The Garden / Field-Guide Metaphor — Why It's the Soul of the App
+
+The garden/field-guide metaphor works because it's the only productivity metaphor built around the actual nature of living things. Living things don't complete. They don't ship. They grow, they go dormant, they need different things in different seasons, they sometimes die back and return from the root. That's not a failure mode of the metaphor — it's the whole point of it.
+
+The specific things the metaphor protects:
+
+**Tending as the primary verb.** Not completing, not shipping, not closing. Tending. Which means you can tend something without finishing it, and that's a legitimate and valuable act. You watered it. You checked on it. You pulled one weed. That's real work even if the harvest is months away.
+
+**Dormancy as a valid state.** A dormant project isn't a failed project. It's a perennial that's underground. It still exists, it still has roots, it will come back when conditions are right. The app should have dormancy as a first-class state that carries no negative connotation — not "paused," not "on hold," not "inactive." Dormant. Resting. Waiting for the right season.
+
+**Seasons as the organizing rhythm** instead of weeks or sprints. You work in bursts of inspiration — that's a seasonal pattern, not an inconsistent one. The app should have some concept of cycles that's longer than a week and more organic than a quarter. Not imposed seasons, but seasons you name yourself based on what's actually alive for you right now.
+
+**Different things need different kinds of care.** A friendship and a build project and a writing fragment and a cat's health are not the same kind of thing, but they're all things you tend. The app holding all of them in the same space makes sense because in a garden you don't separate the vegetables from the flowers from the trees — they're all in the same ground, needing different attention at different times.
+
+**Overgrowth is information, not failure.** When something has been untended too long it gets overgrown — that's visible and meaningful, not shameful. It tells you something about where your attention has been. Not as accusation. As information, the way a plant looks when it needs water. Neutral, observable, actionable or not depending on your capacity right now.
+
+**You can't force growth.** This is what the farming games understand that every productivity system gets wrong. You can prepare the soil, plant the seed, water it, remove what's competing with it — and then you wait. The growth happens on its own timeline. Your job is the conditions, not the outcome. The app should be built around creating conditions, not tracking outcomes.
+
+The app must never do what bad productivity systems do to the garden metaphor, which is use gentle language as a skin over the same underlying logic of completion and failure. "Your seedling hasn't been watered in 5 days" is just a streak notification wearing overalls. The metaphor has to go all the way down into the architecture, not just the copy.
+
+What this means for the build practically: the data model should be built around states that reflect organic life cycles — seedling, growing, flowering, dormant, resting, ready to harvest — rather than todo/doing/done. The interaction model should be built around tending gestures rather than task completion. The time model should be built around seasons and cycles you define rather than deadlines and sprints. The emotional register should stay in the key of a quiet morning in a garden — unhurried, attentive, without urgency.
+
+The farming games got one thing exactly right: the day ends whether you finished everything or not. The sun goes down. Tomorrow the crops are still there. Nothing was lost because you didn't get to it today. You just tend again tomorrow. That's the whole app.
