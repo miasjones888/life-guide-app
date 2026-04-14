@@ -1,22 +1,24 @@
 import type { CalendarEvent } from './types';
 
+// Phase 0 audit (2026-04-14):
+// Kept only events Mia confirmed as real:
+//   - Cat morning/evening meds (9am / 9pm), both safety-critical, double-alarm, hard-day minimum
+//   - AM / PM cat playtime, midday cat snack, cat brushing MWF, weekly full groom
+//   - All monthly cat supply / meds / toys / scratchers / vet food entries
+//   - April one-time events (taxes, vet, family, birthday block, etc.)
+// Struck (Claude-invented, not Mia's):
+//   - All daily human routines (morning routine, skincare, breakfast, dinner, bedtime meds, lights out, etc.)
+//   - Every-two-days shower check-in
+//   - All non-cat weekly events (room reset, deep focus, outside time, applied buddhism, laundry,
+//     sunday self-care, call mom, check in with sister, instacart, transfer notes, weekly setup)
+//   - All biweekly events (check in with Annie, creative adventure, trader joe's check)
+//   - Monthly financial recurrences (monthly reset, pay credit card, pay mom, pay partner rent)
+//   - monthlyBudgetSteps
+// Exports that previously held invented content are preserved as empty arrays so
+// app/daily, app/weekly, app/monthly, app/api/assistant still compile until Phase 1
+// replaces those routes.
+
 export const dailyEvents: CalendarEvent[] = [
-  {
-    id: 'morning-routine',
-    time: '7:30am',
-    title: 'Morning Routine',
-    emoji: '🌅',
-    category: 'sage',
-    recurrence: 'daily',
-  },
-  {
-    id: 'morning-skincare',
-    time: '8:00am',
-    title: 'Morning Skincare',
-    emoji: '✨',
-    category: 'flamingo',
-    recurrence: 'daily',
-  },
   {
     id: 'cat-morning-meds',
     time: '9:00am',
@@ -29,17 +31,6 @@ export const dailyEvents: CalendarEvent[] = [
     criticality: 'safety-critical',
     hardDayMinimum: true,
     timeSensitivity: 'fixed',
-  },
-  {
-    id: 'breakfast',
-    time: '9:15am',
-    title: 'Breakfast',
-    emoji: '🍳',
-    category: 'banana',
-    recurrence: 'daily',
-    criticality: 'high',
-    hardDayMinimum: true,
-    timeSensitivity: 'flexible',
   },
   {
     id: 'am-cat-playtime',
@@ -58,36 +49,11 @@ export const dailyEvents: CalendarEvent[] = [
     recurrence: 'daily',
   },
   {
-    id: 'eaten-today',
-    time: '1:00pm',
-    title: 'Eaten today?',
-    emoji: '🍽️',
-    category: 'banana',
-    recurrence: 'daily',
-    note: 'You don\'t have to cook. You just have to eat something.',
-  },
-  {
-    id: 'dinner',
-    time: '6:30pm',
-    title: 'Dinner',
-    emoji: '🍽️',
-    category: 'banana',
-    recurrence: 'daily',
-  },
-  {
     id: 'pm-cat-playtime',
     time: '7:30pm',
     title: 'PM Cat Playtime',
     emoji: '🐱',
     category: 'tomato',
-    recurrence: 'daily',
-  },
-  {
-    id: 'evening-routine',
-    time: '9:00pm',
-    title: 'Evening Routine',
-    emoji: '🌙',
-    category: 'sage',
     recurrence: 'daily',
   },
   {
@@ -103,80 +69,11 @@ export const dailyEvents: CalendarEvent[] = [
     hardDayMinimum: true,
     timeSensitivity: 'fixed',
   },
-  {
-    id: 'bedtime-meds',
-    time: '9:30pm',
-    title: 'Your Bedtime Meds',
-    emoji: '💊',
-    category: 'tomato',
-    isNonNegotiable: true,
-    doubleAlarm: true,
-    recurrence: 'daily',
-    note: 'On a hard day: just those two. Done.',
-    criticality: 'safety-critical',
-    hardDayMinimum: true,
-    timeSensitivity: 'fixed',
-  },
-  {
-    id: 'night-skincare',
-    time: '9:45pm',
-    title: 'Night Skincare',
-    emoji: '✨',
-    category: 'flamingo',
-    recurrence: 'daily',
-  },
-  {
-    id: 'lights-out',
-    time: '11:00pm',
-    title: 'Lights Out by 11pm',
-    emoji: '💤',
-    category: 'graphite',
-    recurrence: 'daily',
-  },
 ];
 
-export const everyTwoDaysEvents: CalendarEvent[] = [
-  {
-    id: 'shower-checkin',
-    title: 'Shower check-in',
-    emoji: '🚿',
-    category: 'flamingo',
-    recurrence: 'interval',
-    intervalDays: 2,
-    note: 'Non-negotiable on whether, flexible on which.',
-  },
-];
+export const everyTwoDaysEvents: CalendarEvent[] = [];
 
 export const weeklyEvents: CalendarEvent[] = [
-  {
-    id: 'room-reset-tuesday',
-    time: '5:30pm',
-    title: 'Room Reset',
-    emoji: '🧹',
-    category: 'graphite',
-    recurrence: 'weekly',
-    days: ['tuesday', 'saturday'],
-  },
-  {
-    id: 'deep-focus-wednesday',
-    time: '10:00am',
-    title: 'Deep Focus: Project Session',
-    emoji: '🔵',
-    category: 'blueberry',
-    recurrence: 'weekly',
-    days: ['wednesday'],
-    note: 'Protected time. No calls, no notifications, no obligations.',
-  },
-  {
-    id: 'outside-time-thursday',
-    time: '2:00pm',
-    title: 'Outside Time',
-    emoji: '🌿',
-    category: 'basil',
-    recurrence: 'weekly',
-    days: ['thursday'],
-    note: 'body + spirituality + feedstock in one block. Don\'t plan it to death. Just go outside.',
-  },
   {
     id: 'cat-brushing-mwf',
     time: '7:00pm',
@@ -187,35 +84,6 @@ export const weeklyEvents: CalendarEvent[] = [
     days: ['monday', 'wednesday', 'friday'],
   },
   {
-    id: 'applied-buddhism',
-    time: '9:00am',
-    title: 'Applied Buddhism & Meditation (Optional)',
-    emoji: '🛕',
-    category: 'peacock',
-    recurrence: 'weekly',
-    days: ['saturday'],
-    isOptional: true,
-  },
-  {
-    id: 'deep-focus-saturday',
-    time: '10:00am',
-    title: 'Deep Focus: Creative Session',
-    emoji: '🔵',
-    category: 'blueberry',
-    recurrence: 'weekly',
-    days: ['saturday'],
-    note: 'Protected time. No calls, no notifications, no obligations.',
-  },
-  {
-    id: 'laundry',
-    time: '2:00pm',
-    title: 'Laundry',
-    emoji: '🧳',
-    category: 'graphite',
-    recurrence: 'weekly',
-    days: ['saturday'],
-  },
-  {
     id: 'cat-full-groom',
     time: '10:00am',
     title: 'Cat Full Groom',
@@ -224,96 +92,11 @@ export const weeklyEvents: CalendarEvent[] = [
     recurrence: 'weekly',
     days: ['sunday'],
   },
-  {
-    id: 'sunday-self-care',
-    time: '11:00am',
-    title: 'Sunday Self-Care Block',
-    emoji: '🌸',
-    category: 'flamingo',
-    recurrence: 'weekly',
-    days: ['sunday'],
-  },
-  {
-    id: 'call-mom',
-    time: '4:00pm',
-    title: 'Call Mom',
-    emoji: '📞',
-    category: 'flamingo',
-    recurrence: 'weekly',
-    days: ['sunday'],
-  },
-  {
-    id: 'checkin-sister',
-    time: '5:00pm',
-    title: 'Check in with Sister',
-    emoji: '📱',
-    category: 'flamingo',
-    recurrence: 'weekly',
-    days: ['sunday'],
-  },
-  {
-    id: 'instacart',
-    time: '6:30pm',
-    title: 'Instacart Order',
-    emoji: '🛒',
-    category: 'banana',
-    recurrence: 'weekly',
-    days: ['sunday'],
-  },
-  {
-    id: 'transfer-notes',
-    time: '6:45pm',
-    title: 'Transfer Notes → Notecards',
-    emoji: '📱',
-    category: 'graphite',
-    recurrence: 'weekly',
-    days: ['sunday'],
-  },
-  {
-    id: 'weekly-setup',
-    time: '7:00pm',
-    title: 'Weekly Setup',
-    emoji: '🟣',
-    category: 'grape',
-    recurrence: 'weekly',
-    days: ['sunday'],
-  },
 ];
 
-export const biweeklyEvents: CalendarEvent[] = [
-  {
-    id: 'checkin-annie',
-    title: 'Check in with Annie',
-    category: 'flamingo',
-    recurrence: 'biweekly',
-    startDate: '2026-04-12',
-  },
-  {
-    id: 'creative-adventure',
-    title: 'Creative Adventure',
-    category: 'grape',
-    recurrence: 'biweekly',
-    startDate: '2026-04-18',
-  },
-  {
-    id: 'trader-joes-check',
-    title: "Trader Joe's Frozen Meal Check",
-    category: 'banana',
-    recurrence: 'biweekly',
-    startDate: '2026-04-14',
-  },
-];
+export const biweeklyEvents: CalendarEvent[] = [];
 
 export const monthlyEvents: CalendarEvent[] = [
-  {
-    id: 'monthly-reset',
-    time: '9:00am',
-    title: 'Monthly Reset + Budget Hour',
-    emoji: '🟣',
-    category: 'grape',
-    recurrence: 'monthly',
-    monthlyRule: { type: 'nth-weekday', weekday: 'sunday', nth: 1 },
-  },
   {
     id: 'cat-supply-check',
     time: '1:00pm',
@@ -322,30 +105,6 @@ export const monthlyEvents: CalendarEvent[] = [
     category: 'tomato',
     recurrence: 'monthly',
     monthlyRule: { type: 'nth-weekday', weekday: 'sunday', nth: 1 },
-  },
-  {
-    id: 'pay-credit-card',
-    title: 'Pay Credit Card Bill',
-    emoji: '💳',
-    category: 'banana',
-    recurrence: 'monthly',
-    monthlyRule: { type: 'day-of-month', day: 2 },
-  },
-  {
-    id: 'pay-mom',
-    title: 'Pay Mom',
-    emoji: '💛',
-    category: 'banana',
-    recurrence: 'monthly',
-    monthlyRule: { type: 'day-of-month', day: 15 },
-  },
-  {
-    id: 'pay-partner-rent',
-    title: 'Pay Partner Rent',
-    emoji: '🏠',
-    category: 'banana',
-    recurrence: 'monthly',
-    monthlyRule: { type: 'last-day' },
   },
   {
     id: 'reorder-cat-meds',
@@ -569,10 +328,4 @@ export const allEvents = [
   ...aprilOneTimeEvents,
 ];
 
-export const monthlyBudgetSteps = [
-  { order: 1, title: 'Review last month', description: 'Check all accounts, note any surprises' },
-  { order: 2, title: 'Subscription audit', description: 'Cancel anything not used in 30 days' },
-  { order: 3, title: 'Upcoming obligations', description: 'Note fixed bills for next 30 days' },
-  { order: 4, title: 'Set monthly intention', description: 'One financial goal for this month' },
-  { order: 5, title: 'Buffer check', description: 'Is there a 2-week buffer? If not, pause discretionary spending' },
-];
+export const monthlyBudgetSteps: { order: number; title: string; description: string }[] = [];
