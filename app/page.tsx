@@ -113,7 +113,7 @@ export default function TodayPage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('anchor-task');
+      const stored = localStorage.getItem('anchor');
       if (stored) setAnchorTask(stored);
     } catch {}
   }, []);
@@ -138,7 +138,7 @@ export default function TodayPage() {
 
   function handleAnchorChange(v: string) {
     setAnchorTask(v);
-    try { localStorage.setItem('anchor-task', v); } catch {}
+    try { localStorage.setItem('anchor', v); } catch {}
   }
 
   const currentTotalMinutes = currentTime.hours * 60 + currentTime.minutes;

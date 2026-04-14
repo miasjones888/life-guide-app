@@ -16,7 +16,7 @@ const STORES: StoreConfig[] = [
   { key: STORAGE_KEYS.FOLDERS, label: 'Folders & Notes', description: 'All notecards across all folders.' },
   { key: STORAGE_KEYS.BUDGET, label: 'Budget', description: 'All budget lines, overrides, and goals.' },
   { key: STORAGE_KEYS.REFLECTION, label: 'Reflection', description: 'Current freeform reflection text.' },
-  { key: STORAGE_KEYS.ANCHOR_TASK, label: 'Anchor Task', description: 'Current anchor task.' },
+  { key: STORAGE_KEYS.ANCHOR, label: 'Anchor', description: 'Current anchor.' },
   { key: STORAGE_KEYS.ASSISTANT_HISTORY, label: 'Assistant History', description: 'Conversation history.' },
 ];
 

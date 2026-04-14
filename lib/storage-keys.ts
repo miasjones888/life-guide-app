@@ -5,7 +5,7 @@ export const STORAGE_KEYS = {
   // Core data stores
   DECK: 'life-guide-deck',
   REFLECTION: 'reflection-text',
-  ANCHOR_TASK: 'anchor-task',
+  ANCHOR: 'anchor',
   BUDGET: 'life-guide-budget',
   FOLDERS: 'life-guide-folders',
 
