@@ -175,3 +175,27 @@ The app must never do what bad productivity systems do to the garden metaphor, w
 What this means for the build practically: the data model should be built around states that reflect organic life cycles — seedling, growing, flowering, dormant, resting, ready to harvest — rather than todo/doing/done. The interaction model should be built around tending gestures rather than task completion. The time model should be built around seasons and cycles you define rather than deadlines and sprints. The emotional register should stay in the key of a quiet morning in a garden — unhurried, attentive, without urgency.
 
 The farming games got one thing exactly right: the day ends whether you finished everything or not. The sun goes down. Tomorrow the crops are still there. Nothing was lost because you didn't get to it today. You just tend again tomorrow. That's the whole app.
+
+---
+
+## What the App Does Right When You Come Back After a Week Away
+
+**What a bad app does:**
+
+It shows you what accumulated. Notifications, unread counts, days since last visit, tasks that were due, things that moved to overdue, a streak broken and displayed, a summary of what you missed. Some apps do this cheerfully — "Welcome back! Here's what happened while you were away!" — which is somehow worse than doing it coldly because it expects you to receive a list of your own absence as good news. The implicit message in all of it is: things happened without you, things piled up without you, you were supposed to be here and you weren't. The app noticed. The app kept score.
+
+Even the gentle versions get this wrong. "We missed you" is Animal Crossing. It sounds warm and it lands as guilt. Any acknowledgment of the gap — positive, negative, neutral — makes the gap a thing. Makes your absence a fact the system holds about you.
+
+**What this app does:**
+
+Nothing different than if you'd opened it yesterday.
+
+The garden looks the same. Some things may have grown a little. Nothing has died from neglect — because the app has no concept of neglect. Dormant things are still dormant. Active things are still active. The one next move you identified before you left is still there, unchanged, waiting without impatience. The capture inbox has whatever you put in it. There are no new items the app generated in your absence, no summary of elapsed time, no indicator of how long it's been.
+
+The app doesn't know you were gone. This isn't a feature — it's an architectural decision. The app does not track sessions, does not log last-opened timestamps anywhere visible, does not calculate intervals between visits. That data either doesn't exist in the system or exists only in ways completely invisible to you.
+
+What the app might do — gently, optionally, without fanfare — is surface the thing you were last tending. Not as "you left this unfinished" but the way a book falls open to the page you left off on. Here's where you were. No judgment about the interval. Just orientation, offered quietly, in case it's useful.
+
+The return should feel like walking back into your own room. Your stuff is where you left it. The plants are fine. The cats found somewhere comfortable to sleep. Nothing is different except you're here now. The room didn't notice you were gone because rooms don't notice. It was just waiting, the way rooms wait — without need, without expectation, without relief at your return.
+
+**The technical and copy implications are absolute:** no "last visited" language anywhere, no "welcome back" of any kind, no count of anything that increased while you were away, no visual indicator of time passed, no difference whatsoever in the opening experience whether you were gone for a day or a month. The app opens the same way every single time. That sameness is the safety.
