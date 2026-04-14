@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import PageShell from '@/components/layout/PageShell';
 import WindowPanel from '@/components/ui/WindowPanel';
 import TimeBlock from '@/components/ui/TimeBlock';
-import AssistantPanel from '@/components/ui/AssistantPanel';
 import { dailyEvents, aprilOneTimeEvents } from '@/content/calendar';
 import { priorities, financeUrgentItems, verbatimCopy, modularNote, groundingPhrases, groundingBreathing } from '@/content/guide';
 import type { CalendarEvent } from '@/content/types';
@@ -101,7 +100,6 @@ export default function TodayPage() {
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
   const [anchorTask, setAnchorTask] = useState('');
   const [dimmedSteps, setDimmedSteps] = useState<Set<string>>(new Set());
-  const [showAssistant, setShowAssistant] = useState(false);
   const [showGrounding, setShowGrounding] = useState(false);
   const { getStatus, cycleStatus } = usePriorityStatus();
   const { isHardDay, toggle: toggleHardDay } = useHardDay();
@@ -545,36 +543,6 @@ export default function TodayPage() {
           ))}
         </div>
       )}
-
-      {/* AI Assistant — collapsible */}
-      <WindowPanel title="assistant" style={{ marginBottom: '10px' }}>
-        <button
-          type="button"
-          onClick={() => setShowAssistant((v) => !v)}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '0',
-            fontFamily: 'system-ui, -apple-system, sans-serif',
-            minHeight: '32px',
-          }}
-        >
-          <span className="text-body-sm text-ink-muted">One thing at a time. One step at a time.</span>
-          <span className="text-micro text-ink-muted" style={{ fontFamily: 'Courier New, monospace' }}>
-            {showAssistant ? '▾ hide' : '▸ open'}
-          </span>
-        </button>
-        {showAssistant && (
-          <div style={{ marginTop: '10px', borderTop: '1px solid var(--color-ink-ghost)', paddingTop: '10px' }}>
-            <AssistantPanel />
-          </div>
-        )}
-      </WindowPanel>
 
       {/* Closing phrase */}
       <div style={{ padding: '8px 0 20px 0' }}>

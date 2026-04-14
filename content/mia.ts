@@ -40,12 +40,17 @@ export type Terrain =
 /**
  * Growth stages.
  *
- *   seed        → just an idea, planted but never tended. Unlimited.
+ *   seed        → waiting. Can have history — prototypes, research,
+ *                 even full builds — but not actively tended right now.
+ *                 Unlimited. No slot pressure. Can be activated at a
+ *                 Sunday weekly review if a slot is open.
  *   sprout      → activated. Counts against active slot cap.
  *   growing     → tended regularly. Active.
  *   flourishing → meaningful progress. Active.
  *   blooming    → at its peak. Active.
- *   dormant     → was active, paused mid-cycle. Can re-awaken. Not failure.
+ *   dormant     → paused mid-cycle with an active cadence behind it.
+ *                 Use this for things that had a real rhythm and
+ *                 need to keep their rhythm visible. Rare.
  *   harvested   → a cycle completed. Shipped / delivered. Can re-awaken
  *                 for the next cycle (e.g. portfolio audits every 3–6mo).
  */
@@ -119,21 +124,20 @@ export const hardDayMinimum: HardDayMinimumItem[] = [
 //
 // Slot usage: 1 / 1. Job search. Highest urgency thing in the entire system.
 
-// ─── Dormant specimens (unlimited, no shame) ────────────────────────────────
-//
-// Worked on before, paused mid-cycle. The app remembers them. They can
-// re-awaken at a Sunday weekly review. Dormancy is care, not failure.
+// ─── Dormant specimens (rare — for things with an active rhythm behind them) ──
 
 // ─── Harvested specimens (visible, part of garden history) ──────────────────
 //
 // Shipped. Done a cycle. Still visible in the garden — harvest is a moment
-// to celebrate, not a reason to hide a thing. Can re-awaken for the next
-// cycle (e.g. portfolio audits).
+// to mark, not a reason to hide a thing. Can re-awaken for the next cycle
+// (e.g. portfolio audits).
 
-// ─── Seeds (brand new, unlimited, no slot pressure) ─────────────────────────
+// ─── Seeds (unlimited, no slot pressure) ────────────────────────────────────
 //
-// Ideas that have been thought about but never tended. Live in the garden as
-// small unobtrusive reminders that the idea exists. Plant freely.
+// Projects that are waiting. Can have real history — prototypes, research
+// corpus, full builds — but are not being actively tended right now. Live
+// in the garden as visible reminders that they exist. Can be activated at
+// a Sunday weekly review if a slot is open.
 
 export const specimens: Specimen[] = [
   // ═══════════════════════════════════════════════════════════════════════
@@ -228,7 +232,27 @@ Through-line the resume needs to hold:
   },
 
   // ═══════════════════════════════════════════════════════════════════════
-  // DORMANT — paused mid-cycle, can re-awaken at a Sunday weekly review
+  // DORMANT — rare; only for things with an active rhythm behind them
+  // ═══════════════════════════════════════════════════════════════════════
+
+  {
+    id: 'writing-projects',
+    name: 'Not All Ghosts Are Memorable',
+    archetype: 'wildflower',
+    terrain: 'upper-field',
+    stage: 'dormant',
+    lifeTask: false,
+    description:
+      'Zero-draft collection. Multiple fragments across prose poem, flash fiction, lyric essay. Not yet organized into a completable unit.',
+    notes: `Definition of "done" for any piece:
+  • It ends
+  • It has a last sentence
+  • It has been read once and had one pass
+  • It exists as a file.`,
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SEEDS — waiting. Real history allowed. No slot pressure.
   // ═══════════════════════════════════════════════════════════════════════
 
   {
@@ -236,7 +260,7 @@ Through-line the resume needs to hold:
     name: 'Dream App / Dream Visualizer',
     archetype: 'mushroom',
     terrain: 'underground',
-    stage: 'dormant',
+    stage: 'seed',
     lifeTask: false,
     description:
       'Ambient durational browser installation. User speaks a dream on waking, receives an email 6 hours later, returns to find a developed visual/audio piece. The delay is structural — forgetting is built into the work.',
@@ -261,7 +285,7 @@ v1 definition of done: user speaks a dream, six hours later an email arrives, th
     name: 'Cat Archive',
     archetype: 'shell',
     terrain: 'lower-field',
-    stage: 'dormant',
+    stage: 'seed',
     lifeTask: false,
     description:
       'Research OS for collecting cat objects across history and culture. Single HTML file, Supabase integrated, ready to deploy.',
@@ -284,7 +308,7 @@ Next step when slot opens: deploy to Vercel, begin image collection phase.`,
     name: 'Chthonic Archive Curriculum',
     archetype: 'lichen',
     terrain: 'underground',
-    stage: 'dormant',
+    stage: 'seed',
     lifeTask: false,
     description:
       'Year-long curriculum structured across Layers 0–V plus Physical Build Unit. Tracker app (chthonic-v2.html) built. Research report phase delivered. Curriculum construction phase is the blocker.',
@@ -303,7 +327,7 @@ Paired state with Wildlife / Ecology Curriculum — both structured enough to se
     name: 'Wildlife / Ecology Curriculum',
     archetype: 'sedge',
     terrain: 'forest-edge',
-    stage: 'dormant',
+    stage: 'seed',
     lifeTask: false,
     description:
       'Structured curriculum for wildlife and field ecology. Lives in ChatGPT — needs to be surfaced and documented before it can be finalized.',
@@ -319,7 +343,7 @@ Paired dormancy with Chthonic Archive: both need to be finalized before either c
     name: 'Thesis Development App',
     archetype: 'coral',
     terrain: 'underground',
-    stage: 'dormant',
+    stage: 'seed',
     lifeTask: false,
     description:
       'Research support tool for interdisciplinary thesis (neuroscience, cosmology, linguistics, trauma theory, Indigenous knowledge systems). Designed, not built.',
@@ -331,28 +355,26 @@ Features:
   • Thesis assembly
   • Multi-format output adaptation
 
-⚠️ Overlaps in intent with the Research Module going into life-guide-app — resolve before building. Might end up absorbed, might stay its own thing. Decision required at activation.`,
+⚠️ ABSORPTION RISK — overlaps in intent with the Research Module going into
+life-guide-app. May end up fully absorbed rather than shipped standalone.
+Paired with research-web-tool — both need an explicit decision at activation:
+stay standalone, or fold into life-guide-app's Research Module.`,
   },
 
   {
-    id: 'writing-projects',
-    name: 'Not All Ghosts Are Memorable',
-    archetype: 'wildflower',
-    terrain: 'upper-field',
-    stage: 'dormant',
+    id: 'research-web-tool',
+    name: 'Research & Design Web Tool',
+    archetype: 'crystal',
+    terrain: 'underground',
+    stage: 'seed',
     lifeTask: false,
     description:
-      'Zero-draft collection. Multiple fragments across prose poem, flash fiction, lyric essay. Not yet organized into a completable unit.',
-    notes: `Definition of "done" for any piece:
-  • It ends
-  • It has a last sentence
-  • It has been read once and had one pass
-  • It exists as a file.`,
+      'Original standalone research tool. Existing build is currently serving as the spec for the Research Module inside life-guide-app.',
+    notes: `⚠️ ABSORPTION RISK — decision already leaning "do not finish as standalone,
+use as spec for the Research Module inside life-guide-app." Kept visible as
+a seed so the decision can be re-examined at a weekly review rather than
+quietly forgotten. Paired with thesis-app.`,
   },
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // SEEDS — brand new, unlimited, no slot pressure
-  // ═══════════════════════════════════════════════════════════════════════
 
   {
     id: 'interspecies-communication',
@@ -375,9 +397,3 @@ Parking lot or feedstock — not yet decided.`,
   },
 ];
 
-// ─── Grounding phrases ──────────────────────────────────────────────────────
-//
-// Intentionally left empty. Will be filled in by Mia if/when something
-// actually wants to be said. Blank is fine.
-
-export const groundingPhrases: string[] = [];

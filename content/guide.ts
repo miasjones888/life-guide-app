@@ -392,19 +392,15 @@ export const routinesSection = {
 
 // ─── Emergency grounding + changelog (from main) ──────────────────────────────
 
-export const groundingPhrases: string[] = [
-  'Right now, you are safe.',
-  'This is temporary.',
-  'One thing at a time. One step at a time.',
-  'You have what you need to get through this moment.',
-  verbatimCopy.nonNegotiable,
-  verbatimCopy.writtenDown,
-];
+// Phase 0 audit: Claude-invented "grounding phrases" struck by Mia
+// ("grounding phrase is cliche"). Exports kept empty so importers compile
+// until Phase 1 replaces the pages that consume them.
+export const groundingPhrases: string[] = [];
 
 export const groundingBreathing = {
-  label: 'Box breathing',
-  steps: ['Breathe in — 4 counts', 'Hold — 4 counts', 'Breathe out — 4 counts', 'Hold — 4 counts'],
-  note: 'Repeat 3–4 times. You do not have to do all four. Even one cycle counts.',
+  label: '',
+  steps: [] as string[],
+  note: '',
 };
 
 export interface ChangeLogEntry {
