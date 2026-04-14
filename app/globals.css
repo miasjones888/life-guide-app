@@ -8,13 +8,46 @@
   --color-chrome-light: #F0EDE8;
   --color-paper: #F4F1EC;
   --color-ink: #1A1917;
-  --color-ink-muted: #6B6760;
-  --color-ink-ghost: rgba(26, 25, 23, 0.07);
+  --color-ink-muted: #4F4B45;
+  --color-ink-ghost: rgba(26, 25, 23, 0.12);
+
+  /* ─── Ink ramp ─────────────────────────────────────────────
+     Four steps, all audited for ≥4.5:1 contrast on paper (#F4F1EC).
+     --ink-1 is primary body copy; --ink-4 is the lightest readable
+     text tone (label / metadata). Anything fainter than --ink-4 is
+     decorative and must not carry meaning. */
+  --ink-1: #1A1917;
+  --ink-2: #33302C;
+  --ink-3: #4F4B45;
+  --ink-4: #6B6760;
+
+  /* ─── Border ramp ──────────────────────────────────────────
+     Minimum contrast for a structural border is 1.5:1 against
+     paper. --border-1 is the strongest structural line, --border-3
+     is the softest that still reads as a line and not as noise. */
+  --border-1: rgba(26, 25, 23, 0.28);
+  --border-2: rgba(26, 25, 23, 0.18);
+  --border-3: rgba(26, 25, 23, 0.12);
+
   --color-forest: #4A5E3A;
   --color-moss: #7A9B76;
   --color-lichen: #C8D9C6;
   --color-status-bar: #C0C0C0;
   --color-title-text: #FFFFFF;
+
+  /* Landscape wash — the quiet green bloom in the corners of the page.
+     Raised from the prototype values so the bloom is legible on
+     high-brightness displays without becoming scenery. */
+  --landscape-opacity-strong: 0.10;
+  --landscape-opacity-soft: 0.07;
+
+  /* Font stacks. The CSS variables are populated by next/font in
+     app/layout.tsx. Fallbacks cover the case where the font has not
+     loaded yet so first paint is never broken. */
+  --font-chrome: var(--font-plex-mono), 'IBM Plex Mono', 'Courier New', monospace;
+  --font-display: var(--font-serif-display), 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-journal: var(--font-fell), 'IM Fell English', Georgia, 'Times New Roman', serif;
+  --font-accent: var(--font-vt), 'VT323', 'Courier New', monospace;
 
   /* Calendar category colors */
   --color-tomato: #D50000;
@@ -41,10 +74,10 @@ body {
   overflow-x: hidden;
   background-color: var(--color-chrome);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Ccircle cx='1.5' cy='1.5' r='0.6' fill='%231A1917' fill-opacity='0.04'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse at 15% 95%, rgba(74,94,58,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse at 88% 8%, rgba(74,94,58,0.04) 0%, transparent 45%);
-  color: var(--color-ink);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Ccircle cx='1.5' cy='1.5' r='0.6' fill='%231A1917' fill-opacity='0.05'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 15% 95%, rgba(74, 94, 58, var(--landscape-opacity-strong)) 0%, transparent 55%),
+    radial-gradient(ellipse at 88% 8%, rgba(74, 94, 58, var(--landscape-opacity-soft)) 0%, transparent 45%);
+  color: var(--ink-1);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px;
   line-height: 1.5;
@@ -54,29 +87,39 @@ body {
 
 /* Typography */
 .font-mono {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-chrome);
 }
 
 .font-sans {
   font-family: system-ui, -apple-system, sans-serif;
 }
 
+.font-journal {
+  font-family: var(--font-journal);
+  font-style: italic;
+}
+
+.font-accent {
+  font-family: var(--font-accent);
+}
+
 .text-display {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-display);
   font-size: 40px;
   line-height: 1.1;
   font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 .text-h1 {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-display);
   font-size: 24px;
   line-height: 1.2;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .text-h2 {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-display);
   font-size: 16px;
   line-height: 1.3;
   font-weight: 400;
@@ -87,6 +130,7 @@ body {
   font-size: 15px;
   line-height: 1.5;
   font-weight: 400;
+  color: var(--ink-1);
 }
 
 .text-body-sm {
@@ -94,18 +138,21 @@ body {
   font-size: 13px;
   line-height: 1.4;
   font-weight: 400;
+  color: var(--ink-2);
 }
 
 .text-micro {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-chrome);
   font-size: 11px;
   line-height: 1.3;
   font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
 }
 
 /* Window Panel styles */
 .window-panel {
-  border: 1px solid var(--color-ink-ghost);
+  border: 1px solid var(--border-2);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -116,9 +163,11 @@ body {
   display: flex;
   align-items: center;
   padding: 0 8px;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-chrome);
   font-size: 11px;
-  border-bottom: 1px solid var(--color-ink-ghost);
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--border-2);
   user-select: none;
 }
 
@@ -135,19 +184,19 @@ body {
 .window-status-bar {
   height: 14px;
   background: var(--color-status-bar);
-  border-top: 1px solid var(--color-ink-ghost);
-  font-family: 'Courier New', monospace;
+  border-top: 1px solid var(--border-2);
+  font-family: var(--font-chrome);
   font-size: 11px;
   display: flex;
   align-items: center;
   padding: 0 6px;
-  color: var(--color-ink-muted);
+  color: var(--ink-3);
 }
 
 /* Section dividers */
 .section-rule {
   border: none;
-  border-top: 1px solid var(--color-ink-ghost);
+  border-top: 1px solid var(--border-2);
   margin: 16px 0;
 }
 
@@ -194,7 +243,7 @@ body {
 /* Hairline divider */
 hr.hairline {
   border: none;
-  border-top: 1px solid var(--color-ink-ghost);
+  border-top: 1px solid var(--border-2);
 }
 
 /* Time block row */
@@ -203,7 +252,7 @@ hr.hairline {
   align-items: flex-start;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid var(--color-ink-ghost);
+  border-bottom: 1px solid var(--border-2);
 }
 
 .time-block:last-child {
@@ -211,9 +260,10 @@ hr.hairline {
 }
 
 .time-label {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-chrome);
   font-size: 11px;
-  color: var(--color-ink-muted);
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
   min-width: 52px;
   padding-top: 2px;
   flex-shrink: 0;
@@ -230,13 +280,13 @@ hr.hairline {
   align-items: flex-start;
   gap: 8px;
   padding: 6px 0;
-  border-bottom: 1px solid var(--color-ink-ghost);
+  border-bottom: 1px solid var(--border-2);
 }
 
 .priority-number {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-chrome);
   font-size: 11px;
-  color: var(--color-ink-muted);
+  color: var(--ink-3);
   min-width: 20px;
   padding-top: 2px;
 }
@@ -245,13 +295,14 @@ hr.hairline {
 .tag {
   display: inline-flex;
   align-items: center;
-  font-family: 'Courier New', monospace;
-  font-size: 10px;
+  font-family: var(--font-chrome);
+  font-size: 11px;
+  letter-spacing: 0.02em;
   padding: 2px 6px;
-  border: 1px solid var(--color-ink-ghost);
+  border: 1px solid var(--border-2);
   border-radius: 2px;
   background: var(--color-chrome-light);
-  color: var(--color-ink-muted);
+  color: var(--ink-3);
 }
 
 /* Expandable */
@@ -262,7 +313,7 @@ hr.hairline {
   cursor: pointer;
   padding: 10px 0;
   min-height: 44px;
-  border-bottom: 1px solid var(--color-ink-ghost);
+  border-bottom: 1px solid var(--border-2);
   width: 100%;
   text-align: left;
   background: none;
@@ -278,7 +329,7 @@ hr.hairline {
 /* Input placeholder */
 input::placeholder,
 textarea::placeholder {
-  color: var(--color-ink-muted);
+  color: var(--ink-4);
   opacity: 1;
 }
 
@@ -299,12 +350,13 @@ textarea::placeholder {
 
 /* Version footer */
 .version-footer {
-  font-family: 'Courier New', monospace;
-  font-size: 10px;
-  color: var(--color-ink-muted);
+  font-family: var(--font-accent);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
   text-align: center;
   padding: 12px;
-  border-top: 1px solid var(--color-ink-ghost);
+  border-top: 1px solid var(--border-2);
 }
 
 /* ─── Desktop Layout (768px+) ───────────────────────────────────── */
@@ -334,7 +386,7 @@ textarea::placeholder {
     flex-direction: column;
     width: 180px;
     flex-shrink: 0;
-    border-right: 1px solid var(--color-ink-ghost);
+    border-right: 1px solid var(--border-2);
     background: var(--color-chrome);
     position: sticky;
     top: 0;
@@ -369,7 +421,7 @@ textarea::placeholder {
 
 /* Folder tab strip */
 .folder-tab {
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-chrome);
   font-size: 11px;
   letter-spacing: 0.02em;
   color: #fff;
@@ -385,7 +437,7 @@ textarea::placeholder {
 /* Physical notecard */
 .notecard {
   background: var(--color-paper);
-  border: 1px solid rgba(26, 25, 23, 0.18);
+  border: 1px solid var(--border-2);
   border-radius: 2px;
   padding: 14px;
   position: relative;
@@ -400,7 +452,7 @@ textarea::placeholder {
   border-radius: 2px;
   padding: 14px;
   background: var(--color-paper);
-  border: 1px solid rgba(26, 25, 23, 0.18);
+  border: 1px solid var(--border-2);
 }
 
 .notecard-back {
@@ -415,8 +467,8 @@ textarea::placeholder {
 
 /* Format tag pill */
 .format-tag {
-  font-family: 'Courier New', monospace;
-  font-size: 10px;
+  font-family: var(--font-chrome);
+  font-size: 11px;
   letter-spacing: 0.03em;
   padding: 2px 6px;
   border: 1px solid currentColor;
@@ -432,7 +484,7 @@ textarea::placeholder {
   position: absolute;
   inset: 0;
   background: var(--color-paper);
-  border: 1px solid rgba(26, 25, 23, 0.15);
+  border: 1px solid var(--border-2);
   border-radius: 2px;
 }
 
@@ -446,10 +498,10 @@ textarea::placeholder {
 
 /* Move-to-folder selector inside card back */
 .folder-chip {
-  font-family: 'Courier New', monospace;
-  font-size: 10px;
+  font-family: var(--font-chrome);
+  font-size: 11px;
   padding: 3px 8px;
-  border: 1px solid rgba(26, 25, 23, 0.25);
+  border: 1px solid var(--border-1);
   border-radius: 2px;
   background: transparent;
   cursor: pointer;
