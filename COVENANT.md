@@ -199,3 +199,31 @@ What the app might do — gently, optionally, without fanfare — is surface the
 The return should feel like walking back into your own room. Your stuff is where you left it. The plants are fine. The cats found somewhere comfortable to sleep. Nothing is different except you're here now. The room didn't notice you were gone because rooms don't notice. It was just waiting, the way rooms wait — without need, without expectation, without relief at your return.
 
 **The technical and copy implications are absolute:** no "last visited" language anywhere, no "welcome back" of any kind, no count of anything that increased while you were away, no visual indicator of time passed, no difference whatsoever in the opening experience whether you were gone for a day or a month. The app opens the same way every single time. That sameness is the safety.
+
+---
+
+## Prototype Feedback — What Went Wrong and What Must Change
+
+The previous prototype was designed for the aspirational version of you — the one who has capacity, follows time blocks, maintains systems. That version isn't who needs the app. The person who needs the app is the one who is currently barely keeping the basic necessities together. That's not a temporary state to design around until you're "better." That's the baseline the app has to actually work for, or it doesn't work at all.
+
+**"Couldn't figure out all the steps to get to the info"** — the navigation is too deep. Too many taps, too many decisions between opening the app and seeing what you need. The rule: the most important thing you need is visible within one tap of opening. Not after selecting a project, not after choosing a view, not after remembering where something lives. One tap, maximum.
+
+**"Felt disconnected from my projects"** — the life admin layer and the project layer were not integrated. They felt like two different apps stapled together. The connection has to be legible — the reason your projects live alongside your daily life in the same tool is because they're part of the same life, not parallel tracks that occasionally intersect.
+
+**"Overly aspirational scheduling"** — time blocks for things you don't currently have capacity to do aren't motivating, they're accusatory. Every unmet time block is evidence of failure. The scheduling logic needs to be pulled back significantly. The app shouldn't tell you when to do things. It should tell you what the next move is when you're ready to move.
+
+**"Meets me where I'm at and grows with me"** — the app has to be useful at the lowest functioning level you'll ever bring to it, and it has to have room to support more complexity as capacity increases — without ever requiring that complexity to function. The minimum viable version has to be genuinely minimum.
+
+**Concrete implications for the rebuild:**
+
+The entry point should be a single surface. Not a dashboard with sections, not a home screen with navigation options. One thing: either what you decided to do next, or a capture field, or both. That's the whole app on a bad day.
+
+The project garden should not be visible by default. It's there when you want it, accessible in one tap, but it shouldn't be the thing you see when you open the app.
+
+The self-care and basic necessities layer — eating, meds, cat care — should be the most present layer, not subordinate to projects. For where you are right now it's the primary function.
+
+The time blocks need to go entirely, or become completely optional and hidden by default. Replace scheduling logic with: not "do this at 2pm" but "when you have a moment, the next move on this is X." The when is yours. The app just holds the what.
+
+The growth model should be invisible. Complexity surfaces only when you go looking for it.
+
+The question to ask before any new feature gets added: does it work for the version of you that is barely keeping the basics together? If it only works when you have capacity, it doesn't work.
