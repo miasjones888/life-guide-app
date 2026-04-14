@@ -1,15 +1,18 @@
 import type { BudgetLine, BudgetGoal, BudgetState } from './types';
 
+// Phase 0 audit: all amounts zeroed. Mia fills these in during Phase 3
+// when she sits down with her actual accounts. Structure preserved so the
+// shape stays stable; labels are placeholders and can be renamed freely.
+
 export const defaultBudgetLines: BudgetLine[] = [
   // ── Income ──────────────────────────────────────────────────────────────
   {
     id: 'income-freelance',
     label: 'Freelance / gig income',
     category: 'income',
-    amount: 1800,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
-    note: 'Variable. Update at the start of each month.',
   },
   {
     id: 'income-other',
@@ -18,7 +21,6 @@ export const defaultBudgetLines: BudgetLine[] = [
     amount: 0,
     isFixed: false,
     isSubscription: false,
-    note: 'Selling, side projects, etc.',
   },
 
   // ── Housing ─────────────────────────────────────────────────────────────
@@ -26,7 +28,7 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'housing-rent',
     label: 'Rent',
     category: 'housing',
-    amount: 1200,
+    amount: 0,
     isFixed: true,
     isSubscription: false,
   },
@@ -34,16 +36,15 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'housing-electric',
     label: 'Electric (SDG&E)',
     category: 'housing',
-    amount: 90,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
-    note: 'Varies summer vs. winter.',
   },
   {
     id: 'housing-internet',
     label: 'Internet',
     category: 'housing',
-    amount: 55,
+    amount: 0,
     isFixed: true,
     isSubscription: false,
   },
@@ -51,9 +52,9 @@ export const defaultBudgetLines: BudgetLine[] = [
   // ── Food ────────────────────────────────────────────────────────────────
   {
     id: 'food-groceries',
-    label: 'Groceries (Instacart)',
+    label: 'Groceries',
     category: 'food',
-    amount: 250,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
   },
@@ -61,10 +62,9 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'food-takeout',
     label: 'Takeout / coffee shops',
     category: 'food',
-    amount: 120,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
-    note: 'Work sessions included.',
   },
 
   // ── Pets ────────────────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'pets-food',
     label: 'Cat food + litter',
     category: 'pets',
-    amount: 80,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
   },
@@ -80,7 +80,7 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'pets-meds',
     label: 'Cat medications',
     category: 'pets',
-    amount: 40,
+    amount: 0,
     isFixed: true,
     isSubscription: false,
     note: 'Maisie (Prozac) + Meeko.',
@@ -89,10 +89,9 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'pets-vet',
     label: 'Vet / emergency accrual',
     category: 'pets',
-    amount: 30,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
-    note: 'Building toward next visit. Maisie services due.',
   },
 
   // ── Health ──────────────────────────────────────────────────────────────
@@ -100,7 +99,7 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'health-meds',
     label: 'Prescriptions',
     category: 'health',
-    amount: 30,
+    amount: 0,
     isFixed: true,
     isSubscription: false,
   },
@@ -111,59 +110,25 @@ export const defaultBudgetLines: BudgetLine[] = [
     amount: 0,
     isFixed: true,
     isSubscription: false,
-    note: 'Update when enrolled.',
   },
   {
     id: 'health-copays',
     label: 'Therapy / psychiatry copays',
     category: 'health',
-    amount: 60,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
-    note: 'Estimate. Varies by session count.',
   },
 
   // ── Subscriptions ────────────────────────────────────────────────────────
   {
-    id: 'sub-anthropic',
-    label: 'Claude Pro (Anthropic)',
-    category: 'subscriptions',
-    amount: 20,
-    isFixed: true,
-    isSubscription: true,
-  },
-  {
-    id: 'sub-spotify',
-    label: 'Spotify',
-    category: 'subscriptions',
-    amount: 11,
-    isFixed: true,
-    isSubscription: true,
-  },
-  {
-    id: 'sub-notion',
-    label: 'Notion',
-    category: 'subscriptions',
-    amount: 10,
-    isFixed: true,
-    isSubscription: true,
-  },
-  {
-    id: 'sub-icloud',
-    label: 'iCloud Storage',
-    category: 'subscriptions',
-    amount: 3,
-    isFixed: true,
-    isSubscription: true,
-  },
-  {
     id: 'sub-other',
-    label: 'Other subscriptions (unaudited)',
+    label: 'Subscriptions (unaudited)',
     category: 'subscriptions',
     amount: 0,
     isFixed: true,
     isSubscription: true,
-    note: 'Complete subscription audit to fill this in.',
+    note: 'Run a subscription audit and add real entries here.',
   },
 
   // ── Transport ────────────────────────────────────────────────────────────
@@ -171,7 +136,7 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'transport-gas',
     label: 'Gas / rideshare',
     category: 'transport',
-    amount: 60,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
   },
@@ -181,36 +146,13 @@ export const defaultBudgetLines: BudgetLine[] = [
     id: 'misc-buffer',
     label: 'Buffer / random',
     category: 'misc',
-    amount: 50,
+    amount: 0,
     isFixed: false,
     isSubscription: false,
-    note: 'For the thing you forgot.',
   },
 ];
 
-export const defaultBudgetGoals: BudgetGoal[] = [
-  {
-    id: 'goal-sub-audit',
-    label: 'Complete subscription audit',
-    note: 'Target: this Sunday. Cancel anything unused.',
-  },
-  {
-    id: 'goal-emergency',
-    label: 'Build $1,000 emergency fund',
-    targetAmount: 1000,
-    note: 'Any month with positive net goes here first.',
-  },
-  {
-    id: 'goal-petal',
-    label: 'Resolve Petal card',
-    note: 'Fix payment method, then pay down balance.',
-  },
-  {
-    id: 'goal-pet-insurance',
-    label: 'Add pet insurance for Maisie',
-    note: 'Research plans. ~$25–40/mo estimate.',
-  },
-];
+export const defaultBudgetGoals: BudgetGoal[] = [];
 
 export const defaultBudgetState: BudgetState = {
   lines: defaultBudgetLines,

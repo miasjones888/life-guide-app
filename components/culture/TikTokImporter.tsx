@@ -48,18 +48,10 @@ async function fetchOEmbed(url: string): Promise<{ title: string; author: string
 }
 
 async function categorizeTitles(titles: string[]): Promise<WishlistCategory[]> {
-  try {
-    const res = await fetch('/api/categorize', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ titles }),
-    });
-    if (!res.ok) return titles.map(() => 'other' as WishlistCategory);
-    const data = (await res.json()) as { categories?: WishlistCategory[] };
-    return data.categories ?? titles.map(() => 'other' as WishlistCategory);
-  } catch {
-    return titles.map(() => 'other' as WishlistCategory);
-  }
+  // Phase 0: /api/categorize was part of the invented AI cluster and has been
+  // archived. Everything defaults to 'other' until users re-categorize manually
+  // in the preview step.
+  return titles.map(() => 'other' as WishlistCategory);
 }
 
 function extractUrlsFromJson(json: unknown): string[] {

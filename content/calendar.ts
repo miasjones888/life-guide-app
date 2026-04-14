@@ -1,22 +1,54 @@
 import type { CalendarEvent } from './types';
 
+// Phase 0 audit v2 (2026-04-14) — updated after Mia's second pass.
+//
+// KEPT as real (Mia's own rhythm):
+//   Daily:
+//     • Cat morning + evening meds (9a/9p, safety-critical, double-alarm, hard-day minimum)
+//     • AM + PM cat playtime, cat midday snack
+//   Weekly:
+//     • Cat brushing MWF 7pm, cat full groom Sunday 10am
+//     • Deep Focus: Project Session Wednesday 10–11:30am
+//     • Outside Time Thursday 2–5pm
+//     • Applied Buddhism & Meditation Saturday 9–11am (optional, Fo Guang Shan Hsi Fang Temple)
+//     • Deep Focus: Creative Session Saturday 10–11:30am
+//     • Laundry Saturday 2–3pm
+//     • Sunday ritual block: self-care 11am, plant watering, call Mom 4pm,
+//       sister check-in 5pm, Instacart 6:30pm, notes → notecards 6:45pm,
+//       weekly setup 7pm
+//   Biweekly:
+//     • Creative Adventure (startDate 2026-04-18)
+//   Monthly:
+//     • Cat supply check, reorder cat meds, rotate cat toys, replace scratchers, vet food check
+//     • Pay credit card (day 2), pay Mom (day 15), pay partner rent (last day)
+//   One-time:
+//     • All confirmed April events (taxes, family meeting, therapists, psychiatry,
+//       Maisie insurance, birthday, safari park, Glen Ivy, USPS, SDG&E, Gap,
+//       contract check-in, animal comm session, Dar/Mother's day planning)
+//     • Apr 18 Temecula Mix + Mingle Pool Party
+//     • May 16 Dar's birthday
+//     • ~May 22 Google contract end ⚠️
+//     • Tao of Clay sculpture class, 6 sessions Tuesdays May 19–June 23, 6–8pm
+//
+// STRUCK as invented (Mia confirmed cliche/aspirational/Claude-authored):
+//   • Morning routine, morning skincare, breakfast, eaten-today, dinner,
+//     evening routine, bedtime meds, night skincare, lights out
+//   • Every-two-days shower check-in
+//   • Annie biweekly check-in, Trader Joe's biweekly check
+//   • Room reset Tue/Sat
+//   • Monthly reset + budget hour (separate from the real payments)
+//   • monthlyBudgetSteps
+//
+// TAXES EMPHASIZED: apr10-taxes and apr15-tax-day are both safety-critical,
+// non-negotiable, double-alarm. They should sort to the top of any
+// criticality-aware list.
+//
+// Exports for invented content kept as empty arrays / stubs so
+// app/daily, app/weekly, app/monthly still compile until Phase 1 replaces them.
+
+// ─── Daily ──────────────────────────────────────────────────────────────────
+
 export const dailyEvents: CalendarEvent[] = [
-  {
-    id: 'morning-routine',
-    time: '7:30am',
-    title: 'Morning Routine',
-    emoji: '🌅',
-    category: 'sage',
-    recurrence: 'daily',
-  },
-  {
-    id: 'morning-skincare',
-    time: '8:00am',
-    title: 'Morning Skincare',
-    emoji: '✨',
-    category: 'flamingo',
-    recurrence: 'daily',
-  },
   {
     id: 'cat-morning-meds',
     time: '9:00am',
@@ -29,17 +61,6 @@ export const dailyEvents: CalendarEvent[] = [
     criticality: 'safety-critical',
     hardDayMinimum: true,
     timeSensitivity: 'fixed',
-  },
-  {
-    id: 'breakfast',
-    time: '9:15am',
-    title: 'Breakfast',
-    emoji: '🍳',
-    category: 'banana',
-    recurrence: 'daily',
-    criticality: 'high',
-    hardDayMinimum: true,
-    timeSensitivity: 'flexible',
   },
   {
     id: 'am-cat-playtime',
@@ -58,36 +79,11 @@ export const dailyEvents: CalendarEvent[] = [
     recurrence: 'daily',
   },
   {
-    id: 'eaten-today',
-    time: '1:00pm',
-    title: 'Eaten today?',
-    emoji: '🍽️',
-    category: 'banana',
-    recurrence: 'daily',
-    note: 'You don\'t have to cook. You just have to eat something.',
-  },
-  {
-    id: 'dinner',
-    time: '6:30pm',
-    title: 'Dinner',
-    emoji: '🍽️',
-    category: 'banana',
-    recurrence: 'daily',
-  },
-  {
     id: 'pm-cat-playtime',
     time: '7:30pm',
     title: 'PM Cat Playtime',
     emoji: '🐱',
     category: 'tomato',
-    recurrence: 'daily',
-  },
-  {
-    id: 'evening-routine',
-    time: '9:00pm',
-    title: 'Evening Routine',
-    emoji: '🌙',
-    category: 'sage',
     recurrence: 'daily',
   },
   {
@@ -103,80 +99,15 @@ export const dailyEvents: CalendarEvent[] = [
     hardDayMinimum: true,
     timeSensitivity: 'fixed',
   },
-  {
-    id: 'bedtime-meds',
-    time: '9:30pm',
-    title: 'Your Bedtime Meds',
-    emoji: '💊',
-    category: 'tomato',
-    isNonNegotiable: true,
-    doubleAlarm: true,
-    recurrence: 'daily',
-    note: 'On a hard day: just those two. Done.',
-    criticality: 'safety-critical',
-    hardDayMinimum: true,
-    timeSensitivity: 'fixed',
-  },
-  {
-    id: 'night-skincare',
-    time: '9:45pm',
-    title: 'Night Skincare',
-    emoji: '✨',
-    category: 'flamingo',
-    recurrence: 'daily',
-  },
-  {
-    id: 'lights-out',
-    time: '11:00pm',
-    title: 'Lights Out by 11pm',
-    emoji: '💤',
-    category: 'graphite',
-    recurrence: 'daily',
-  },
 ];
 
-export const everyTwoDaysEvents: CalendarEvent[] = [
-  {
-    id: 'shower-checkin',
-    title: 'Shower check-in',
-    emoji: '🚿',
-    category: 'flamingo',
-    recurrence: 'interval',
-    intervalDays: 2,
-    note: 'Non-negotiable on whether, flexible on which.',
-  },
-];
+// Stub — kept empty until app/daily page is replaced in Phase 1.
+export const everyTwoDaysEvents: CalendarEvent[] = [];
+
+// ─── Weekly ─────────────────────────────────────────────────────────────────
 
 export const weeklyEvents: CalendarEvent[] = [
-  {
-    id: 'room-reset-tuesday',
-    time: '5:30pm',
-    title: 'Room Reset',
-    emoji: '🧹',
-    category: 'graphite',
-    recurrence: 'weekly',
-    days: ['tuesday', 'saturday'],
-  },
-  {
-    id: 'deep-focus-wednesday',
-    time: '10:00am',
-    title: 'Deep Focus: Project Session',
-    emoji: '🔵',
-    category: 'blueberry',
-    recurrence: 'weekly',
-    days: ['wednesday'],
-    note: 'Protected time. No calls, no notifications, no obligations.',
-  },
-  {
-    id: 'outside-time-thursday',
-    time: '2:00pm',
-    title: 'Outside Time',
-    emoji: '🌿',
-    category: 'basil',
-    recurrence: 'weekly',
-    days: ['thursday'],
-    note: 'body + spirituality + feedstock in one block. Don\'t plan it to death. Just go outside.',
-  },
+  // ── Cat care rhythm ──
   {
     id: 'cat-brushing-mwf',
     time: '7:00pm',
@@ -187,14 +118,46 @@ export const weeklyEvents: CalendarEvent[] = [
     days: ['monday', 'wednesday', 'friday'],
   },
   {
+    id: 'cat-full-groom',
+    time: '10:00am',
+    title: 'Cat Full Groom',
+    emoji: '🐱',
+    category: 'tomato',
+    recurrence: 'weekly',
+    days: ['sunday'],
+  },
+
+  // ── Creative + focus rhythm ──
+  {
+    id: 'deep-focus-wednesday',
+    time: '10:00am',
+    title: 'Deep Focus: Project Session',
+    emoji: '🔵',
+    category: 'blueberry',
+    recurrence: 'weekly',
+    days: ['wednesday'],
+    note: 'Protected. 10–11:30am. No calls, no notifications.',
+  },
+  {
+    id: 'outside-time-thursday',
+    time: '2:00pm',
+    title: 'Outside Time',
+    emoji: '🌿',
+    category: 'basil',
+    recurrence: 'weekly',
+    days: ['thursday'],
+    note: '2–5pm. Body + spirituality + feedstock in one block. Just go outside.',
+  },
+  {
     id: 'applied-buddhism',
     time: '9:00am',
-    title: 'Applied Buddhism & Meditation (Optional)',
+    title: 'Applied Buddhism & Meditation',
     emoji: '🛕',
     category: 'peacock',
     recurrence: 'weekly',
     days: ['saturday'],
     isOptional: true,
+    note: '9–11am, Fo Guang Shan Hsi Fang Temple.',
   },
   {
     id: 'deep-focus-saturday',
@@ -204,32 +167,36 @@ export const weeklyEvents: CalendarEvent[] = [
     category: 'blueberry',
     recurrence: 'weekly',
     days: ['saturday'],
-    note: 'Protected time. No calls, no notifications, no obligations.',
+    note: 'Protected. 10–11:30am. No calls, no notifications.',
   },
   {
-    id: 'laundry',
+    id: 'laundry-saturday',
     time: '2:00pm',
     title: 'Laundry',
-    emoji: '🧳',
+    emoji: '🧺',
     category: 'graphite',
     recurrence: 'weekly',
     days: ['saturday'],
+    note: '2–3pm.',
   },
-  {
-    id: 'cat-full-groom',
-    time: '10:00am',
-    title: 'Cat Full Groom',
-    emoji: '🐱',
-    category: 'tomato',
-    recurrence: 'weekly',
-    days: ['sunday'],
-  },
+
+  // ── Sunday ritual block ──
   {
     id: 'sunday-self-care',
     time: '11:00am',
     title: 'Sunday Self-Care Block',
     emoji: '🌸',
     category: 'flamingo',
+    recurrence: 'weekly',
+    days: ['sunday'],
+    note: '11am–noon.',
+  },
+  {
+    id: 'plant-watering',
+    time: '12:00pm',
+    title: 'Plant Watering',
+    emoji: '🪴',
+    category: 'basil',
     recurrence: 'weekly',
     days: ['sunday'],
   },
@@ -241,6 +208,7 @@ export const weeklyEvents: CalendarEvent[] = [
     category: 'flamingo',
     recurrence: 'weekly',
     days: ['sunday'],
+    note: '4–4:30pm.',
   },
   {
     id: 'checkin-sister',
@@ -250,6 +218,7 @@ export const weeklyEvents: CalendarEvent[] = [
     category: 'flamingo',
     recurrence: 'weekly',
     days: ['sunday'],
+    note: '5–5:30pm.',
   },
   {
     id: 'instacart',
@@ -264,7 +233,7 @@ export const weeklyEvents: CalendarEvent[] = [
     id: 'transfer-notes',
     time: '6:45pm',
     title: 'Transfer Notes → Notecards',
-    emoji: '📱',
+    emoji: '📇',
     category: 'graphite',
     recurrence: 'weekly',
     days: ['sunday'],
@@ -277,52 +246,27 @@ export const weeklyEvents: CalendarEvent[] = [
     category: 'grape',
     recurrence: 'weekly',
     days: ['sunday'],
+    note: '7–7:20pm.',
   },
 ];
 
+// ─── Biweekly ───────────────────────────────────────────────────────────────
+
 export const biweeklyEvents: CalendarEvent[] = [
-  {
-    id: 'checkin-annie',
-    title: 'Check in with Annie',
-    category: 'flamingo',
-    recurrence: 'biweekly',
-    startDate: '2026-04-12',
-  },
   {
     id: 'creative-adventure',
     title: 'Creative Adventure',
     category: 'grape',
     recurrence: 'biweekly',
     startDate: '2026-04-18',
-  },
-  {
-    id: 'trader-joes-check',
-    title: "Trader Joe's Frozen Meal Check",
-    category: 'banana',
-    recurrence: 'biweekly',
-    startDate: '2026-04-14',
+    note: 'Go somewhere. Do something. No deliverable.',
   },
 ];
 
+// ─── Monthly ────────────────────────────────────────────────────────────────
+
 export const monthlyEvents: CalendarEvent[] = [
-  {
-    id: 'monthly-reset',
-    time: '9:00am',
-    title: 'Monthly Reset + Budget Hour',
-    emoji: '🟣',
-    category: 'grape',
-    recurrence: 'monthly',
-    monthlyRule: { type: 'nth-weekday', weekday: 'sunday', nth: 1 },
-  },
-  {
-    id: 'cat-supply-check',
-    time: '1:00pm',
-    title: 'Cat Supply Check',
-    emoji: '🐱',
-    category: 'tomato',
-    recurrence: 'monthly',
-    monthlyRule: { type: 'nth-weekday', weekday: 'sunday', nth: 1 },
-  },
+  // ── Real recurring payments ──
   {
     id: 'pay-credit-card',
     title: 'Pay Credit Card Bill',
@@ -330,14 +274,16 @@ export const monthlyEvents: CalendarEvent[] = [
     category: 'banana',
     recurrence: 'monthly',
     monthlyRule: { type: 'day-of-month', day: 2 },
+    criticality: 'high',
   },
   {
-    id: 'pay-mom',
+    id: 'pay-mom-monthly',
     title: 'Pay Mom',
     emoji: '💛',
     category: 'banana',
     recurrence: 'monthly',
     monthlyRule: { type: 'day-of-month', day: 15 },
+    criticality: 'high',
   },
   {
     id: 'pay-partner-rent',
@@ -346,6 +292,18 @@ export const monthlyEvents: CalendarEvent[] = [
     category: 'banana',
     recurrence: 'monthly',
     monthlyRule: { type: 'last-day' },
+    criticality: 'high',
+  },
+
+  // ── Cat care cadence ──
+  {
+    id: 'cat-supply-check',
+    time: '1:00pm',
+    title: 'Cat Supply Check',
+    emoji: '🐱',
+    category: 'tomato',
+    recurrence: 'monthly',
+    monthlyRule: { type: 'nth-weekday', weekday: 'sunday', nth: 1 },
   },
   {
     id: 'reorder-cat-meds',
@@ -380,7 +338,12 @@ export const monthlyEvents: CalendarEvent[] = [
   },
 ];
 
+// ─── One-time events (April → June 2026) ────────────────────────────────────
+// NB: named `aprilOneTimeEvents` for backward-compat with existing importers.
+// Actually contains April, May, and June one-time events.
+
 export const aprilOneTimeEvents: CalendarEvent[] = [
+  // ═══ April ═══
   {
     id: 'apr1-family-meeting',
     date: '2026-04-01',
@@ -467,14 +430,22 @@ export const aprilOneTimeEvents: CalendarEvent[] = [
     category: 'tangerine',
     recurrence: 'one-time',
     isUrgent: true,
+    criticality: 'high',
   },
+
+  // ⚠️ TAXES — highest-criticality April items
   {
     id: 'apr10-taxes',
     date: '2026-04-10',
     title: 'FILE TAXES (deadline Apr 15)',
+    emoji: '⚠️',
     category: 'tangerine',
     recurrence: 'one-time',
     isUrgent: true,
+    isNonNegotiable: true,
+    doubleAlarm: true,
+    criticality: 'safety-critical',
+    note: 'Federal + state returns or extension request. Do not let this slip.',
   },
   {
     id: 'apr13-sdge',
@@ -488,9 +459,14 @@ export const aprilOneTimeEvents: CalendarEvent[] = [
     id: 'apr15-tax-day',
     date: '2026-04-15',
     title: 'TAX DAY',
+    emoji: '⚠️',
     category: 'tangerine',
     recurrence: 'one-time',
     isUrgent: true,
+    isNonNegotiable: true,
+    doubleAlarm: true,
+    criticality: 'safety-critical',
+    note: 'HARD DEADLINE. Federal + state.',
   },
   {
     id: 'apr15-pay-mom',
@@ -498,6 +474,14 @@ export const aprilOneTimeEvents: CalendarEvent[] = [
     title: 'Pay Mom',
     category: 'banana',
     recurrence: 'one-time',
+  },
+  {
+    id: 'apr18-temecula-pool',
+    date: '2026-04-18',
+    title: 'Temecula Mix + Mingle Pool Party',
+    category: 'flamingo',
+    recurrence: 'one-time',
+    note: 'Temecula Wine Country. Check Meetup for confirmed time/address. Bring potluck item.',
   },
   {
     id: 'apr19-glen-ivy',
@@ -510,9 +494,12 @@ export const aprilOneTimeEvents: CalendarEvent[] = [
   {
     id: 'apr24-contract-checkin',
     date: '2026-04-24',
-    title: '4 Weeks to Contract End Check-In',
+    title: '⚠️ 4 Weeks to Contract End check-in',
     category: 'blueberry',
     recurrence: 'one-time',
+    isUrgent: true,
+    criticality: 'high',
+    note: 'Four areas: job applications, move decision (SD/Seattle/elsewhere), budget audit, portfolio status. One-paragraph honest assessment + one next move per area.',
   },
   {
     id: 'apr25-animal-photos',
@@ -545,20 +532,104 @@ export const aprilOneTimeEvents: CalendarEvent[] = [
     recurrence: 'one-time',
   },
   {
-    id: 'apr26-dar-birthday',
+    id: 'apr26-dar-birthday-plan',
     date: '2026-04-26',
     title: "Plan Dar's Birthday (May 16)",
     category: 'flamingo',
     recurrence: 'one-time',
   },
   {
-    id: 'apr26-mothers-day',
+    id: 'apr26-mothers-day-plan',
     date: '2026-04-26',
     title: "Plan Mother's Day (May 10)",
     category: 'flamingo',
     recurrence: 'one-time',
   },
+
+  // ═══ May ═══
+  {
+    id: 'may16-dar-birthday',
+    date: '2026-05-16',
+    title: "Dar's Birthday",
+    emoji: '🎂',
+    category: 'flamingo',
+    recurrence: 'one-time',
+  },
+  {
+    id: 'may19-tao-of-clay-1',
+    date: '2026-05-19',
+    time: '6:00pm',
+    title: 'Tao of Clay — Session 1 of 6',
+    emoji: '🏺',
+    category: 'grape',
+    recurrence: 'one-time',
+    note: '6–8pm. Josh Herman. Sculpture class.',
+  },
+  {
+    id: 'may22-contract-end',
+    date: '2026-05-22',
+    title: '⚠️ Google contract end (~approx)',
+    category: 'blueberry',
+    recurrence: 'one-time',
+    isUrgent: true,
+    criticality: 'safety-critical',
+    note: 'Highest-urgency thread in the system. Confirm exact end date.',
+  },
+  {
+    id: 'may26-tao-of-clay-2',
+    date: '2026-05-26',
+    time: '6:00pm',
+    title: 'Tao of Clay — Session 2 of 6',
+    emoji: '🏺',
+    category: 'grape',
+    recurrence: 'one-time',
+    note: '6–8pm.',
+  },
+
+  // ═══ June ═══
+  {
+    id: 'jun2-tao-of-clay-3',
+    date: '2026-06-02',
+    time: '6:00pm',
+    title: 'Tao of Clay — Session 3 of 6',
+    emoji: '🏺',
+    category: 'grape',
+    recurrence: 'one-time',
+    note: '6–8pm.',
+  },
+  {
+    id: 'jun9-tao-of-clay-4',
+    date: '2026-06-09',
+    time: '6:00pm',
+    title: 'Tao of Clay — Session 4 of 6',
+    emoji: '🏺',
+    category: 'grape',
+    recurrence: 'one-time',
+    note: '6–8pm.',
+  },
+  {
+    id: 'jun16-tao-of-clay-5',
+    date: '2026-06-16',
+    time: '6:00pm',
+    title: 'Tao of Clay — Session 5 of 6',
+    emoji: '🏺',
+    category: 'grape',
+    recurrence: 'one-time',
+    note: '6–8pm.',
+  },
+  {
+    id: 'jun23-tao-of-clay-6',
+    date: '2026-06-23',
+    time: '6:00pm',
+    title: 'Tao of Clay — Session 6 of 6 (final)',
+    emoji: '🏺',
+    category: 'grape',
+    recurrence: 'one-time',
+    note: '6–8pm.',
+  },
 ];
+
+// ─── Composite exports ─────────────────────────────────────────────────────
 
 export const allEvents = [
   ...dailyEvents,
@@ -569,10 +640,5 @@ export const allEvents = [
   ...aprilOneTimeEvents,
 ];
 
-export const monthlyBudgetSteps = [
-  { order: 1, title: 'Review last month', description: 'Check all accounts, note any surprises' },
-  { order: 2, title: 'Subscription audit', description: 'Cancel anything not used in 30 days' },
-  { order: 3, title: 'Upcoming obligations', description: 'Note fixed bills for next 30 days' },
-  { order: 4, title: 'Set monthly intention', description: 'One financial goal for this month' },
-  { order: 5, title: 'Buffer check', description: 'Is there a 2-week buffer? If not, pause discretionary spending' },
-];
+// Stub — struck as invented, kept empty until app/monthly page is replaced.
+export const monthlyBudgetSteps: { order: number; title: string; description: string }[] = [];
