@@ -55,3 +55,29 @@ The one underlying principle behind all of these: it should reduce the cost of r
 **Always be honest about what's actually in it.** No optimistic auto-organization, no inferred structure you didn't put there. If something is a fragment with no clear next step, it should look like that. The app should reflect reality, not aspirationally tidy it.
 
 The underlying principle: it should feel like a second brain that respects how your actual brain works — not a productivity system designed for someone else that you're trying to adapt yourself to fit.
+
+---
+
+## If It Ever Happens, Rip the Feature Out — Absolute Redlines
+
+**A completion rate or productivity score of any kind.** The moment there's a number representing how much you got done — percentage complete, tasks closed this week, anything — the app has become a performance context. You will start managing the number instead of managing your life. Rip it out.
+
+**Any feature that makes you feel worse for opening the app than not opening it.** This is the ultimate redline and it covers everything. If you notice you're avoiding the app, that's diagnostic. Something in it has become a source of dread. Find it and remove it before the avoidance becomes habitual, because a life management app you don't open is worse than no system at all.
+
+**Push notifications for anything that isn't a hard external deadline.** The app reaching into your pocket to tell you something is undone is the app becoming a source of ambient guilt. One notification that slips through and catches you at the wrong moment can poison the whole relationship with the tool.
+
+**A visible count of how many things are in the parking lot.** "You have 14 parked projects" is just the weight of all open loops, quantified. The parking lot should feel like a drawer, not a debt.
+
+**Any "you haven't touched this in X days" language.** Anywhere. For anything. Projects go dormant — that's not failure, that's how you work. The app surfacing elapsed time as implicit accusation is the app moralizing about consistency.
+
+**A required field that blocks you from saving.** If you can't log something because you haven't filled in a category, a due date, a status — the app is demanding more than you have to give in that moment. Required fields are a bureaucratic instinct that has no place in a system designed for your brain.
+
+**Social or comparative features of any kind.** Sharing, public profiles, "others are working on similar projects" — anything that introduces an external gaze. Your creative work and your life management are not performance. The moment there's an audience, real or implied, the nature of the tool changes completely.
+
+**An onboarding flow you have to redo after a gap.** If returning after two weeks requires re-setup, re-configuration, or re-orientation of any kind, the cost of returning is too high. The app should just be there, exactly as you left it, waiting.
+
+**Anything that auto-archives or auto-closes things you didn't explicitly close.** The app making decisions about what's dead or done without your input is the app overwriting your reality with its own assumptions. Nothing should disappear unless you put it there.
+
+**A "suggested next action" generated without your input.** AI-generated task suggestions, smart recommendations, nudges about what you should work on — all of this is the app pretending to understand your priorities better than you do. It doesn't. Its job is to hold what you've decided, not to generate new decisions.
+
+The meta-redline underneath all of these: if you ever find yourself doing work for the app rather than the app doing work for you — feeding it data to keep it accurate, maintaining its structure, managing its categories — the whole thing needs to be stripped back to the minimum that actually helps.
