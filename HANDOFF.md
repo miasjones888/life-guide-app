@@ -1,8 +1,8 @@
 # Handoff — life-guide-app
 
-**Status:** Phase 1 Step 2 complete (PR #27 merged). Phase 1 Step 3 (journal drawer) is next.
-**Source of truth:** `main`. Branch Step 3 work directly from `main`.
-**Last updated:** 2026-04-15.
+**Status:** Phase 1 Step 3 complete (PR #30 merged). Phase 1 Step 4 (nav cleanup + "sprouting in Phase N" placeholders + `/settings` export/import) is next.
+**Source of truth:** `main`. Branch Step 4 work directly from `main`.
+**Last updated:** 2026-04-15 (after Step 3 shipped).
 
 ---
 
@@ -63,35 +63,46 @@ Shipped in PR #27. Four files, one PR, exactly the scoped plan:
 1. **P1 — `/today` hides date-only events.** `getNowNextLater` in `app/today/page.tsx` filters out every event without a `time` field, and the page has no alternate path for date-only items. That means safety-critical one-time external events like `apr15-tax-day` and `may22-contract-end` never render on `/today` even on the correct date. Fix: render a small "today" section above Now / Next / Later that lists date-only events for `localIsoDate(now)`. Show outside hard-day mode only (per HANDOFF Step 2's "collapse to minimum" rule). Mark safety-critical rows with the existing tomato left border.
 2. **P2 — `useAnchor` silently drops legacy anchor strings on first read.** The previous `app/page.tsx` wrote `localStorage.setItem('anchor', v)` as a raw string under the same key the new hook claims. The new `parseAnchorState` calls `JSON.parse`, throws on the raw string, hits the catch, and returns `emptyState()` — Mia's existing anchor is silently lost. Fix: in the JSON.parse catch branch, treat the raw stored value as a v0 legacy string and adopt it as today's sentence (`{ date: todayKey(), text: stored }`). The next `setAnchorText` call will rewrite it in the v1 shape.
 
-   Same v0 → v1 migration carve-out belongs in `useJournal` from day one — see Step 3 below.
+   Same v0 → v1 migration carve-out belongs in `useJournal` from day one — see Step 3 below. (Both follow-ups were resolved: P1 and P2 landed as a hotfix in PR #28, and `useJournal` shipped with the v0 migration wired in from the first commit — see Step 3 ledger entry.)
+
+### Phase 1 Step 3 — Journal drawer (complete)
+
+Shipped in PR #30. Six files, one PR, exactly the scoped plan:
+
+- **`lib/storage-keys.ts`** — registered `STORAGE_KEYS.JOURNAL = 'journal'`, a fresh key for the drawer's paged notebook. Deliberately distinct from the future `growth-journal` entries store.
+- **`hooks/useJournal.ts`** — versioned-localStorage hook mirroring `useAnchor` / `useBudget` exactly. State shape: `{ pages: string[], currentPageIndex: number }`. **v0 → v1 migration carve-out wired from day one** (the thing `useAnchor` was missing on first ship): any raw non-JSON string ever written under this key is adopted as page 0 of the notebook instead of being silently dropped. Lesson learned from the PR #27 → PR #28 hotfix cycle, folded in up front.
+- **`components/ui/JournalPenButton.tsx`** — 44×44 fixed bottom-right affordance. Paper background, 1px ink-3 border, Unicode pen glyph (`✎`), no image asset. No keyboard shortcut — mobile-first per the prior draft's rejected `n` shortcut. A future desktop power-user shortcut remains acceptable if modifier-gated (`⌘J` / `Ctrl+J`); Step 3 shipped with the button only.
+- **`components/ui/JournalDrawer.tsx`** — full-screen drawer. Dotted-paper CSS background via `radial-gradient(circle, rgba(26,25,23,0.14) 1px, transparent 1.4px)` at 18×18px (no image asset). IM Fell English italic `<textarea>` body with `overflow:hidden` + `resize:none` so no soft scroll inside a page. Character-budget pagination (~1200/page) that splits overflow at the nearest word boundary and flows it into the next page (creating one if needed). Closes on `Escape` and on a visible `close` button. Focus never trapped — Tab flows out of the drawer normally.
+- **`components/layout/PageShell.tsx`** — mounts `JournalPenButton` + `JournalDrawer` globally so every Phase 1 surface inherits the entry point for free. Journal open state lifted here.
+- **`components/ui/QuickCapture.tsx`** — shifted the legacy floating `+` button up to `bottom:124px` so the pen owns the bottom-right corner. (See Step 4 notes below — `QuickCapture` comes out of `PageShell` in Step 4 anyway.)
+
+**Verified:** `npm run test` passes (28/28). `npm run build` succeeds; 16 static routes, `/today` at 5.16 kB. Covenant §10 vocab audit clean across all new surface copy, aria labels, placeholders, and file comments. The mechanical ratchet test caught one doc-comment slip on the first run (`score` / `completion` inside a JSDoc); rewritten clean in the same commit.
+
+**No PR #30 follow-ups logged.** The merge happened immediately after exit criteria were verified, with no review feedback queued. If Codex or another reviewer flags anything post-merge, log it here and resolve it in Step 4 or a dedicated hotfix.
 
 ---
 
-## Phase 1 Step 3 — Journal drawer (NEXT)
+## Phase 1 Step 4 — Nav cleanup and "sprouting in Phase N" placeholders (NEXT)
 
-- **Entry point:** a small fixed pen / corner button (~44×44px, paper background, ink-3 border) in the bottom-right of every screen, positioned just above `BottomNav` so it doesn't collide with it. **Mobile-first:** the visible affordance is the primary path on every device. **No global `n` keyboard shortcut** — the previous draft of this step proposed one and it was rejected: `n` collides with typing in any input (anchor field, future capture box) and mobile has no keyboard, so a keyboard-only entry would make the journal desktop-only by design. If a desktop power-user shortcut is added later it must be modifier-gated (`⌘J` / `Ctrl+J`) so it can't fire while typing — but Step 3 ships with the button only.
-- Tapping the pen button opens a full-screen drawer.
-- Dotted-paper CSS background (radial-gradient pattern — no image asset).
-- `<textarea>` body in IM Fell English italic, pagination (pages fill up and a new one starts; no soft scroll).
-- Persists to localStorage via a new `useJournal` hook, same versioned pattern as `useBudget` / `useAnchor`. Register the storage key in `lib/storage-keys.ts` first. **Include the v0 → v1 migration carve-out** that `useAnchor` was missing on first ship (see Codex follow-ups below) — if any prior surface ever wrote a raw string under the same key, fold it into the new shape on first read instead of dropping it.
-- **No tear-out interaction yet.** Tear-out requires the Notes surface to exist as a destination (Phase 2).
-- Drawer closes on Escape and on a visible close button. Never traps focus or blocks the rest of the app.
-- Covenant audit against the drawer copy before the PR merges.
+Primary scope:
 
-**Exit criteria:** tap the pen button on `/today` (and any other Phase 1 surface) → drawer opens → type → close → reopen → content persists. Works on touch and mouse. No keyboard shortcut required for any path.
+- **Trim primary nav to 6 items:** `/today`, `/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`. Exact labels match covenant vocabulary.
+- **Placeholder routes** for the 5 unbuilt surfaces (`/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`): each renders a single styled "sprouting in Phase N" card. One line each. No functionality, no placeholder data, no faked UI.
+- **Redirect legacy routes** from the Phase 0 tree (`/daily`, `/weekly`, `/monthly`, `/deck`, `/folders`, `/reflection`, `/culture`, `/growth`, `/backup`, `/guide`) to their closest Phase 1 equivalent, or `/today` if there isn't one. `next/navigation` redirect stubs, same pattern as `app/page.tsx` already uses.
+- **`BottomNav` and `SideNav` updated accordingly.** No "more" drawer — if it's not in the 6, it's not in the nav.
+- **`/settings`** (not in nav, reached via a chrome menu): Export All / Import All JSON backed by the same versioned-localStorage pattern. This is the Phase 1 escape hatch — if any store migration ever breaks, Mia can export + reload. Reuse `useBudget`'s `exportData` / `importData` shape across `useAnchor`, `useJournal`, and any other versioned store. Round-trip every store before shipping.
+- **As legacy routes get deleted, their entries come out of the `tests/covenant-vocab.test.ts` allowlist in the same commit.** End state for Phase 1 is an empty (or near-empty) allowlist.
 
----
+**Folded into Step 4 (added 2026-04-15 after Step 3 shipped — flagged during the Step 3 completion report):**
 
-## Phase 1 Step 4 — Nav cleanup and "sprouting in Phase N" placeholders
+1. **Unmount `QuickCapture` from `PageShell`.** It's a Phase 0 legacy component whose only save path runs into `useFolderSystem`, which lives at `/folders`. Once Step 4 redirects `/folders` away, `QuickCapture` has nothing to capture into, and the journal drawer is now the Phase 1 freeform capture path. Cleanest move: delete the `<QuickCapture />` render from `components/layout/PageShell.tsx` in the same commit that redirects `/folders`. The component file itself can stay (it's on the salvage list and will be re-used if/when the Phase 2 Notes surface wants it) — it just stops being rendered globally. As a side effect, the `bottom:124px` slot that Step 3 opened up goes back to being free space.
 
-- Primary nav trimmed to 6 items: `/today`, `/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`. Exact labels to match covenant vocabulary.
-- Unbuilt surfaces (`/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`) render a single styled "sprouting in Phase N" card. No functionality, no placeholder data, no faked UI. One line each.
-- Old routes from the Phase 0 tree (`/daily`, `/weekly`, `/monthly`, `/deck`, `/folders`, `/reflection`, `/culture`, `/growth`, `/backup`, `/guide`) redirect to their closest Phase 1 equivalent or to `/today` if there isn't one.
-- `BottomNav` and `SideNav` updated accordingly. No "more" drawer — if it's not in the 6, it's not in the nav.
-- Settings route at `/settings` (not in nav, reached via chrome menu): Export All / Import All JSON backed by the same versioned localStorage pattern. This is the Phase 1 escape hatch — if any store migration ever breaks, Mia can export + reload.
-- As legacy routes get deleted, their entries come out of the covenant-vocab allowlist in the same commit.
+2. **Handle the `content/guide.ts` → `PageShell` import chain.** `PageShell.tsx` currently imports `systemVersionNote` from `content/guide.ts` for the footer, and `content/guide.ts` is in the covenant-vocab ratchet allowlist because `/guide` is on its way out. Two options, pick one before writing code:
+   - **(a) Relocate.** Move `systemVersionNote` (and only that export) to a tiny standalone module — e.g. `content/version.ts` — and update the import in `PageShell.tsx`. Then delete `content/guide.ts` and `app/guide/page.tsx` and their covenant-vocab allowlist entries in the same commit.
+   - **(b) Inline.** Hard-code the version string directly in `PageShell.tsx` and delete `content/guide.ts` + `app/guide/page.tsx` + both allowlist entries in the same commit.
+   Recommendation: (a) if the version string is likely to be referenced again elsewhere (settings screen, about surface); (b) if it's genuinely single-use. Either way, `content/guide.ts` and `app/guide/page.tsx` both leave the covenant-vocab allowlist in Step 4.
 
-**Exit criteria:** 6 nav items, redirects work, Export/Import round-trips cleanly, covenant-vocab allowlist shrinks to near-empty.
+**Exit criteria:** 6 nav items visible, every legacy route redirects cleanly, `/settings` Export → Import round-trips every versioned store (anchor, journal, budget, folders, wishlist, user events, local events, hard-day mode), covenant-vocab allowlist shrinks to near-empty, `QuickCapture` no longer renders on `/today`, `content/guide.ts` and `app/guide/page.tsx` no longer exist. `npm run test` and `npm run build` both green.
 
 ---
 
@@ -143,20 +154,21 @@ Custom ESLint rules have a real maintenance cost and they need enough surfaces t
 
 ## Priority reading list for a fresh session
 
-Read in this order — first the four orientation docs, then the references for Step 2:
+Read in this order — first the four orientation docs, then the references for Step 4:
 
 1. **`COVENANT.md`** — everything. Read this first every session.
-2. **`HANDOFF.md`** — this file. Phase ledger, Step 2 plan, hard don'ts.
+2. **`HANDOFF.md`** — this file. Phase ledger, Step 4 plan, hard don'ts.
 3. **`CLAUDE.md`** — hard rules and command reference for every session.
 4. **`content/mia.ts`** — the grounding file. Real specimens, hard-day minimum, archetype system, terrain zones.
-5. **`content/calendar.ts`** — what's real on the calendar (spoiler: not much, and that's correct).
-6. **`hooks/useBudget.ts`** — canonical versioned-localStorage pattern to copy for `useAnchor` and future stores.
-7. **`hooks/useFolderSystem.ts`** — same pattern, second reference.
-8. **`lib/storage-keys.ts`** — `STORAGE_KEYS.ANCHOR` is already registered for `useAnchor` to reuse.
-9. **`tests/covenant-vocab.test.ts`** — the mechanical half of §10 enforcement. Read this before writing any new surface copy; `app/page.tsx` comes out of the allowlist as part of Step 2.
-10. **`app/globals.css`** — the Step 1 visual baseline.
-11. **`context/HardDayContext.tsx`** — hard-day wiring to reuse on the Today surface.
-12. **`components/folders/ProjectFolder.tsx`** + siblings — the 981 lines to re-skin in Phase 2 (not Step 2).
+5. **`hooks/useBudget.ts`** — canonical versioned-localStorage pattern. `exportData` / `importData` here are the shape to mirror across every versioned store for the `/settings` escape hatch.
+6. **`hooks/useAnchor.ts`** + **`hooks/useJournal.ts`** — the two Phase 1 stores that need `exportData` / `importData` added in Step 4 to match the `useBudget` shape.
+7. **`lib/storage-keys.ts`** — the full key registry. Every key in here needs to round-trip through `/settings` export/import.
+8. **`tests/covenant-vocab.test.ts`** — the mechanical half of §10 enforcement. The allowlist is the Step 4 shopping list: every legacy file in it comes out in the same commit that deletes or rewrites the file.
+9. **`components/layout/PageShell.tsx`** — where `QuickCapture` gets unmounted and where the `content/guide.ts` import needs to be relocated or inlined.
+10. **`components/layout/BottomNav.tsx`** + **`components/layout/SideNav.tsx`** — the two nav surfaces being trimmed to 6 items.
+11. **`app/page.tsx`** — canonical `next/navigation` redirect stub; copy this shape for every legacy route redirect.
+12. **`content/calendar.ts`** — what's real on the calendar. Stays as-is in Step 4; relevant because `/calendar` becomes a placeholder surface and the real content continues to flow through `/today`.
+13. **`components/folders/ProjectFolder.tsx`** + siblings — the 981 lines to re-skin in Phase 2. Do not touch in Step 4 — just unmount the `QuickCapture` entry point and redirect `/folders`.
 
 ---
 
@@ -174,10 +186,10 @@ Read in this order — first the four orientation docs, then the references for 
 
 ---
 
-## What must be true before Step 3 starts
+## What must be true before Step 4 starts
 
-Only one thing: the next agent reads `COVENANT.md` end-to-end with fresh eyes, then this file, then `CLAUDE.md`, then `content/mia.ts`, then opens `hooks/useAnchor.ts` (and `hooks/useBudget.ts` for the deeper pattern) as the reference for the new `useJournal` hook. Everything else above is already decided.
+Only one thing: the next agent reads `COVENANT.md` end-to-end with fresh eyes, then this file, then `CLAUDE.md`, then `content/mia.ts`, then opens `hooks/useBudget.ts` (for the `exportData` / `importData` shape to mirror across every versioned store) and `tests/covenant-vocab.test.ts` (to see which legacy files leave the allowlist in the same commit they're deleted). Everything else above is already decided.
 
 ---
 
-*End of handoff. Steps 1 and 2 shipped. Step 3 is the journal drawer with a bottom-right pen-button entry point.*
+*End of handoff. Steps 1, 2, and 3 shipped. Step 4 is nav cleanup + "sprouting in Phase N" placeholders + the `/settings` export/import escape hatch, with the `QuickCapture` unmount and `content/guide.ts` import cleanup folded in.*
