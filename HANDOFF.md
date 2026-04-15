@@ -1,7 +1,7 @@
 # Handoff — life-guide-app
 
 **Status:** Phase 1 Step 1 complete. ANCHOR rename complete. Phase 1 Step 2 is next.
-**Current working branch:** `claude/review-merge-codex-branches-L2Vxr` (branch Step 2 work from here, or from `main` once this is merged).
+**Source of truth:** `main`. Branch Step 2 work directly from `main`.
 **Last updated:** 2026-04-15.
 
 ---
@@ -51,11 +51,11 @@ Shipped in PRs #24 and #25. What landed:
 
 ## Phase 1 Step 2 — Guardrails + Today (Anchor) surface (NEXT)
 
-Budget: 3–4 focused days. One PR. Exit criteria below.
+One PR, four files touched, exit criteria below.
 
 ### What to build
 
-1. **`lib/guardrails.ts`** — a short exported-constants module. ~20 lines. Example surface area:
+1. **`lib/guardrails.ts`** — a new ~20-line constants module. Example surface area:
 
    ```ts
    export const MAX_ACTIVE_CREATIVE_SLOTS = 3;
@@ -67,27 +67,27 @@ Budget: 3–4 focused days. One PR. Exit criteria below.
    export const NO_SESSION_TRACKING = true;
    ```
 
-   Import it in any Step 2 code that could otherwise drift from the covenant. Naming note: no word from §10's "Never use" list appears in any constant name. Use "life slot" (one word from §10 removed from the earlier draft).
+   Import it from any Step 2 code that could otherwise drift from the covenant. Naming note: no word from §10's "Never use" list appears in any constant name.
 
-2. **`hooks/useAnchor.ts`** — a new versioned-localStorage hook. Copy the shape of `hooks/useBudget.ts` exactly: same migration pattern, same version field, same schema shape. Storage key already exists: `STORAGE_KEYS.ANCHOR` in `lib/storage-keys.ts`.
+2. **`hooks/useAnchor.ts`** — a new versioned-localStorage hook. Copy the shape of `hooks/useBudget.ts` exactly: same migration pattern, same version field, same schema shape. The storage key already exists at `STORAGE_KEYS.ANCHOR` in `lib/storage-keys.ts`.
 
-3. **`/today` route** — the Today Anchor surface. New directory at `app/today/page.tsx`. What it reads from:
+3. **`app/today/page.tsx`** — the Today Anchor surface. Reads from:
    - `content/calendar.ts` — cat meds (9am / 9pm, Maisie + Meeko), April / May / June 2026 one-time events.
    - `content/mia.ts` — hard-day minimum.
-   - `useHardDayMode` / `HardDayContext` — existing.
-   - `useAnchor` — new.
+   - `context/HardDayContext` + `hooks/useHardDayMode` — existing.
+   - `hooks/useAnchor` — new (item 2 above).
 
    What it shows:
    - Time + date header.
    - Hard-day toggle.
-   - Anchor input (the single sentence Mia sets for the day). Not a list. Not a checklist. One line.
+   - Anchor input — the single sentence Mia sets for the day. Not a list. Not a checklist. One line.
    - Cat meds and any hard-day-minimum items as always-visible rows.
    - Now / Next / Later sections for real calendar events only.
    - **Nothing else.** No "what matters now" panel, no "coming up" panel, no morning/evening checklist (all Claude-invented in the Phase 0 audit and archived).
 
    Hard-day mode collapses the surface to: cat meds, Mia's meds (if surfaced from `content/mia.ts`), anchor line. Nothing else is visible.
 
-4. **Redirect `/` → `/today`.** `app/page.tsx` becomes a minimal redirect. The old `/` implementation can be deleted once the redirect is in place; the covenant-vocab ratchet's `app/page.tsx` allowlist entry comes out in the same commit.
+4. **`app/page.tsx`** — replace the legacy implementation with a minimal redirect to `/today`, and remove its entry from the `tests/covenant-vocab.test.ts` allowlist in the same commit.
 
 ### What must not happen
 
@@ -188,15 +188,20 @@ Custom ESLint rules have a real maintenance cost and they need enough surfaces t
 
 ## Priority reading list for a fresh session
 
+Read in this order — first the four orientation docs, then the references for Step 2:
+
 1. **`COVENANT.md`** — everything. Read this first every session.
-2. **`content/mia.ts`** — the grounding file. Real specimens, hard-day minimum, archetype system, terrain zones.
-3. **`content/calendar.ts`** — what's real on the calendar (spoiler: not much, and that's correct).
-4. **`hooks/useBudget.ts`** — canonical versioned-localStorage pattern to copy for `useAnchor` and future stores.
-5. **`hooks/useFolderSystem.ts`** — same pattern, second reference.
-6. **`tests/covenant-vocab.test.ts`** — the mechanical half of §10 enforcement. Read this before writing any new surface copy.
-7. **`app/globals.css`** — the Step 1 visual baseline.
-8. **`components/folders/ProjectFolder.tsx`** + siblings — the 981 lines to re-skin in Phase 2.
-9. **`context/HardDayContext.tsx`** — hard-day wiring to reuse.
+2. **`HANDOFF.md`** — this file. Phase ledger, Step 2 plan, hard don'ts.
+3. **`CLAUDE.md`** — hard rules and command reference for every session.
+4. **`content/mia.ts`** — the grounding file. Real specimens, hard-day minimum, archetype system, terrain zones.
+5. **`content/calendar.ts`** — what's real on the calendar (spoiler: not much, and that's correct).
+6. **`hooks/useBudget.ts`** — canonical versioned-localStorage pattern to copy for `useAnchor` and future stores.
+7. **`hooks/useFolderSystem.ts`** — same pattern, second reference.
+8. **`lib/storage-keys.ts`** — `STORAGE_KEYS.ANCHOR` is already registered for `useAnchor` to reuse.
+9. **`tests/covenant-vocab.test.ts`** — the mechanical half of §10 enforcement. Read this before writing any new surface copy; `app/page.tsx` comes out of the allowlist as part of Step 2.
+10. **`app/globals.css`** — the Step 1 visual baseline.
+11. **`context/HardDayContext.tsx`** — hard-day wiring to reuse on the Today surface.
+12. **`components/folders/ProjectFolder.tsx`** + siblings — the 981 lines to re-skin in Phase 2 (not Step 2).
 
 ---
 
@@ -216,7 +221,7 @@ Custom ESLint rules have a real maintenance cost and they need enough surfaces t
 
 ## What must be true before Step 2 starts
 
-Only one thing: the next agent reads `COVENANT.md` end-to-end with fresh eyes, then this file, then `content/mia.ts`, then opens `hooks/useBudget.ts` as the pattern reference. Everything else above is already decided.
+Only one thing: the next agent reads `COVENANT.md` end-to-end with fresh eyes, then this file, then `CLAUDE.md`, then `content/mia.ts`, then opens `hooks/useBudget.ts` as the pattern reference. Everything else above is already decided.
 
 ---
 
