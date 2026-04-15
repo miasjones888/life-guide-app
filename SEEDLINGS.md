@@ -79,9 +79,19 @@ exactly three options:
    the candidate pool in `content/mia.ts` (if it came from there) or is
    forgotten (if it was freeform). The slot frees up for next week's choice.
 
-There is no fourth option. No *"skip this week"*, no *"postpone"*, no partial
-credit. The whole point of the three-way split is that every outcome has
-dignity — including the one where the practice didn't stick this time.
+There is no fourth option. No *"postpone"*, no partial credit. The whole
+point of the three-way split is that every outcome has dignity — including
+the one where the practice didn't stick this time.
+
+**If the weekly setup ends without the block being touched, the carried
+seedling rolls forward unchanged** — behaviorally identical to option 2
+("another week as a seedling"). This is not a fourth option; it is the
+default reading of option 2 when no explicit decision is made. Slot state
+stays well-defined: the seedling is still there, carried into the new week,
+until Mia explicitly marks it rooted or dormant. COVENANT §1 forbids
+required fields that block you from saving, so non-interaction always has a
+safe, unambiguous meaning — never a blocked state, never a mid-week
+ambiguity about whose slot is whose.
 
 ---
 
@@ -181,9 +191,24 @@ The block has two states:
    `content/mia.ts`. Picking one or typing a name sets this week's seedling
    and the block becomes inert until next Sunday.
 
-The block is skippable. If Mia doesn't want a seedling this week she leaves
-the block untouched and moves on. There is no "you haven't chosen a seedling"
-warning — COVENANT §1 forbids moralizing about consistency.
+The block is skippable, and skipping has a well-defined meaning in both
+states — it never leaves slot state ambiguous:
+
+- **State 1 (carrying a seedling from last week):** leaving the block
+  untouched is the implicit default for option 2 ("another week as a
+  seedling") — see the three-way-decision section above. The carried
+  seedling stays carried, the slot stays occupied, and nothing changes
+  until Mia explicitly marks it rooted or dormant at a future Sunday. No
+  "you skipped the decision" accusation, no required-field block on the
+  weekly setup flow.
+- **State 2 (no seedling this week yet):** leaving the block untouched
+  means this week has no seedling. The slot sits empty until the next
+  Sunday setup. That is a legitimate choice, not a failure, and the app
+  never flags it as one.
+
+There is no "you haven't chosen a seedling" warning in either state —
+COVENANT §1 forbids moralizing about consistency and forbids required
+fields that block you from saving.
 
 ---
 
