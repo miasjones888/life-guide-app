@@ -2,7 +2,12 @@
 
 import React, { useState } from 'react';
 import PageShell from '@/components/layout/PageShell';
-import { STORAGE_KEYS } from '@/lib/storage-keys';
+import {
+  SETTINGS_STORES,
+  buildSnapshot,
+  restoreSnapshot,
+  type ImportResult,
+} from '@/lib/settings-snapshot';
 
 /**
  * /settings — the Phase 1 escape hatch.
@@ -10,118 +15,9 @@ import { STORAGE_KEYS } from '@/lib/storage-keys';
  * Not on the primary nav. Single purpose: export every versioned
  * localStorage store as one JSON snapshot, and import one back. If a
  * future store migration ever breaks, Mia can export, reload, and keep
- * her data.
- *
- * The snapshot shape mirrors the stored shape of each hook exactly —
- * useBudget's / useAnchor's / useJournal's versioned `{ version, state }`
- * wrappers pass through unchanged. Simple per-value stores
- * (hard-day-mode, user events, local events, wishlist) also round-trip
- * as their raw stored value.
+ * her data. All snapshot logic lives in lib/settings-snapshot so the
+ * round-trip can be tested without a browser.
  */
-
-interface StoreConfig {
-  readonly key: string;
-  readonly label: string;
-}
-
-// The eight Phase 1 data stores called out in HANDOFF Step 4:
-// anchor, journal, budget, folders, wishlist, user events, local events,
-// hard-day mode. Exporting reads them from localStorage verbatim; no
-// transformation of the on-disk format happens anywhere in this file.
-const STORES: readonly StoreConfig[] = [
-  { key: STORAGE_KEYS.ANCHOR, label: 'anchor' },
-  { key: STORAGE_KEYS.JOURNAL, label: 'journal' },
-  { key: STORAGE_KEYS.BUDGET, label: 'budget' },
-  { key: STORAGE_KEYS.FOLDERS, label: 'folders' },
-  { key: STORAGE_KEYS.WISHLIST, label: 'wishlist' },
-  { key: STORAGE_KEYS.USER_EVENTS, label: 'user events' },
-  { key: STORAGE_KEYS.LOCAL_EVENTS, label: 'local events' },
-  { key: STORAGE_KEYS.HARD_DAY_MODE, label: 'hard-day mode' },
-];
-
-const SNAPSHOT_VERSION = 'life-guide-snapshot-v1';
-
-interface Snapshot {
-  readonly version: typeof SNAPSHOT_VERSION;
-  readonly exportedAt: string;
-  readonly stores: Record<string, unknown>;
-}
-
-function readStore(key: string): unknown {
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw === null) return null;
-    try {
-      return JSON.parse(raw);
-    } catch {
-      // Raw non-JSON value (e.g. hard-day-mode stores "true"/"false").
-      return raw;
-    }
-  } catch {
-    return null;
-  }
-}
-
-function writeStore(key: string, value: unknown): boolean {
-  try {
-    const serialized = typeof value === 'string' ? value : JSON.stringify(value);
-    localStorage.setItem(key, serialized);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function buildSnapshot(): Snapshot {
-  const stores: Record<string, unknown> = {};
-  for (const s of STORES) {
-    const value = readStore(s.key);
-    if (value !== null) stores[s.key] = value;
-  }
-  return {
-    version: SNAPSHOT_VERSION,
-    exportedAt: new Date().toISOString(),
-    stores,
-  };
-}
-
-interface ImportResult {
-  readonly ok: boolean;
-  readonly restored: readonly string[];
-  readonly error?: string;
-}
-
-function restoreSnapshot(json: string): ImportResult {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(json);
-  } catch {
-    return { ok: false, restored: [], error: 'Could not parse file.' };
-  }
-  if (!parsed || typeof parsed !== 'object') {
-    return { ok: false, restored: [], error: 'Not a valid snapshot file.' };
-  }
-  const candidate = parsed as Partial<Snapshot>;
-  if (candidate.version !== SNAPSHOT_VERSION) {
-    return {
-      ok: false,
-      restored: [],
-      error: `Unknown snapshot version: ${String(candidate.version ?? 'none')}.`,
-    };
-  }
-  if (!candidate.stores || typeof candidate.stores !== 'object') {
-    return { ok: false, restored: [], error: 'Snapshot has no stores.' };
-  }
-  const restored: string[] = [];
-  for (const s of STORES) {
-    if (!(s.key in candidate.stores)) continue;
-    const value = candidate.stores[s.key];
-    if (writeStore(s.key, value)) {
-      restored.push(s.label);
-    }
-  }
-  return { ok: true, restored };
-}
 
 function downloadJson(filename: string, content: string) {
   const blob = new Blob([content], { type: 'application/json' });
@@ -187,7 +83,8 @@ export default function SettingsPage() {
           export
         </div>
         <p className="text-body-sm" style={{ marginBottom: '10px' }}>
-          Download one JSON file containing every store: {STORES.map((s) => s.label).join(', ')}.
+          Download one JSON file containing every store:{' '}
+          {SETTINGS_STORES.map((s) => s.label).join(', ')}.
         </p>
         <button
           type="button"
@@ -266,7 +163,9 @@ export default function SettingsPage() {
                   restored.
                 </div>
                 <div className="text-micro text-ink-muted">
-                  {importResult.restored.length > 0 ? importResult.restored.join(', ') : 'nothing to restore'}
+                  {importResult.restored.length > 0
+                    ? importResult.restored.join(', ')
+                    : 'nothing to restore'}
                 </div>
               </>
             ) : (
