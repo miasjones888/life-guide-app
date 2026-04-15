@@ -61,8 +61,6 @@ const ALLOWLIST = new Set<string>([
   // ── (3) Phase 0 legacy — remove as later steps rewrite them ──────
   // 'behind' appears only in a z-order comment in this salvage file.
   'components/folders/NoteCardStack.tsx',
-  // Phase 1 Step 2 rebuilds /page.tsx → /today with covenant copy.
-  'app/page.tsx',
   // Legacy guide surface — not on the Phase 1 nav; to be archived.
   'app/guide/page.tsx',
   // Phase 1 Step 4 replaces /backup with /settings (Export/Import).
