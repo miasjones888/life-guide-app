@@ -45,25 +45,32 @@ function emptyState(): AnchorState {
 
 function parseAnchorState(stored: string | null): AnchorState {
   if (!stored) return emptyState();
+
+  let parsed: unknown;
   try {
-    const parsed = JSON.parse(stored) as unknown;
-    if (
-      !parsed ||
-      typeof parsed !== 'object' ||
-      (parsed as StoredAnchorV1).version !== STORAGE_VERSION
-    ) {
-      return emptyState();
-    }
-    const { state } = parsed as StoredAnchorV1;
-    if (!state || typeof state.date !== 'string' || typeof state.text !== 'string') {
-      return emptyState();
-    }
-    // Date-scoped: a stored sentence from a previous day reads as empty.
-    if (state.date !== todayKey()) return emptyState();
-    return state;
+    parsed = JSON.parse(stored);
   } catch {
+    // Legacy v0 — pre-versioning, the previous /page.tsx wrote the anchor
+    // as a raw (non-JSON) string under this same localStorage key. Adopt
+    // it as today's sentence instead of silently dropping it on first
+    // upgrade. The next setAnchorText call will rewrite in the v1 shape.
+    return { date: todayKey(), text: stored };
+  }
+
+  if (
+    !parsed ||
+    typeof parsed !== 'object' ||
+    (parsed as StoredAnchorV1).version !== STORAGE_VERSION
+  ) {
     return emptyState();
   }
+  const { state } = parsed as StoredAnchorV1;
+  if (!state || typeof state.date !== 'string' || typeof state.text !== 'string') {
+    return emptyState();
+  }
+  // Date-scoped: a stored sentence from a previous day reads as empty.
+  if (state.date !== todayKey()) return emptyState();
+  return state;
 }
 
 export function useAnchor() {
