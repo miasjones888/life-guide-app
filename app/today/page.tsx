@@ -109,6 +109,10 @@ export default function TodayPage() {
     currentMinutes,
     todaysEvents
   );
+  // Date-only items — tax day, contract end, etc. They have a date but
+  // no clock time, so getNowNextLater drops them. Surface them in their
+  // own section so safety-critical externals never disappear from /today.
+  const dateOnlyEvents = todaysEvents.filter((e) => !e.time);
 
   return (
     <PageShell>
@@ -219,6 +223,61 @@ export default function TodayPage() {
           ))}
         </div>
       </div>
+
+      {/* Today — date-only events. Only outside hard-day mode. Skips
+          itself entirely if there are no date-only items today. */}
+      {!isHardDay && dateOnlyEvents.length > 0 && (
+        <div style={{ marginBottom: '16px' }}>
+          <div
+            className="text-micro text-ink-muted"
+            style={{ marginBottom: '6px', letterSpacing: '0.05em' }}
+          >
+            today
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              border: '1px solid var(--border-2)',
+              borderRadius: '2px',
+              backgroundColor: 'var(--color-paper)',
+            }}
+          >
+            {dateOnlyEvents.map((event, i) => {
+              const isSafetyCritical = event.criticality === 'safety-critical';
+              return (
+                <div
+                  key={event.id}
+                  style={{
+                    padding: '10px 12px',
+                    paddingLeft: isSafetyCritical ? '10px' : '12px',
+                    borderBottom:
+                      i < dateOnlyEvents.length - 1
+                        ? '1px solid var(--border-3)'
+                        : 'none',
+                    borderLeft: isSafetyCritical
+                      ? '3px solid var(--color-tomato)'
+                      : '3px solid transparent',
+                  }}
+                >
+                  <div className="text-body" style={{ lineHeight: 1.3 }}>
+                    {event.emoji ? `${event.emoji} ` : ''}
+                    {event.title}
+                  </div>
+                  {event.note && (
+                    <div
+                      className="text-micro text-ink-muted"
+                      style={{ marginTop: '4px' }}
+                    >
+                      {event.note}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Now / Next / Later — only outside hard-day mode */}
       {!isHardDay && (
