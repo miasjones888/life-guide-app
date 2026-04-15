@@ -56,22 +56,11 @@ const ALLOWLIST = new Set<string>([
   // Real IRS / USPS deadlines live on the calendar and must say so.
   'content/calendar.ts',
   'components/ui/TimeBlock.tsx',
-  'components/calendar/AddEventSheet.tsx',
 
   // ── (3) Phase 0 legacy — remove as later steps rewrite them ──────
   // 'behind' appears only in a z-order comment in this salvage file.
+  // Re-skinned (not rewritten) in Phase 2; this comment goes with it.
   'components/folders/NoteCardStack.tsx',
-  // Legacy guide surface — not on the Phase 1 nav; to be archived.
-  'app/guide/page.tsx',
-  // Phase 1 Step 4 replaces /backup with /settings (Export/Import).
-  'app/backup/page.tsx',
-  // Legacy priority cycle — superseded by the Step 2 anchor model.
-  'hooks/usePriorityStatus.ts',
-  // Legacy content module referenced by app/guide; follows /guide out.
-  'content/guide.ts',
-  // Type comment "hard deadline" on a specimen field — rewritten when
-  // the specimen shape is revised for the new vocabulary.
-  'content/types.ts',
 ]);
 
 const FORBIDDEN_RE = new RegExp(`\\b(${FORBIDDEN.join('|')})\\b`, 'gi');

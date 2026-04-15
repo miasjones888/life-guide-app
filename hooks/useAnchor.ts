@@ -129,9 +129,44 @@ export function useAnchor() {
     });
   }, [persist]);
 
+  const exportData = useCallback((): string => {
+    try {
+      return (
+        localStorage.getItem(STORAGE_KEY) ??
+        JSON.stringify({ version: STORAGE_VERSION, state } satisfies StoredAnchorV1)
+      );
+    } catch {
+      return JSON.stringify({ version: STORAGE_VERSION, state } satisfies StoredAnchorV1);
+    }
+  }, [state]);
+
+  const importData = useCallback(
+    (json: string): { ok: boolean; error?: string } => {
+      try {
+        const parsed = JSON.parse(json) as unknown;
+        if (!parsed || typeof parsed !== 'object') {
+          return { ok: false, error: 'Invalid anchor data.' };
+        }
+        const { state: imported } = parsed as StoredAnchorV1;
+        if (!imported || typeof imported.date !== 'string' || typeof imported.text !== 'string') {
+          return { ok: false, error: 'Missing anchor fields.' };
+        }
+        const next = parseAnchorState(json);
+        setState(next);
+        persist(next);
+        return { ok: true };
+      } catch {
+        return { ok: false, error: 'Could not parse anchor data.' };
+      }
+    },
+    [persist]
+  );
+
   return {
     anchor: state,
     setAnchorText,
     clearAnchor,
+    exportData,
+    importData,
   };
 }

@@ -4,18 +4,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useHardDay } from '@/context/HardDayContext';
 
+/**
+ * SideNav — 6-item primary nav, desktop.
+ *
+ * Mirrors BottomNav exactly. No "more" drawer, no secondary list.
+ * /settings is reachable via URL, never from here.
+ */
 const navItems = [
-  { href: '/', label: 'today', icon: '◉' },
-  { href: '/guide', label: 'guide', icon: '≡' },
-  { href: '/weekly', label: 'week', icon: '▦' },
-  { href: '/daily', label: 'daily rhythm', icon: '│' },
-  { href: '/monthly', label: 'monthly', icon: '◫' },
-  { href: '/folders', label: 'folders', icon: '▣' },
-  { href: '/deck', label: 'deck', icon: '▤' },
-  { href: '/reflection', label: 'reflection', icon: '○' },
+  { href: '/today', label: 'today', icon: '◉' },
+  { href: '/garden', label: 'garden', icon: '❋' },
+  { href: '/calendar', label: 'calendar', icon: '▦' },
+  { href: '/notes', label: 'notes', icon: '▣' },
   { href: '/budget', label: 'budget', icon: '$' },
-  { href: '/backup', label: 'backup', icon: '↓' },
-];
+  { href: '/field-report', label: 'field report', icon: '≡' },
+] as const;
 
 export default function SideNav() {
   const pathname = usePathname();
@@ -23,10 +25,16 @@ export default function SideNav() {
 
   return (
     <nav className="side-nav" aria-label="Primary navigation">
-      <div style={{ padding: '12px 0 8px', borderBottom: '1px solid var(--color-ink-ghost)', marginBottom: '4px' }}>
+      <div
+        style={{
+          padding: '12px 0 8px',
+          borderBottom: '1px solid var(--color-ink-ghost)',
+          marginBottom: '4px',
+        }}
+      >
         <span
           style={{
-            fontFamily: 'Courier New, monospace',
+            fontFamily: 'var(--font-chrome)',
             fontSize: '10px',
             color: 'var(--color-ink-muted)',
             letterSpacing: '0.08em',
@@ -38,7 +46,8 @@ export default function SideNav() {
       </div>
 
       {navItems.map((item) => {
-        const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+        const isActive =
+          pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <Link
             key={item.href}
@@ -49,22 +58,32 @@ export default function SideNav() {
               gap: '10px',
               padding: '9px 12px',
               textDecoration: 'none',
-              fontFamily: 'Courier New, monospace',
+              fontFamily: 'var(--font-chrome)',
               fontSize: '11px',
               color: isActive ? 'var(--color-forest)' : 'var(--color-ink-muted)',
-              borderLeft: isActive ? '2px solid var(--color-forest)' : '2px solid transparent',
+              borderLeft: isActive
+                ? '2px solid var(--color-forest)'
+                : '2px solid transparent',
               backgroundColor: isActive ? 'rgba(74,94,58,0.06)' : 'transparent',
               minHeight: '36px',
             }}
           >
-            <span style={{ width: '14px', textAlign: 'center', fontSize: '10px' }}>{item.icon}</span>
+            <span style={{ width: '14px', textAlign: 'center', fontSize: '10px' }}>
+              {item.icon}
+            </span>
             <span>{item.label}</span>
           </Link>
         );
       })}
 
       {/* Hard Day toggle */}
-      <div style={{ padding: '12px', borderTop: '1px solid var(--color-ink-ghost)', marginTop: '8px' }}>
+      <div
+        style={{
+          padding: '12px',
+          borderTop: '1px solid var(--color-ink-ghost)',
+          marginTop: '8px',
+        }}
+      >
         <button
           type="button"
           onClick={toggle}
@@ -76,10 +95,12 @@ export default function SideNav() {
             gap: '8px',
             padding: '8px 0',
             background: 'none',
-            border: `1px solid ${isHardDay ? 'var(--color-ink-muted)' : 'var(--color-ink-ghost)'}`,
+            border: `1px solid ${
+              isHardDay ? 'var(--color-ink-muted)' : 'var(--color-ink-ghost)'
+            }`,
             borderRadius: '2px',
             cursor: 'pointer',
-            fontFamily: 'Courier New, monospace',
+            fontFamily: 'var(--font-chrome)',
             fontSize: '11px',
             color: isHardDay ? 'var(--color-ink)' : 'var(--color-ink-muted)',
             justifyContent: 'center',

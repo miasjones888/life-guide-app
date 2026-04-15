@@ -63,59 +63,11 @@ export interface MonthlyRule {
   time?: string;
 }
 
-export interface Priority {
-  rank: number;
-  title: string;
-  status: string;
-  nextAction: string;
-  isLocked?: boolean;
-  isUrgent?: boolean;
-  isOngoing?: boolean;
-}
-
 export interface Project {
   title: string;
   status: 'active' | 'locked' | 'in-progress' | 'ongoing' | 'hold';
   description?: string;
   nextAction?: string;
-}
-
-export interface WorkLocation {
-  name: string;
-  address: string;
-  hours?: string;
-  rating?: string;
-  note?: string;
-}
-
-export interface Pet {
-  name: string;
-  gender?: string;
-  medications?: string[];
-  notes?: string[];
-  urgentItems?: string[];
-}
-
-export interface VetInfo {
-  name: string;
-  phone: string;
-  address: string;
-}
-
-export interface FinanceItem {
-  title: string;
-  amount?: string;
-  note: string;
-  isUrgent?: boolean;
-  action?: string;
-  criticality?: Criticality;
-  hardDate?: string; // ISO date of hard deadline
-}
-
-export interface MonthlyBudgetStep {
-  order: number;
-  title: string;
-  description: string;
 }
 
 export interface FlashCard {
