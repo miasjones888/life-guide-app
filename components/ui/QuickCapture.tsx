@@ -148,8 +148,10 @@ export default function QuickCapture() {
         aria-label="Quick capture"
         aria-expanded={open}
         style={{
+          // Stacked above JournalPenButton so the pen owns the
+          // bottom-right corner on every Phase 1 surface.
           position: 'fixed',
-          bottom: '68px',
+          bottom: '124px',
           right: '16px',
           width: '44px',
           height: '44px',

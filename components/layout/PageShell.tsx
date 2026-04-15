@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import BottomNav from './BottomNav';
@@ -8,6 +8,8 @@ import SideNav from './SideNav';
 import { systemVersionNote } from '@/content/guide';
 import { useHardDay } from '@/context/HardDayContext';
 import QuickCapture from '@/components/ui/QuickCapture';
+import JournalPenButton from '@/components/ui/JournalPenButton';
+import JournalDrawer from '@/components/ui/JournalDrawer';
 
 // Primary tab order for swipe navigation
 const PRIMARY_TABS = ['/', '/guide', '/weekly'];
@@ -20,6 +22,7 @@ export default function PageShell({ children }: PageShellProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { isHardDay, toggle: toggleHardDay } = useHardDay();
+  const [journalOpen, setJournalOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
@@ -121,6 +124,8 @@ export default function PageShell({ children }: PageShellProps) {
       </div>
 
       <QuickCapture />
+      <JournalPenButton onOpen={() => setJournalOpen(true)} />
+      <JournalDrawer open={journalOpen} onClose={() => setJournalOpen(false)} />
       <BottomNav />
     </div>
   );
