@@ -6,9 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 1. **`COVENANT.md`** — the highest-precedence document in the repo. 11 sections, all authored by Mia, all load-bearing. Every change is measured against it. If a covenant section is ambiguous, ask Mia — do not infer. §10 ("Core Vocabulary") contains a list of words that must never appear in source files.
 2. **`HANDOFF.md`** — current phase status, decisions already made, scoped work for the next step, hard don'ts, priority reading list. Start here for orientation on what's done and what's next.
-3. **`content/mia.ts`** — the grounding file. Real specimens, hard-day minimum, archetype system, terrain zones. Authored by Mia; Claude scaffolded types only. Do not add entries.
+3. **`CLAUDE.md`** — this file. The hard rules and command reference below apply to every session.
+4. **`content/mia.ts`** — the grounding file. Real specimens, hard-day minimum, archetype system, terrain zones. Authored by Mia; Claude scaffolded types only. Do not add entries.
 
-After those three, consult `HANDOFF.md`'s "Priority reading list" section.
+After those four, consult `HANDOFF.md`'s "Priority reading list" section.
 
 ## Hard rules for every session
 
@@ -26,7 +27,7 @@ After those three, consult `HANDOFF.md`'s "Priority reading list" section.
 - ANCHOR rename: complete.
 - **Phase 1 Step 2 (guardrails + Today Anchor surface) is next.** See `HANDOFF.md` for the scoped plan.
 
-Current working branch: `claude/review-merge-codex-branches-L2Vxr`. Step 2 work can branch from here, or from `main` once this branch is merged.
+`main` is the source of truth. Branch Step 2 work directly from `main`.
 
 ## Commands
 
