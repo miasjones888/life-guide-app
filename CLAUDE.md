@@ -4,20 +4,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Read these first, every session, in this order
 
-1. **`COVENANT.md`** — the highest-precedence document in the repo. 11 sections, all authored by Mia, all load-bearing. Every PR is measured against it. If a covenant section is ambiguous, ask Mia — do not infer. §10 ("Core Vocabulary") contains a list of words that must never appear in source files.
-2. **`HANDOFF.md`** — current phase status, decisions already made, Phase 1 scope broken into four sequenced steps, hard don'ts, critical files to read first. Start here for orientation on what's done and what's next.
+1. **`COVENANT.md`** — the highest-precedence document in the repo. 11 sections, all authored by Mia, all load-bearing. Every change is measured against it. If a covenant section is ambiguous, ask Mia — do not infer. §10 ("Core Vocabulary") contains a list of words that must never appear in source files.
+2. **`HANDOFF.md`** — current phase status, decisions already made, scoped work for the next step, hard don'ts, priority reading list. Start here for orientation on what's done and what's next.
 3. **`content/mia.ts`** — the grounding file. Real specimens, hard-day minimum, archetype system, terrain zones. Authored by Mia; Claude scaffolded types only. Do not add entries.
 
-After those three, consult `HANDOFF.md`'s "Critical files to read first" section for the priority reading list.
+After those three, consult `HANDOFF.md`'s "Priority reading list" section.
 
 ## Hard rules for every session
 
 - Do not edit `COVENANT.md`. It is the one document Claude does not author.
 - Do not generate entries in `content/mia.ts`. Mia authors, Claude scaffolds types.
 - Do not restore anything from `_archive/`. It is not Mia's voice and the assistant/API infrastructure stays out of Phase 1.
-- Do not use any word from `COVENANT.md` §10's "Never use" list in source files.
-- Do not merge PRs without Mia's explicit approval.
-- Current working branch: `claude/merge-guide-systems-UxLng`. Phase 1 work branches from here.
+- Do not use any word from `COVENANT.md` §10's "Never use" list in source files. `tests/covenant-vocab.test.ts` enforces this mechanically.
+- Do not merge pull requests without Mia's explicit approval.
+- Do not add OpenAI / Anthropic / Google / Gemini keys, routes, or SDKs to Phase 1. The archive exists; leave it archived.
+
+## Current state
+
+- Phase 0 (audit + grounding): complete.
+- Phase 1 Step 1 (visual baseline + covenant vocab test): complete.
+- ANCHOR rename: complete.
+- **Phase 1 Step 2 (guardrails + Today Anchor surface) is next.** See `HANDOFF.md` for the scoped plan.
+
+Current working branch: `claude/review-merge-codex-branches-L2Vxr`. Step 2 work can branch from here, or from `main` once this branch is merged.
 
 ## Commands
 

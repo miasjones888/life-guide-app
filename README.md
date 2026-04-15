@@ -1,117 +1,63 @@
 # life-guide-app
 
-This repository contains the canonical project documentation and assets for a mobile-first Life Guide web application. It will be used by Claude Code as the starting point for planning and development.
+A private, mobile-first field guide built for one person. It is not a dashboard, not an assistant, not a system of record, not a tracker of any kind. It is a quiet reference surface that holds a life in paper-like shapes.
 
-**Claude Code: read the files in the `docs/` directory first before generating the implementation plan.**
+## Where to start
 
----
+Every session reads these three files, in order, before touching anything else:
 
-## What This Is
+1. **[`COVENANT.md`](./COVENANT.md)** — the highest-precedence document in the repo. 11 sections, all authored by Mia, all load-bearing. Every change is measured against it. If a section is ambiguous, ask — do not infer. §10 contains a list of words that must never appear in source files.
+2. **[`HANDOFF.md`](./HANDOFF.md)** — current phase status, decisions already made, and the scoped work for the next step. Read this for orientation on what's done and what's next.
+3. **[`CLAUDE.md`](./CLAUDE.md)** — hard rules and read-order for every Claude Code session.
 
-A personal life system built for one specific person (Mia Jones, San Diego) with ADHD, depression, anxiety, and CPTSD. It is a mobile-first reference app — a digital handbook, not a productivity dashboard. The user should be able to open it, find what they need in under 10 seconds, close it, and go do the thing.
+After those three, consult the "Priority reading list" section in `HANDOFF.md`.
 
-The underlying system is paper-first. Google Calendar handles time-anchored reminders. This app handles everything else: the daily rhythm, weekly structure, monthly cadence, project tracking, financial reminders, pet care, and creative work guidance.
+## Status
 
----
+- **Phase 0** — audit, archive, covenant, grounding content: complete.
+- **Phase 1 Step 1** — visual baseline tokens + mechanical covenant-vocabulary test: complete.
+- **Phase 1 Step 2** — guardrails file + Today (Anchor) surface: next.
 
-## Repository Structure
+See `HANDOFF.md` for the full phase plan and exit criteria.
+
+## Stack
+
+Next.js 14 App Router, Tailwind, Vitest, next-pwa. TypeScript strict. `@/*` maps to the repo root. `_archive/` is excluded from the build and from type-checking.
+
+## Commands
+
+```bash
+npm run dev          # next dev
+npm run build        # next build
+npm run lint         # next lint
+npm run test         # vitest run
+npx vitest run path/to/file.test.ts   # single test file
+```
+
+## Hard rules (also in CLAUDE.md)
+
+- Do not edit `COVENANT.md`. It is the one document Claude does not author.
+- Do not generate entries in `content/mia.ts`. Mia authors, Claude scaffolds types.
+- Do not restore anything from `_archive/`. The archived assistant, API routes, and Claude-authored design docs stay archived.
+- Do not use any word from `COVENANT.md` §10's "Never use" list in source files. A vitest grep enforces this mechanically.
+- Do not merge pull requests without Mia's explicit approval.
+
+## What lives where
 
 ```
 life-guide-app/
+├── COVENANT.md              ← Mia-authored. The source of truth. Do not edit.
+├── HANDOFF.md               ← Phase status, decisions, next step.
+├── CLAUDE.md                ← Read-order and hard rules for every session.
+├── README.md                ← This file.
 │
-├── README.md                    ← This file
+├── app/                     ← Next.js App Router routes.
+├── components/              ← React components (folders/, ui/, layout/, calendar/, culture/).
+├── content/                 ← Grounding data. mia.ts is Mia-authored; others are typed structure.
+├── context/                 ← React context providers (HardDayContext).
+├── hooks/                   ← Versioned-localStorage hooks (useBudget, useFolderSystem, useHardDayMode).
+├── lib/                     ← Small utilities (time, storage-keys).
+├── tests/                   ← Vitest suites, including the covenant-vocabulary ratchet.
 │
-├── docs/                        ← All canonical project documentation
-│   ├── life-guide-v1.md         ← The complete Life Guide (v1, locked April 2026)
-│   ├── calendar.md              ← The complete calendar system and all events
-│   ├── design-direction.md      ← Visual aesthetic, typography, component direction
-│   └── content-map.md           ← Content-to-interface mapping for each section
-│
-├── assets/
-│   └── reference-images/        ← Reference images provided during design conversation
-│       ├── IMG_5702.png         ← Reference image 1
-│       ├── IMG_5704.png         ← Text conversation screenshot (content context)
-│       └── IMG_5705.png         ← Text conversation screenshot (content context)
-│
-└── app/                         ← Application code (empty — Claude Code builds here)
-    ├── components/              ← React/UI components
-    ├── styles/                  ← CSS / Tailwind / styling
-    └── content/                 ← Processed content files (JSON, parsed markdown, etc.)
+└── _archive/                ← Phase 0 audit residue. Do not promote back.
 ```
-
----
-
-## Documentation Reading Order
-
-Claude Code should read the docs in this order:
-
-1. **docs/life-guide.md** — the full content of the life system. This is the source of truth for all text, schedules, reminders, and system logic.
-
-2. **docs/calendar.md** — the complete calendar system. All recurring events, one-time events, color coding, and scheduling logic.
-
-3. **docs/design-direction.md** — visual aesthetic, typography, color system, component inventory, technology suggestions.
-
-4. **docs/content-map.md** — how the content maps to the interface. What goes in each section, what is always visible vs. collapsed, implementation notes.
-
-5. **assets/reference-images/** — visual reference images. Review before making design decisions.
-
----
-
-## Application Brief
-
-**Type:** Mobile-first web application
-**Primary use case:** Personal reference system — quick lookup, scan, close, act
-**User:** One person (Mia Jones), San Diego, 92115
-**Content:** Static — all content lives in the repository. No backend or database required for v1.
-
-**Key principles:**
-- Design for scanning, not reading
-- Calm over stimulating
-- Retreat-and-act, not engage-and-stay
-- Paper-first philosophy — the app supports the paper system, not replaces it
-- Tasks are modular (except cat meds, personal meds, and financial deadlines)
-
-**Non-negotiables:**
-- Cat medication alarms must be visually prominent
-- Financial deadlines with hard dates must be accurate
-- The modular task note must appear in Daily, Weekly, and Today views
-- Color system must match the Google Calendar color system exactly
-- Version must be visible: "Life Guide v1 — locked April 2026. Next review: May 1."
-
----
-
-## For Claude Code
-
-Your task is to:
-
-1. Generate a PRD based on the documentation in `docs/`
-2. Design the application architecture
-3. Implement the application in `app/`
-4. Perform QA/QC and debugging
-5. Produce a deployment plan
-
-Do not summarize or simplify the content from the docs. The content is intentional and specific. Preserve all information, all reminders, and all system logic as documented.
-
-Start with the docs. The source of truth is in the markdown files, not this README.
-
-Claude Code: read the /docs directory first before planning implementation.
-
----
-
-## GPT Assistant Setup (Phase 2 foundation)
-
-The app now includes a GPT-backed assistant panel on the Today page for:
-- calendar update intent parsing,
-- email draft assistance,
-- lightweight planning support,
-- freeze-mode next-step prompts.
-
-Set these environment variables before running:
-
-```bash
-OPENAI_API_KEY=your_api_key
-# optional (defaults to gpt-4.1-mini)
-OPENAI_MODEL=gpt-4.1-mini
-```
-
-If `OPENAI_API_KEY` is not set, the assistant endpoint returns a clear setup error.
