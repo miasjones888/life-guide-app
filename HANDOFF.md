@@ -112,6 +112,7 @@ Primary scope:
 - Notes surface / notecards / folders re-skin (Phase 2)
 - Tear-out interaction (Phase 2)
 - Phase system, slot activation dialogs, weekly review ritual (Phase 2)
+- Seedlings — week-by-week practice introduction, inside the weekly review ritual (Phase 2, see `SEEDLINGS.md`)
 - All 17 archetypes (Phase 2)
 - Budget real numbers (Phase 3; Mia fills in when she sits with it)
 - Supabase, auth, cross-device sync (Phase 3)
