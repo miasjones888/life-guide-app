@@ -6,6 +6,10 @@ export const STORAGE_KEYS = {
   DECK: 'life-guide-deck',
   REFLECTION: 'reflection-text',
   ANCHOR: 'anchor',
+  // The Phase 1 journal drawer — pages of free-form writing, one notebook
+  // shared across all Phase 1 surfaces. Distinct from JOURNAL_ENTRIES
+  // (future structured entries array under 'growth-journal').
+  JOURNAL: 'journal',
   BUDGET: 'life-guide-budget',
   FOLDERS: 'life-guide-folders',
 
