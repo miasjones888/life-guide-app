@@ -1,8 +1,8 @@
 # Handoff — life-guide-app
 
-**Status:** Phase 1 Step 3 complete (PR #30 merged). Phase 1 Step 4 (nav cleanup + "sprouting in Phase N" placeholders + `/settings` export/import) is next.
-**Source of truth:** `main`. Branch Step 4 work directly from `main`.
-**Last updated:** 2026-04-15 (after Step 3 shipped).
+**Status:** Phase 1 complete (Steps 1–4 shipped, follow-up snapshot round-trip test in PR #33). Phase 2 Step 1 (Garden surface — read-only render of `content/mia.ts` specimens with deterministic forest scatter layout) is next.
+**Source of truth:** `main`. Branch Phase 2 Step 1 work directly from `main`.
+**Last updated:** 2026-04-15 (after Step 4 + snapshot-extraction follow-up shipped).
 
 ---
 
@@ -82,42 +82,71 @@ Shipped in PR #30. Six files, one PR, exactly the scoped plan:
 
 ---
 
-## Phase 1 Step 4 — Nav cleanup and "sprouting in Phase N" placeholders (NEXT)
+### Phase 1 Step 4 — Nav cleanup, placeholders, and `/settings` escape hatch (complete)
 
-Primary scope:
+Shipped in PR #32. Twenty-eight files, one PR, exactly the scoped plan:
 
-- **Trim primary nav to 6 items:** `/today`, `/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`. Exact labels match covenant vocabulary.
-- **Placeholder routes** for the 5 unbuilt surfaces (`/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`): each renders a single styled "sprouting in Phase N" card. One line each. No functionality, no placeholder data, no faked UI.
-- **Redirect legacy routes** from the Phase 0 tree (`/daily`, `/weekly`, `/monthly`, `/deck`, `/folders`, `/reflection`, `/culture`, `/growth`, `/backup`, `/guide`) to their closest Phase 1 equivalent, or `/today` if there isn't one. `next/navigation` redirect stubs, same pattern as `app/page.tsx` already uses.
-- **`BottomNav` and `SideNav` updated accordingly.** No "more" drawer — if it's not in the 6, it's not in the nav.
-- **`/settings`** (not in nav, reached via a chrome menu): Export All / Import All JSON backed by the same versioned-localStorage pattern. This is the Phase 1 escape hatch — if any store migration ever breaks, Mia can export + reload. Reuse `useBudget`'s `exportData` / `importData` shape across `useAnchor`, `useJournal`, and any other versioned store. Round-trip every store before shipping.
-- **As legacy routes get deleted, their entries come out of the `tests/covenant-vocab.test.ts` allowlist in the same commit.** End state for Phase 1 is an empty (or near-empty) allowlist.
+- **Primary nav trimmed to six** — `BottomNav.tsx` and `SideNav.tsx` rewritten. Nav items: `/today`, `/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`. No "more" drawer. `PageShell`'s edge-swipe order mirrors the same six. `/settings` is reachable by URL, never from the nav.
+- **Five "sprouting in Phase N" placeholder surfaces** via a shared `components/ui/PhasePlaceholder.tsx` component. `/garden`, `/calendar`, `/notes`, `/field-report` → Phase 2; `/budget` → Phase 3 (the Phase 0 budget page is replaced).
+- **Nine legacy routes redirect** via `next/navigation` stubs (same pattern as `app/page.tsx`): `/daily`, `/weekly`, `/monthly`, `/growth`, `/culture` → `/today`; `/deck`, `/folders`, `/reflection` → `/notes`; `/backup` → `/settings`. `/guide` is **deleted outright** — `app/guide/` and `content/guide.ts` no longer exist. The only surviving use of `systemVersionNote` was the `PageShell` footer, so it inlines there (option (b) from the fold-in note).
+- **`/settings`** — new page, not on the nav, reached by URL. One JSON snapshot round-trips every Phase 1 store: anchor, journal, budget, folders, wishlist, user events, local events, hard-day mode. Reads/writes localStorage verbatim, so every hook's on-disk shape passes through unchanged. `useAnchor` and `useJournal` gained matching `exportData` / `importData` methods mirroring `useBudget`.
+- **`QuickCapture` unmounted from `PageShell`** — its only save path led into `useFolderSystem`, which lives at `/folders`, which now redirects. The journal drawer is the Phase 1 freeform capture path. `components/ui/QuickCapture.tsx` itself stays on the salvage list for a potential Phase 2 `/notes` re-skin.
+- **Covenant §10 ratchet allowlist shrunk from 10 entries to 4** (`content/mia.ts`, `content/calendar.ts`, `components/ui/TimeBlock.tsx`, `components/folders/NoteCardStack.tsx`). Removed allowlist entries for `app/guide/page.tsx`, `content/guide.ts`, `hooks/usePriorityStatus.ts`, `app/backup/page.tsx`, `components/calendar/AddEventSheet.tsx`, and `content/types.ts`. Deleted `hooks/usePriorityStatus.ts`, `content/guide.ts`, `components/calendar/AddEventSheet.tsx`, and the unused `Priority` / `WorkLocation` / `Pet` / `VetInfo` / `FinanceItem` / `MonthlyBudgetStep` types in `content/types.ts`.
 
-**Folded into Step 4 (added 2026-04-15 after Step 3 shipped — flagged during the Step 3 completion report):**
+**Verified:** `npm run test` passes (28/28 at PR #32 ship). `npm run build` succeeds; 20 static routes, `/today` at 4.87 kB, placeholders 520 B, redirect stubs 162 B, `/settings` 2.08 kB.
 
-1. **Unmount `QuickCapture` from `PageShell`.** It's a Phase 0 legacy component whose only save path runs into `useFolderSystem`, which lives at `/folders`. Once Step 4 redirects `/folders` away, `QuickCapture` has nothing to capture into, and the journal drawer is now the Phase 1 freeform capture path. Cleanest move: delete the `<QuickCapture />` render from `components/layout/PageShell.tsx` in the same commit that redirects `/folders`. The component file itself can stay (it's on the salvage list and will be re-used if/when the Phase 2 Notes surface wants it) — it just stops being rendered globally. As a side effect, the `bottom:124px` slot that Step 3 opened up goes back to being free space.
+**Follow-up shipped same day in PR #33** — extract `/settings` snapshot logic into `lib/settings-snapshot.ts` and add `tests/settings-snapshot.test.ts` (six cases) so the round-trip is exercised mechanically every CI run, not just by hand in a browser. The follow-up was driven by post-merge verification: the test plan had a manual "edit → export → re-import" check that couldn't be done without a browser, and the cleanest way to verify it was to extract the pure functions and write a jsdom test against them. No behavior change to the live `/settings` page. `npm run test` now passes 34/34. The extracted module also covers the hard-day-mode raw-string edge case: that store writes `"true"`/`"false"` (not JSON), and the round-trip preserves the raw form.
 
-2. **Handle the `content/guide.ts` → `PageShell` import chain.** `PageShell.tsx` currently imports `systemVersionNote` from `content/guide.ts` for the footer, and `content/guide.ts` is in the covenant-vocab ratchet allowlist because `/guide` is on its way out. Two options, pick one before writing code:
-   - **(a) Relocate.** Move `systemVersionNote` (and only that export) to a tiny standalone module — e.g. `content/version.ts` — and update the import in `PageShell.tsx`. Then delete `content/guide.ts` and `app/guide/page.tsx` and their covenant-vocab allowlist entries in the same commit.
-   - **(b) Inline.** Hard-code the version string directly in `PageShell.tsx` and delete `content/guide.ts` + `app/guide/page.tsx` + both allowlist entries in the same commit.
-   Recommendation: (a) if the version string is likely to be referenced again elsewhere (settings screen, about surface); (b) if it's genuinely single-use. Either way, `content/guide.ts` and `app/guide/page.tsx` both leave the covenant-vocab allowlist in Step 4.
-
-**Exit criteria:** 6 nav items visible, every legacy route redirects cleanly, `/settings` Export → Import round-trips every versioned store (anchor, journal, budget, folders, wishlist, user events, local events, hard-day mode), covenant-vocab allowlist shrinks to near-empty, `QuickCapture` no longer renders on `/today`, `content/guide.ts` and `app/guide/page.tsx` no longer exist. `npm run test` and `npm run build` both green.
+**No PR #32 or #33 review feedback queued.** Both merged immediately after exit criteria were verified. If Codex or another reviewer flags anything post-merge, log it here and resolve as a hotfix or fold into Phase 2 Step 1.
 
 ---
 
-## Out of scope for Phase 1 (explicit)
+## Phase 2 Step 1 — Garden surface (NEXT)
 
-- Garden surface (Phase 2)
-- Notes surface / notecards / folders re-skin (Phase 2)
-- Tear-out interaction (Phase 2)
-- Phase system, slot activation dialogs, weekly review ritual (Phase 2)
-- Seedlings — week-by-week practice introduction, inside the weekly review ritual (Phase 2, see `SEEDLINGS.md`)
-- All 17 archetypes (Phase 2)
-- Budget real numbers (Phase 3; Mia fills in when she sits with it)
-- Supabase, auth, cross-device sync (Phase 3)
-- Web Push for cat meds (Phase 4)
-- Assistant, email, calendar write-back (out of scope indefinitely — the archive stays archived)
+**The scope: the garden becomes real.** The `/garden` placeholder ships its real implementation — a read-only render of the specimens already authored in `content/mia.ts`, laid out as a forest scatter on a multi-zone terrain. This is the surface COVENANT §6 calls "the soul of the app," and it's the first Phase 2 surface to land because it unblocks every later Phase 2 step (notes re-skin borrows garden's visual language; the weekly review ritual mutates garden state; the custom hard-day-awareness ESLint rule needs garden-shaped lists to enforce against).
+
+**Why Garden first, not Notes:** notes re-skin (Phase 2 Step 2) is mostly a visual refresh of the salvage-list `components/folders/*`. It doesn't shift the metaphor. Garden does. Garden is the surface that proves the covenant — tending instead of completing, dormant instead of paused, archetypes instead of categories. Building it first means every later Phase 2 surface gets to borrow garden's vocabulary, color palette, and component shapes. Building it second would mean the notes surface ships with placeholder language that has to be replaced again.
+
+**What's in scope:**
+
+- **`app/garden/page.tsx`** — replaces the `PhasePlaceholder` with the real surface. Reads `specimens` from `content/mia.ts`. **Read-only.** No mutation paths land in this step. Mia still authors content; Claude still scaffolds types.
+- **Forest scatter layout** in `lib/garden-layout.ts` — deterministic PRNG keyed to a date string, so the scatter is stable across reloads on a given day but evolves day-to-day. **40 → 80 element targets** (the count budget HANDOFF locked in pre-Phase-2). Five parallax layers (background → midground → foreground), each with its own scatter density and motion factor. PRNG must be seedable by `localIsoDate(now)` so two surfaces opening on the same day see the same scatter. The PRNG and the placement function get their own unit tests — same shape as `lib/settings-snapshot` and `tests/settings-snapshot.test.ts`.
+- **Specimen sprites** — one component per archetype, picking from the 16 archetypes defined in `content/mia.ts` (`fern`, `moss`, `succulent`, `tree`, `wildflower`, `mushroom`, `shell`, `rock`, `lichen`, `cactus`, `coral`, `sedge`, `vine`, `crystal`, `spore`, `driftwood`). Sprites are CSS / Unicode / inline SVG — no image assets, mirroring the journal drawer's all-CSS approach. Each archetype has its own visual signature *and* a distinct visual treatment for each growth stage (`seed`, `sprout`, `growing`, `flourishing`, `blooming`, `dormant`, `harvested`). The treatment must read covenant-compliant: dormant looks resting, not failed. Harvested looks shipped, not closed.
+- **Terrain zones** — four zones from the type system (`forest-edge`, `upper-field`, `lower-field`, `underground`), rendered as soft horizontal bands with a paper-on-paper feel. Each specimen lives in its declared terrain. The `underground` zone deserves a tone all its own — that's where roots, mushrooms, and the buried crystals live.
+- **Hard-day mode behavior** — garden honors the existing `useHardDay` context. On a hard day the garden collapses to a reduced view: terrain bands stay, but specimen detail dims and only the active-stage specimens (`sprout` / `growing` / `flourishing` / `blooming`) render. Seeds, dormant, and harvested specimens hide. The collapse is structural, not "you can't see them" — it's "they're resting too." No language about hiding.
+- **Tap a specimen → see its detail** — opens a small inline panel (or modal sized like the journal drawer) showing the specimen's name, archetype, terrain, stage, description, and full notes. **Read-only.** Close on Escape and on a visible close affordance, same shape as the journal drawer.
+
+**What's out of scope for Step 1, even though it's tempting:**
+
+- **Slot activation dialogs.** Three creative + one life slot is a hard cap (COVENANT §3 + `lib/guardrails.ts`), but activation only happens during weekly review. Step 1 ships read-only — Mia activates by editing `content/mia.ts`. The interactive activation dialog is its own step.
+- **The weekly review ritual surface** — separate Phase 2 step. Garden Step 1 is render-only.
+- **Mutation of any kind.** No "tend this specimen" buttons, no stage-change UI, no notes edit-in-place. All of that is a Phase 2 mutation step that comes later.
+- **The custom `enforce-hard-day-awareness` ESLint rule.** HANDOFF flagged this as Phase 2 work; deferring to Phase 2 Step 2 (alongside the notes re-skin) gives the rule two genuine list-rendering surfaces to enforce against.
+- **Web Push for cat meds** — Phase 4. Not now.
+- **Real budget numbers** — Phase 3. Not now.
+
+**Exit criteria:**
+
+- `/garden` renders real specimens from `content/mia.ts`, deterministically scattered, in their declared terrain zones, with archetype-specific visuals and stage-specific treatment.
+- Tap a specimen → detail panel opens with name + description + notes.
+- Hard-day mode collapses garden to active-stage specimens only.
+- No mutation. No edit affordances. No new stores. No new entries in `content/mia.ts`.
+- Forest scatter layout is unit-tested: same date string → same placement, different date string → different placement, element count stays inside the 40 → 80 budget across a year of seeds.
+- Covenant §10 vocab clean across all new files. Allowlist does not grow.
+- `npm run test` and `npm run build` both green.
+
+---
+
+## Out of scope for Phase 2 Step 1 (feedstock for later steps)
+
+- **Notes surface / folder re-skin** → Phase 2 Step 2. The salvage-list `components/folders/*` (~981 lines: `ProjectFolder`, `NoteCardItem`, `NoteCardStack`, `CaptureStack`, `FolderShelf`, `AddNoteSheet`) gets re-skinned, not rewritten, into the real `/notes` surface. Re-uses garden's visual vocabulary.
+- **Custom ESLint rule `enforce-hard-day-awareness`** → Phase 2 Step 2 or 3. Earns its keep once garden + notes both ship. Replaces the `components/folders/NoteCardStack.tsx` allowlist entry once that file leaves the ratchet.
+- **Slot activation dialogs + weekly review ritual** → Phase 2 Step 3 or 4. First mutation surface. Interacts with `lib/guardrails.ts` constants. **The weekly review surface is also where the Seedlings block lives** (see `SEEDLINGS.md`) — one new practice per week, chosen Sunday, held silently mid-week, reviewed as a three-way decision (`rooted` / `another week as a seedling` / `dormant`) at the next Sunday setup. Seedlings ship as one block inside the weekly review surface, never on `/today`, never with a mid-week nudge. Mia authors candidate practices in `content/mia.ts` when that step lands; Claude scaffolds types only.
+- **Tear-out interaction for the journal drawer** → Phase 2 Step 4 or later.
+- **Real budget numbers** → Phase 3. Mia fills in when she sits with it.
+- **Supabase, auth, cross-device sync** → Phase 3. Lands as a sync adapter under the existing hook API — no component changes.
+- **Web Push for cat meds** → Phase 4.
+- **Assistant, email, calendar write-back** → out of scope indefinitely. The archive stays archived.
 
 ---
 
@@ -139,13 +168,13 @@ Phase 1 must feel instant, private, offline. Auth complicates "open the app, see
 
 The contrast bump is live: raised `--ink-3` / `--ink-4`, stronger borders, higher landscape opacity range, 11px text-micro. No text below 4.5:1 on cream. No border below 1.5:1. If Step 2 reveals any drift, fix it in-place and re-audit with axe-core.
 
-### Forest scatter density: Phase 2, not Phase 1.
+### Forest scatter density: scoped into Phase 2 Step 1.
 
-Density is a Garden-surface concern. Garden isn't in Phase 1. When Phase 2 builds Garden, do the 40 → 80 elements + 5th parallax layer + deterministic PRNG keyed to date. Not earlier.
+The 40 → 80 element budget + 5th parallax layer + deterministic PRNG keyed to date is the Phase 2 Step 1 layout work. Don't do it earlier; don't do it differently. The PRNG seed is `localIsoDate(now)` so two surfaces opening on the same day see the same scatter; tomorrow it shifts on its own.
 
-### Custom ESLint rule `enforce-hard-day-awareness`: Phase 2, not Phase 1.
+### Custom ESLint rule `enforce-hard-day-awareness`: Phase 2 Step 2, not Step 1.
 
-Custom ESLint rules have a real maintenance cost and they need enough surfaces to enforce against to be worth writing. Phase 1 has Today plus a drawer. That's not enough. Write the rule when Phase 2 adds Garden — at that point there are 2+ list-rendering surfaces and the rule earns its keep.
+Custom ESLint rules have a real maintenance cost and they need enough surfaces to enforce against to be worth writing. Phase 1 had Today plus a drawer. Phase 2 Step 1 adds Garden — that's two list-rendering surfaces, which is enough to *write* the rule, but writing it alongside garden makes the garden PR fight two hard problems at once. Defer to Step 2 (alongside notes re-skin), at which point three surfaces use the rule and the cost is amortized properly.
 
 ### Covenant §10 vocabulary grep test: shipped in Step 1.
 
@@ -155,21 +184,20 @@ Custom ESLint rules have a real maintenance cost and they need enough surfaces t
 
 ## Priority reading list for a fresh session
 
-Read in this order — first the four orientation docs, then the references for Step 4:
+Read in this order — first the four orientation docs, then the references for Phase 2 Step 1:
 
-1. **`COVENANT.md`** — everything. Read this first every session.
-2. **`HANDOFF.md`** — this file. Phase ledger, Step 4 plan, hard don'ts.
+1. **`COVENANT.md`** — everything. **§6 ("The Garden / Field-Guide Metaphor — Why It's the Soul of the App") is the spec for this step.** Read it twice. Every visual decision is measured against it. §10 ("Core Vocabulary") still applies — `dormant`, `harvested`, `tending`, `seasonal`. Never `inactive`, never `failed`, never `score`.
+2. **`HANDOFF.md`** — this file. Phase ledger, Step 1 plan, hard don'ts.
 3. **`CLAUDE.md`** — hard rules and command reference for every session.
-4. **`content/mia.ts`** — the grounding file. Real specimens, hard-day minimum, archetype system, terrain zones.
-5. **`hooks/useBudget.ts`** — canonical versioned-localStorage pattern. `exportData` / `importData` here are the shape to mirror across every versioned store for the `/settings` escape hatch.
-6. **`hooks/useAnchor.ts`** + **`hooks/useJournal.ts`** — the two Phase 1 stores that need `exportData` / `importData` added in Step 4 to match the `useBudget` shape.
-7. **`lib/storage-keys.ts`** — the full key registry. Every key in here needs to round-trip through `/settings` export/import.
-8. **`tests/covenant-vocab.test.ts`** — the mechanical half of §10 enforcement. The allowlist is the Step 4 shopping list: every legacy file in it comes out in the same commit that deletes or rewrites the file.
-9. **`components/layout/PageShell.tsx`** — where `QuickCapture` gets unmounted and where the `content/guide.ts` import needs to be relocated or inlined.
-10. **`components/layout/BottomNav.tsx`** + **`components/layout/SideNav.tsx`** — the two nav surfaces being trimmed to 6 items.
-11. **`app/page.tsx`** — canonical `next/navigation` redirect stub; copy this shape for every legacy route redirect.
-12. **`content/calendar.ts`** — what's real on the calendar. Stays as-is in Step 4; relevant because `/calendar` becomes a placeholder surface and the real content continues to flow through `/today`.
-13. **`components/folders/ProjectFolder.tsx`** + siblings — the 981 lines to re-skin in Phase 2. Do not touch in Step 4 — just unmount the `QuickCapture` entry point and redirect `/folders`.
+4. **`content/mia.ts`** — the grounding file. Real specimens, the 16-archetype enum, the four-terrain enum, the seven-stage growth enum. **Garden is a read-only view over this file.** Do not add entries; do not change the type definitions in this step.
+5. **`lib/guardrails.ts`** — the slot caps (3 creative + 1 life), the activation invariants, `DORMANCY_IS_FRICTIONLESS`, `NO_STREAKS`, `NO_SESSION_TRACKING`. Garden Step 1 is read-only, but the layout has to honor these: active-stage specimens stand out, dormant + harvested do not feel like failure modes.
+6. **`context/HardDayContext.tsx`** — hard-day toggle wiring. Garden honors `useHardDay()` the same way `/today` does — collapse to active-stage specimens only.
+7. **`app/today/page.tsx`** — reference for the surface shape (header + sections + hard-day collapse). `/today` is the model `/garden` should follow for layout shell, header, and hard-day branching.
+8. **`components/ui/JournalDrawer.tsx`** — reference for the all-CSS, no-asset approach. Garden's specimen sprites should follow the same pattern: Unicode glyphs, inline SVG, CSS gradients. No image files.
+9. **`lib/settings-snapshot.ts`** + **`tests/settings-snapshot.test.ts`** — reference for "extract pure logic, then unit-test it." The `/garden` PRNG layout function should ship with the same pattern: pure module + jsdom test.
+10. **`tests/covenant-vocab.test.ts`** — the §10 mechanical enforcement. New garden code must not add allowlist entries. End state: still 4 entries, ideally 3 if the notes re-skin in Step 2 retires `components/folders/NoteCardStack.tsx`.
+11. **`components/ui/PhasePlaceholder.tsx`** — what `/garden` currently renders. Step 1 replaces this with the real surface; the PhasePlaceholder component itself stays for `/calendar`, `/notes`, `/budget`, `/field-report`.
+12. **`SEEDLINGS.md`** — the Phase 2 design sketch for the Seedlings block inside the weekly review surface. Not relevant to Step 1 (Garden is read-only), but the agent picking up the weekly review ritual step reads this *first*. Covers: one practice per week, Sunday-only surface, three-way decision (`rooted` / `another week as a seedling` / `dormant`), carry-forward default when the block is left untouched, negative list (*not* a habit tracker, no mid-week surface, no reduction concept in the data model), and the §§1/3/5/7/8/10 covenant cross-reference that anchors the design.
 
 ---
 
@@ -187,10 +215,10 @@ Read in this order — first the four orientation docs, then the references for 
 
 ---
 
-## What must be true before Step 4 starts
+## What must be true before Phase 2 Step 1 starts
 
-Only one thing: the next agent reads `COVENANT.md` end-to-end with fresh eyes, then this file, then `CLAUDE.md`, then `content/mia.ts`, then opens `hooks/useBudget.ts` (for the `exportData` / `importData` shape to mirror across every versioned store) and `tests/covenant-vocab.test.ts` (to see which legacy files leave the allowlist in the same commit they're deleted). Everything else above is already decided.
+The next agent reads `COVENANT.md` end-to-end with fresh eyes — **§6 twice, that's the spec for this step** — then this file, then `CLAUDE.md`, then `content/mia.ts` (for the actual specimens to render and the type system already in place), then opens `app/today/page.tsx` (for the surface shape to mirror) and `lib/guardrails.ts` (for the invariants the garden has to honor without violating). Everything else above is already decided.
 
 ---
 
-*End of handoff. Steps 1, 2, and 3 shipped. Step 4 is nav cleanup + "sprouting in Phase N" placeholders + the `/settings` export/import escape hatch, with the `QuickCapture` unmount and `content/guide.ts` import cleanup folded in.*
+*End of handoff. Phase 1 is complete (Steps 1–4 shipped, follow-up snapshot test in PR #33). Phase 2 Step 1 is the Garden surface: read-only render of `content/mia.ts` specimens, deterministic forest scatter layout keyed to the day, terrain zones, archetype visuals, hard-day collapse to active-stage specimens. No mutation, no slot dialogs, no ESLint rule yet.*
