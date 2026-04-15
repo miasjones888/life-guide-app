@@ -25,10 +25,12 @@ After those four, consult `HANDOFF.md`'s "Priority reading list" section.
 - Phase 0 (audit + grounding): complete.
 - Phase 1 Step 1 (visual baseline + covenant vocab test): complete.
 - ANCHOR rename: complete.
-- Phase 1 Step 2 (guardrails + Today Anchor surface): complete (PR #27 merged).
-- **Phase 1 Step 3 (journal drawer) is next.** See `HANDOFF.md` for the scoped plan. Two Codex follow-ups from PR #27 are logged in HANDOFF and should be folded into Step 3 work or fixed as a hotfix.
+- Phase 1 Step 2 (guardrails + Today Anchor surface): complete (PR #27 + #28 hotfix merged).
+- Phase 1 Step 3 (journal drawer): complete (PR #30 merged).
+- Phase 1 Step 4 (nav cleanup + placeholders + `/settings` escape hatch): complete (PR #32 + #33 follow-up merged).
+- **Phase 1 is complete. Phase 2 Step 1 (Garden surface — read-only render of `content/mia.ts` specimens with a deterministic forest scatter layout) is next.** See `HANDOFF.md` for the scoped plan. COVENANT §6 is the spec for this step.
 
-`main` is the source of truth. Branch Step 3 work directly from `main`.
+`main` is the source of truth. Branch Phase 2 Step 1 work directly from `main`.
 
 ## Commands
 
