@@ -5,14 +5,27 @@ import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import BottomNav from './BottomNav';
 import SideNav from './SideNav';
-import { systemVersionNote } from '@/content/guide';
 import { useHardDay } from '@/context/HardDayContext';
-import QuickCapture from '@/components/ui/QuickCapture';
 import JournalPenButton from '@/components/ui/JournalPenButton';
 import JournalDrawer from '@/components/ui/JournalDrawer';
 
-// Primary tab order for swipe navigation
-const PRIMARY_TABS = ['/', '/guide', '/weekly'];
+// Inlined version string. Previously lived in content/guide.ts, which
+// was removed in Phase 1 Step 4 along with the rest of the legacy /guide
+// surface. This footer is the only surviving use site, so keeping a
+// separate module for one string is dead weight.
+const systemVersionNote = 'Life Guide v1 — Phase 1.';
+
+// Primary tab order for swipe navigation. Mirrors the six-item nav:
+// edge-swipes move between Phase 1 surfaces in the same left-to-right
+// order as the bottom nav.
+const PRIMARY_TABS = [
+  '/today',
+  '/garden',
+  '/calendar',
+  '/notes',
+  '/budget',
+  '/field-report',
+];
 
 interface PageShellProps {
   children: React.ReactNode;
@@ -123,7 +136,6 @@ export default function PageShell({ children }: PageShellProps) {
         </motion.main>
       </div>
 
-      <QuickCapture />
       <JournalPenButton onOpen={() => setJournalOpen(true)} />
       <JournalDrawer open={journalOpen} onClose={() => setJournalOpen(false)} />
       <BottomNav />

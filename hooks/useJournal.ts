@@ -163,10 +163,45 @@ export function useJournal() {
     [persist]
   );
 
+  const exportData = useCallback((): string => {
+    try {
+      return (
+        localStorage.getItem(STORAGE_KEY) ??
+        JSON.stringify({ version: STORAGE_VERSION, state } satisfies StoredJournalV1)
+      );
+    } catch {
+      return JSON.stringify({ version: STORAGE_VERSION, state } satisfies StoredJournalV1);
+    }
+  }, [state]);
+
+  const importData = useCallback(
+    (json: string): { ok: boolean; error?: string } => {
+      try {
+        const parsed = JSON.parse(json) as unknown;
+        if (!parsed || typeof parsed !== 'object') {
+          return { ok: false, error: 'Invalid journal data.' };
+        }
+        const { state: imported } = parsed as StoredJournalV1;
+        if (!imported || !Array.isArray(imported.pages)) {
+          return { ok: false, error: 'Missing journal pages.' };
+        }
+        const next = parseJournalState(json);
+        setState(next);
+        persist(next);
+        return { ok: true };
+      } catch {
+        return { ok: false, error: 'Could not parse journal data.' };
+      }
+    },
+    [persist]
+  );
+
   return {
     state,
     setPageText,
     addPage,
     goToPage,
+    exportData,
+    importData,
   };
 }
