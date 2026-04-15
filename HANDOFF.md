@@ -1,7 +1,7 @@
 # Handoff — life-guide-app
 
-**Status:** Phase 1 Step 1 complete. ANCHOR rename complete. Phase 1 Step 2 is next.
-**Source of truth:** `main`. Branch Step 2 work directly from `main`.
+**Status:** Phase 1 Step 2 complete (PR #27 merged). Phase 1 Step 3 (journal drawer) is next.
+**Source of truth:** `main`. Branch Step 3 work directly from `main`.
 **Last updated:** 2026-04-15.
 
 ---
@@ -47,87 +47,42 @@ Shipped in PRs #24 and #25. What landed:
 
 **Verified:** `npm run test` passes (28/28). `npm run build` succeeds with 15 static routes. The only surfaces still shipping §10 vocabulary are the ones in the ratchet's allowlist — all of them scheduled for Step 2 or Step 4 rewrites.
 
----
+### Phase 1 Step 2 — Guardrails + Today (Anchor) surface (complete)
 
-## Phase 1 Step 2 — Guardrails + Today (Anchor) surface (NEXT)
+Shipped in PR #27. Four files, one PR, exactly the scoped plan:
 
-One PR, four files touched, exit criteria below.
+- **`lib/guardrails.ts`** — covenant-derived constants module: slot caps (3 creative + 1 life), `ACTIVATION_ONLY_DURING_WEEKLY_REVIEW`, `DORMANCY_IS_FRICTIONLESS`, `NO_STREAKS`, `NO_SESSION_TRACKING`. No §10 vocabulary in any constant name.
+- **`hooks/useAnchor.ts`** — versioned-localStorage hook mirroring `useBudget`'s shape exactly. Date-scoped: yesterday's anchor reads as empty so it never lands as today's decision. Reuses `STORAGE_KEYS.ANCHOR`.
+- **`app/today/page.tsx`** — the Anchor surface. Header (time + date + hard-day toggle), single-sentence anchor input in the display serif, hard-day-minimum rows from `content/mia.ts` always visible, and Now / Next / Later built only from `content/calendar.ts` (`dailyEvents` + this weekday's `weeklyEvents` + today's one-time events). Hard-day mode collapses to anchor + minimum.
+- **`app/page.tsx`** — replaced with a `next/navigation` redirect to `/today`. The `app/page.tsx` entry came out of the `tests/covenant-vocab.test.ts` ratchet in the same commit. The ratchet shrank by one.
 
-### What to build
+**Verified:** `npm run test` passes (28/28). `npm run build` succeeds; `/today` ships at 5.03 kB, `/` collapses to a 137 B redirect stub.
 
-1. **`lib/guardrails.ts`** — a new ~20-line constants module. Example surface area:
+**Codex follow-ups from PR #27 — known issues to resolve in Step 3 or as a hotfix.** Codex flagged two real bugs after the merge. Both are small and tractable; both should be fixed before they bite.
 
-   ```ts
-   export const MAX_ACTIVE_CREATIVE_SLOTS = 3;
-   export const MAX_ACTIVE_LIFE_SLOTS = 1;
-   export const MAX_TOTAL_ACTIVE_SPECIMENS = 4;
-   export const ACTIVATION_ONLY_DURING_WEEKLY_REVIEW = true;
-   export const DORMANCY_IS_FRICTIONLESS = true;
-   export const NO_STREAKS = true;
-   export const NO_SESSION_TRACKING = true;
-   ```
+1. **P1 — `/today` hides date-only events.** `getNowNextLater` in `app/today/page.tsx` filters out every event without a `time` field, and the page has no alternate path for date-only items. That means safety-critical one-time external events like `apr15-tax-day` and `may22-contract-end` never render on `/today` even on the correct date. Fix: render a small "today" section above Now / Next / Later that lists date-only events for `localIsoDate(now)`. Show outside hard-day mode only (per HANDOFF Step 2's "collapse to minimum" rule). Mark safety-critical rows with the existing tomato left border.
+2. **P2 — `useAnchor` silently drops legacy anchor strings on first read.** The previous `app/page.tsx` wrote `localStorage.setItem('anchor', v)` as a raw string under the same key the new hook claims. The new `parseAnchorState` calls `JSON.parse`, throws on the raw string, hits the catch, and returns `emptyState()` — Mia's existing anchor is silently lost. Fix: in the JSON.parse catch branch, treat the raw stored value as a v0 legacy string and adopt it as today's sentence (`{ date: todayKey(), text: stored }`). The next `setAnchorText` call will rewrite it in the v1 shape.
 
-   Import it from any Step 2 code that could otherwise drift from the covenant. Naming note: no word from §10's "Never use" list appears in any constant name.
-
-2. **`hooks/useAnchor.ts`** — a new versioned-localStorage hook. Copy the shape of `hooks/useBudget.ts` exactly: same migration pattern, same version field, same schema shape. The storage key already exists at `STORAGE_KEYS.ANCHOR` in `lib/storage-keys.ts`.
-
-3. **`app/today/page.tsx`** — the Today Anchor surface. Reads from:
-   - `content/calendar.ts` — cat meds (9am / 9pm, Maisie + Meeko), April / May / June 2026 one-time events.
-   - `content/mia.ts` — hard-day minimum.
-   - `context/HardDayContext` + `hooks/useHardDayMode` — existing.
-   - `hooks/useAnchor` — new (item 2 above).
-
-   What it shows:
-   - Time + date header.
-   - Hard-day toggle.
-   - Anchor input — the single sentence Mia sets for the day. Not a list. Not a checklist. One line.
-   - Cat meds and any hard-day-minimum items as always-visible rows.
-   - Now / Next / Later sections for real calendar events only.
-   - **Nothing else.** No "what matters now" panel, no "coming up" panel, no morning/evening checklist (all Claude-invented in the Phase 0 audit and archived).
-
-   Hard-day mode collapses the surface to: cat meds, Mia's meds (if surfaced from `content/mia.ts`), anchor line. Nothing else is visible.
-
-4. **`app/page.tsx`** — replace the legacy implementation with a minimal redirect to `/today`, and remove its entry from the `tests/covenant-vocab.test.ts` allowlist in the same commit.
-
-### What must not happen
-
-- No Garden surface. Phase 2.
-- No Notes surface / notecards / folders re-skin. Phase 2.
-- No tear-out interaction. Phase 2.
-- No slot activation dialogs or weekly review ritual. Phase 2.
-- No new routes beyond `/today`. Step 4 handles nav and old routes.
-- No assistant, no API routes, no env vars. The archive stays archived.
-- No onboarding flow. COVENANT §3.
-- No session tracking, last-opened timestamps, or visible elapsed time. COVENANT §8.
-- No §10 vocabulary in any string the user will ever see. The ratchet catches it mechanically.
-
-### Exit criteria for Step 2
-
-- `npm run test` passes. The covenant-vocab ratchet passes with `/app/today/page.tsx` and `hooks/useAnchor.ts` and `lib/guardrails.ts` all clean (not added to the allowlist).
-- `npm run build` succeeds.
-- Opening `/` redirects to `/today`.
-- Real events from `content/calendar.ts` render correctly in Now / Next / Later.
-- Hard-day mode collapses the surface correctly.
-- The surface is usable in under 10 seconds from cold open.
-- The PR has one clean commit history and a short description.
+   Same v0 → v1 migration carve-out belongs in `useJournal` from day one — see Step 3 below.
 
 ---
 
-## Phase 1 Steps 3 and 4 — unchanged from the Phase 0 plan
+## Phase 1 Step 3 — Journal drawer (NEXT)
 
-### Step 3 — Journal drawer (2–3 days)
-
-- Global keyboard shortcut `n` opens a full-screen drawer.
+- **Entry point:** a small fixed pen / corner button (~44×44px, paper background, ink-3 border) in the bottom-right of every screen, positioned just above `BottomNav` so it doesn't collide with it. **Mobile-first:** the visible affordance is the primary path on every device. **No global `n` keyboard shortcut** — the previous draft of this step proposed one and it was rejected: `n` collides with typing in any input (anchor field, future capture box) and mobile has no keyboard, so a keyboard-only entry would make the journal desktop-only by design. If a desktop power-user shortcut is added later it must be modifier-gated (`⌘J` / `Ctrl+J`) so it can't fire while typing — but Step 3 ships with the button only.
+- Tapping the pen button opens a full-screen drawer.
 - Dotted-paper CSS background (radial-gradient pattern — no image asset).
 - `<textarea>` body in IM Fell English italic, pagination (pages fill up and a new one starts; no soft scroll).
-- Persists to localStorage via a new `useJournal` hook, same versioned pattern as `useBudget`. Register the storage key in `lib/storage-keys.ts`.
+- Persists to localStorage via a new `useJournal` hook, same versioned pattern as `useBudget` / `useAnchor`. Register the storage key in `lib/storage-keys.ts` first. **Include the v0 → v1 migration carve-out** that `useAnchor` was missing on first ship (see Codex follow-ups below) — if any prior surface ever wrote a raw string under the same key, fold it into the new shape on first read instead of dropping it.
 - **No tear-out interaction yet.** Tear-out requires the Notes surface to exist as a destination (Phase 2).
 - Drawer closes on Escape and on a visible close button. Never traps focus or blocks the rest of the app.
 - Covenant audit against the drawer copy before the PR merges.
 
-**Exit criteria:** press `n` anywhere → drawer opens → type → close → reopen → content persists.
+**Exit criteria:** tap the pen button on `/today` (and any other Phase 1 surface) → drawer opens → type → close → reopen → content persists. Works on touch and mouse. No keyboard shortcut required for any path.
 
-### Step 4 — Nav cleanup and "sprouting in Phase N" placeholders (1–2 days)
+---
+
+## Phase 1 Step 4 — Nav cleanup and "sprouting in Phase N" placeholders
 
 - Primary nav trimmed to 6 items: `/today`, `/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`. Exact labels to match covenant vocabulary.
 - Unbuilt surfaces (`/garden`, `/calendar`, `/notes`, `/budget`, `/field-report`) render a single styled "sprouting in Phase N" card. No functionality, no placeholder data, no faked UI. One line each.
@@ -219,10 +174,10 @@ Read in this order — first the four orientation docs, then the references for 
 
 ---
 
-## What must be true before Step 2 starts
+## What must be true before Step 3 starts
 
-Only one thing: the next agent reads `COVENANT.md` end-to-end with fresh eyes, then this file, then `CLAUDE.md`, then `content/mia.ts`, then opens `hooks/useBudget.ts` as the pattern reference. Everything else above is already decided.
+Only one thing: the next agent reads `COVENANT.md` end-to-end with fresh eyes, then this file, then `CLAUDE.md`, then `content/mia.ts`, then opens `hooks/useAnchor.ts` (and `hooks/useBudget.ts` for the deeper pattern) as the reference for the new `useJournal` hook. Everything else above is already decided.
 
 ---
 
-*End of handoff. Step 1 shipped. Step 2 is the Anchor surface.*
+*End of handoff. Steps 1 and 2 shipped. Step 3 is the journal drawer with a bottom-right pen-button entry point.*

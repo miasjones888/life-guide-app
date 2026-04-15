@@ -25,9 +25,10 @@ After those four, consult `HANDOFF.md`'s "Priority reading list" section.
 - Phase 0 (audit + grounding): complete.
 - Phase 1 Step 1 (visual baseline + covenant vocab test): complete.
 - ANCHOR rename: complete.
-- **Phase 1 Step 2 (guardrails + Today Anchor surface) is next.** See `HANDOFF.md` for the scoped plan.
+- Phase 1 Step 2 (guardrails + Today Anchor surface): complete (PR #27 merged).
+- **Phase 1 Step 3 (journal drawer) is next.** See `HANDOFF.md` for the scoped plan. Two Codex follow-ups from PR #27 are logged in HANDOFF and should be folded into Step 3 work or fixed as a hotfix.
 
-`main` is the source of truth. Branch Step 2 work directly from `main`.
+`main` is the source of truth. Branch Step 3 work directly from `main`.
 
 ## Commands
 
