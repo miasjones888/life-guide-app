@@ -141,7 +141,7 @@ Shipped in PR #32. Twenty-eight files, one PR, exactly the scoped plan:
 
 - **Notes surface / folder re-skin** → Phase 2 Step 2. The salvage-list `components/folders/*` (~981 lines: `ProjectFolder`, `NoteCardItem`, `NoteCardStack`, `CaptureStack`, `FolderShelf`, `AddNoteSheet`) gets re-skinned, not rewritten, into the real `/notes` surface. Re-uses garden's visual vocabulary.
 - **Custom ESLint rule `enforce-hard-day-awareness`** → Phase 2 Step 2 or 3. Earns its keep once garden + notes both ship. Replaces the `components/folders/NoteCardStack.tsx` allowlist entry once that file leaves the ratchet.
-- **Slot activation dialogs + weekly review ritual** → Phase 2 Step 3 or 4. First mutation surface. Interacts with `lib/guardrails.ts` constants.
+- **Slot activation dialogs + weekly review ritual** → Phase 2 Step 3 or 4. First mutation surface. Interacts with `lib/guardrails.ts` constants. **The weekly review surface is also where the Seedlings block lives** (see `SEEDLINGS.md`) — one new practice per week, chosen Sunday, held silently mid-week, reviewed as a three-way decision (`rooted` / `another week as a seedling` / `dormant`) at the next Sunday setup. Seedlings ship as one block inside the weekly review surface, never on `/today`, never with a mid-week nudge. Mia authors candidate practices in `content/mia.ts` when that step lands; Claude scaffolds types only.
 - **Tear-out interaction for the journal drawer** → Phase 2 Step 4 or later.
 - **Real budget numbers** → Phase 3. Mia fills in when she sits with it.
 - **Supabase, auth, cross-device sync** → Phase 3. Lands as a sync adapter under the existing hook API — no component changes.
@@ -197,6 +197,7 @@ Read in this order — first the four orientation docs, then the references for 
 9. **`lib/settings-snapshot.ts`** + **`tests/settings-snapshot.test.ts`** — reference for "extract pure logic, then unit-test it." The `/garden` PRNG layout function should ship with the same pattern: pure module + jsdom test.
 10. **`tests/covenant-vocab.test.ts`** — the §10 mechanical enforcement. New garden code must not add allowlist entries. End state: still 4 entries, ideally 3 if the notes re-skin in Step 2 retires `components/folders/NoteCardStack.tsx`.
 11. **`components/ui/PhasePlaceholder.tsx`** — what `/garden` currently renders. Step 1 replaces this with the real surface; the PhasePlaceholder component itself stays for `/calendar`, `/notes`, `/budget`, `/field-report`.
+12. **`SEEDLINGS.md`** — the Phase 2 design sketch for the Seedlings block inside the weekly review surface. Not relevant to Step 1 (Garden is read-only), but the agent picking up the weekly review ritual step reads this *first*. Covers: one practice per week, Sunday-only surface, three-way decision (`rooted` / `another week as a seedling` / `dormant`), carry-forward default when the block is left untouched, negative list (*not* a habit tracker, no mid-week surface, no reduction concept in the data model), and the §§1/3/5/7/8/10 covenant cross-reference that anchors the design.
 
 ---
 
