@@ -55,12 +55,6 @@ const ALLOWLIST = new Set<string>([
   // ── (2) External deadline context — §10 parenthetical exception ──
   // Real IRS / USPS deadlines live on the calendar and must say so.
   'content/calendar.ts',
-  'components/ui/TimeBlock.tsx',
-
-  // ── (3) Phase 0 legacy — remove as later steps rewrite them ──────
-  // 'behind' appears only in a z-order comment in this salvage file.
-  // Re-skinned (not rewritten) in Phase 2; this comment goes with it.
-  'components/folders/NoteCardStack.tsx',
 ]);
 
 const FORBIDDEN_RE = new RegExp(`\\b(${FORBIDDEN.join('|')})\\b`, 'gi');

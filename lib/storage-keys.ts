@@ -1,41 +1,33 @@
 // All localStorage keys used across the app.
 // Add new keys here before using them in hooks or components.
+//
+// Phase 1 Step 5 trimmed this module to the eight keys covered by the
+// /settings snapshot contract (see lib/settings-snapshot.ts + HANDOFF
+// Step 4). Historical legacy keys (deck, reflection, assistant, media
+// log, art history, creative feed, growth journal, reflection summaries,
+// community saved) were removed alongside their consumers — nothing
+// live reads them and the snapshot never exported them.
 
 export const STORAGE_KEYS = {
-  // Core data stores
-  DECK: 'life-guide-deck',
-  REFLECTION: 'reflection-text',
+  // The Phase 1 anchor sentence, per-day scoped.
   ANCHOR: 'anchor',
-  // The Phase 1 journal drawer — pages of free-form writing, one notebook
-  // shared across all Phase 1 surfaces. Distinct from JOURNAL_ENTRIES
-  // (future structured entries array under 'growth-journal').
+  // The Phase 1 journal drawer — pages of free-form writing. Distinct
+  // from any future structured entries store.
   JOURNAL: 'journal',
+  // Budget — consumers archived under _archive/; key stays so the
+  // /settings snapshot keeps round-tripping any legacy data on device.
   BUDGET: 'life-guide-budget',
+  // Folders — consumers archived under _archive/; same rationale as BUDGET.
   FOLDERS: 'life-guide-folders',
-
-  // UI state
+  // Hard-day toggle. Raw "true"/"false" string, not JSON.
   HARD_DAY_MODE: 'hard-day-mode',
-  ASSISTANT_HISTORY: 'assistant-history',
-  ASSISTANT_PROVIDER: 'assistant-provider',
-
-  // Local calendar events (Phase 2 - user-added events)
+  // Wishlist — consumers deleted in Phase 1 Step 5; key stays so the
+  // /settings snapshot keeps round-tripping any legacy data on device.
+  WISHLIST: 'life-guide-wishlist',
+  // Local-only calendar events — consumers archived under _archive/.
   LOCAL_EVENTS: 'local-calendar-events',
-
-  // Wishlist
-  WISHLIST: 'life-guide-wishlist',           // WishlistItem[]
-
-  // Cultural Discovery (future)
-  MEDIA_LOG: 'culture-media-log',         // MediaItem[]
-  ART_HISTORY: 'culture-art-history',     // ArtworkEntry[]
-  CREATIVE_FEED: 'culture-creative-feed', // CreativeInspirationItem[]
-
-  // Personal Growth (future)
-  JOURNAL_ENTRIES: 'growth-journal',      // JournalEntry[]
-  REFLECTION_SUMMARIES: 'growth-summaries', // ReflectionSummary[]
-  COMMUNITY_SAVED: 'growth-community',    // CommunityEvent[]
-
-  // Calendar write-path
-  USER_EVENTS: 'life-guide-user-events',  // UserEvent[]
+  // User-added calendar events — consumers archived under _archive/.
+  USER_EVENTS: 'life-guide-user-events',
 } as const;
 
 export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS];
