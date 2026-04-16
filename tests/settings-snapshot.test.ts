@@ -21,8 +21,9 @@ import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // Representative seed values for each store. Shapes match what the
 // hooks actually write under each key — verified against useAnchor,
-// useJournal, useBudget, useFolderSystem, useWishlist, useUserEvents,
-// useLocalEvents, useHardDayMode.
+// useJournal, useHardDayMode (live), and the archived hooks whose
+// storage keys the snapshot still round-trips (useBudget, useFolderSystem,
+// useWishlist, useUserEvents, useLocalEvents).
 const SEEDS: Record<string, string> = {
   [STORAGE_KEYS.ANCHOR]: JSON.stringify({
     version: 1,
