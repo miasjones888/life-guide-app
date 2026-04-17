@@ -43,8 +43,9 @@ import type { CalendarEvent } from './types';
 // non-negotiable, double-alarm. They should sort to the top of any
 // criticality-aware list.
 //
-// Exports for invented content kept as empty arrays / stubs so
-// app/daily, app/weekly, app/monthly still compile until Phase 1 replaces them.
+// Exports for invented content kept as empty arrays / stubs. The pages that
+// referenced them are gone (collapsed under app/[legacy]/page.tsx in Step 5c);
+// the empty exports are retained because removing them is a separate audit.
 
 // ─── Daily ──────────────────────────────────────────────────────────────────
 
@@ -101,7 +102,8 @@ export const dailyEvents: CalendarEvent[] = [
   },
 ];
 
-// Stub — kept empty until app/daily page is replaced in Phase 1.
+// Stub — empty since the Phase 0 audit. Spread into allEvents below; left in
+// place to keep the aggregator stable until a real biweekly cadence shows up.
 export const everyTwoDaysEvents: CalendarEvent[] = [];
 
 // ─── Weekly ─────────────────────────────────────────────────────────────────
@@ -640,5 +642,6 @@ export const allEvents = [
   ...aprilOneTimeEvents,
 ];
 
-// Stub — struck as invented, kept empty until app/monthly page is replaced.
+// Stub — struck as invented in Phase 0. Real monthly budget structure lands
+// in Phase 3 when Mia fills in real numbers.
 export const monthlyBudgetSteps: { order: number; title: string; description: string }[] = [];
