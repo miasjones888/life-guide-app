@@ -1,8 +1,8 @@
 # Handoff — life-guide-app
 
-**Status:** Phase 1 complete (Steps 1–4 shipped, follow-up snapshot round-trip test in PR #33). Phase 2 Step 1 (Garden surface — read-only render of `content/mia.ts` specimens with deterministic forest scatter layout) is next.
+**Status:** Phase 1 complete (Steps 1–4 shipped, follow-up snapshot round-trip test in PR #33). Phase 1 Step 5 (cleanup pass — orphan archive in 5a, PWA fix in 5b, covenant + doc hygiene in 5c) shipped before Phase 2 opens. Phase 2 Step 1 (Garden surface — read-only render of `content/mia.ts` specimens with deterministic forest scatter layout) is next, branched from a tree that no longer carries the orphan forest.
 **Source of truth:** `main`. Branch Phase 2 Step 1 work directly from `main`.
-**Last updated:** 2026-04-15 (after Step 4 + snapshot-extraction follow-up shipped).
+**Last updated:** 2026-04-17 (after Step 5c — covenant + doc hygiene — shipped).
 
 ---
 
@@ -98,6 +98,30 @@ Shipped in PR #32. Twenty-eight files, one PR, exactly the scoped plan:
 **Follow-up shipped same day in PR #33** — extract `/settings` snapshot logic into `lib/settings-snapshot.ts` and add `tests/settings-snapshot.test.ts` (six cases) so the round-trip is exercised mechanically every CI run, not just by hand in a browser. The follow-up was driven by post-merge verification: the test plan had a manual "edit → export → re-import" check that couldn't be done without a browser, and the cleanest way to verify it was to extract the pure functions and write a jsdom test against them. No behavior change to the live `/settings` page. `npm run test` now passes 34/34. The extracted module also covers the hard-day-mode raw-string edge case: that store writes `"true"`/`"false"` (not JSON), and the round-trip preserves the raw form.
 
 **No PR #32 or #33 review feedback queued.** Both merged immediately after exit criteria were verified. If Codex or another reviewer flags anything post-merge, log it here and resolve as a hotfix or fold into Phase 2 Step 1.
+
+---
+
+### Phase 1 Step 5 — Cleanup pass before Phase 2 (complete)
+
+A cleanup-only step inserted between Phase 1 Step 4 and Phase 2 Step 1. No new surfaces, no new dependencies, no behavior change to live code. The point was to make sure Garden lands on a clean tree — every orphan hook, orphan component, zombie type, stale storage key, and stale doc comment either moves to `_archive/` (with git history preserved), comes out entirely, or gets fixed in place.
+
+- **5a — prune the orphan forest (PR #36)** — archived `components/folders/*` (six files, salvage-list target for Phase 2 Step 2's notes re-skin), `components/ui/QuickCapture.tsx`, `hooks/useFolderSystem.ts`, `content/folders.ts`, `hooks/useBudget.ts`, `content/budget.ts`, `hooks/useLocalEvents.ts`, `hooks/useUserEvents.ts` — all of these have no live importer today, but their consumers are on the roadmap (Phase 2 notes, Phase 2 calendar, Phase 3 budget). Deleted outright with no planned revival: `components/culture/*` (`AddManualItem`, `TikTokImporter`, `WishlistCard` — ~895 LOC), `hooks/useFlashCards.ts` + its 175-line test, `hooks/useWishlist.ts`, `components/ui/{Tag,Expandable,WindowPanel,TimeBlock}.tsx`. `content/types.ts` trimmed from 267 → 133 lines (Calendar / Budget / FolderSystem types kept; Project / FlashCard / Media / Inspiration / Philosophy / Reflection / Community / Wishlist / Integration types deleted). `lib/storage-keys.ts` trimmed to the eight keys covered by the `/settings` snapshot contract. `tests/covenant-vocab.test.ts` allowlist shrunk from 4 → 2 entries: end state is `content/mia.ts` and `content/calendar.ts` only, both Mia-authored, both permanent §10 parenthetical carve-outs.
+- **5b — PWA surface fix (PR #37)** — generated real `public/icon-192.png` and `public/icon-512.png` (seedling mark, ink on paper) so `manifest.json`'s icon refs stop 404'ing on install. Removed the tracked `public/sw.js` and `public/workbox-*.js`; `next-pwa` regenerates them at build time, so they belong in `.gitignore`, not version control.
+- **5c — covenant + doc hygiene (this branch)** — fixed `content/mia.ts:14`'s "17 archetypes" comment (typo; the enum has always been 16, matching COVENANT and HANDOFF). Rewrote `content/mia.ts:12`'s "will move to `content/types.ts` in Phase 2" comment, which contradicted Step 1's "do not change the type definitions" rule — now reads as a statement that the inlined types stay where they are. Consolidated six legacy redirect stubs (`/daily`, `/weekly`, `/monthly`, `/growth`, `/culture` → `/today`; `/reflection` → `/notes`) into a single `app/[legacy]/page.tsx` dynamic route with `generateStaticParams` + `dynamicParams = false`, so old bookmarks keep working and unknown slugs still 404 cleanly. The other three redirect stubs (`/deck` and `/folders` → `/notes`; `/backup` → `/settings`) stay as their own files for now — out of scope for this pass.
+
+**Why insert a Step 5 between phases at all:** Step 4 left the tree carrying ~2.4k LOC of components, hooks, and content files that no live surface imported. Garden (Phase 2 Step 1) is going to add a deterministic PRNG layout module, archetype sprite components, terrain bands, and a detail panel. Landing those on a tree that still carried the orphan forest would mean every `grep` and every IDE jump-to-definition over the Phase 2 work would surface dead code as plausible-looking neighbors. Step 5 moves Garden's blast radius down to the files Garden actually touches.
+
+**Re-baselined test + build counts (2026-04-17, end of Step 5c, cold-tree).** `rm -rf node_modules && npm install && npm run test && npm run build` from scratch:
+
+- `npm run test`: **4 test files / 23 tests passed.** (Step 4 quoted "34/34"; Step 5a quoted "23/23, -11 from the deleted `useFlashCards.test.ts`." This re-baseline confirms 5a's number, not Step 4's.)
+- `npm run build`: **20 static routes**, build green.
+  - `/today` 4.87 kB / 138 kB First Load JS
+  - `/settings` 2.08 kB / 135 kB
+  - `/garden`, `/notes`, `/calendar`, `/budget`, `/field-report` (PhasePlaceholders) 520 B / 133 kB each
+  - `/[legacy]` 151 B / 87.1 kB — pre-renders six paths via `generateStaticParams` (`/daily`, `/weekly`, `/monthly`, `/growth`, `/culture`, `/reflection`); `dynamicParams = false` so unknown slugs 404
+  - `/backup`, `/deck`, `/folders` (remaining redirect stubs) 151 B / 87.1 kB each
+  - `/`, `/_not-found` 151 B / 87.1 kB and 871 B / 87.9 kB respectively
+- Static-route count is unchanged from Step 4 (20 → 20): the six deleted stub directories collapse into one dynamic catch-all that pre-renders six SSG params, so the page-count math nets to zero.
 
 ---
 

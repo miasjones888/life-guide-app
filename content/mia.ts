@@ -9,9 +9,9 @@
  * Phase 0 audit: April 14, 2026.
  */
 
-// ─── Types (inlined for now; will move to content/types.ts in Phase 2) ──────
+// ─── Types (inlined; HANDOFF Phase 2 Step 1 explicitly does not touch these) ──
 
-/** The 17 archetypes from the Field Guide. Full catalog ships in Phase 2. */
+/** The 16 archetypes from the Field Guide. Full catalog ships in Phase 2. */
 export type Archetype =
   | 'fern'
   | 'moss'
