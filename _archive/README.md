@@ -1,0 +1,1 @@
+This directory is frozen. Nothing ships from here. Imports inside these files may dangle because dependencies outside `_archive/` were removed; that's expected. Do not promote without a new covenant conversation.
