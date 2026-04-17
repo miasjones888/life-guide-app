@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
-// Copied from app/deck/page.tsx — tests the pure function in isolation
+// Pure-function date formatter copied here from a Phase 0 surface that
+// has since been retired. Kept as a regression check on locale-formatting.
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
     month: 'short',
