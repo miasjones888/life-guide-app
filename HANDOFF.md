@@ -165,9 +165,47 @@ Three concerns, three sub-steps. The point of this step is to make sure the next
 
 ---
 
+## Phase 2 Step 2 — Library surface (ready on `claude/media-tracking-app-WGNnD`)
+
+The library is the first user-mutation surface in the app. Built and pushed to `claude/media-tracking-app-WGNnD` ahead of Garden, positioned to merge *after* Phase 2 Step 1 (Garden) lands on `main`. Mia's call: "Next after Garden." The branch exists so the work is ready when Garden ships; nothing in it conflicts with Garden's scope.
+
+**What shipped on this branch:**
+
+- **`app/library/page.tsx`** — the surface. Reverse-chronological list grouped by month, inline add form, per-entry edit and remove. Hard-day mode collapses the whole page to a single resting line ("library, resting.") — list and add button both hide. No elapsed-time language, no count of anything.
+- **`hooks/useLibrary.ts`** — versioned-localStorage hook mirroring `useAnchor` / `useJournal` exactly. `v0 → v1` migration carve-out wired from day one (no real legacy data under this key, but the pattern stays consistent). `exportData` / `importData` implemented the same shape every Phase 1 store uses. Entries are sanitized on read — malformed entries (missing title, unknown kind, bad link shape) are dropped silently rather than throwing.
+- **Entry shape:** `{ id, kind (book|film|series), title, sentence?, impression? (stayed-with-me|liked|fine|set-down), movedMe, learnedFrom, link?, loggedAt }`. Only title and kind are required to save. Impression is categorical care-language per COVENANT §10 (no numeric ratings, no stars, no out-of-five). `movedMe` / `learnedFrom` are two independent marks — they do not compose into a score.
+- **Link model:** optional pointer to where the longer notes live. Kinds: `journal` (page index), `specimen` (garden id — wires up once Garden ships), `note` (folder note id — wires up once notes re-skin ships), `external` (free-text, e.g. "blue notebook, p. 40"). Only `journal` and `external` are pickable from the form today; `specimen` and `note` are accepted on read so future surfaces can back-fill them without a schema bump.
+- **`components/library/EntryForm.tsx`** and **`components/library/EntryRow.tsx`** — the inline add/edit form and the per-entry row. Quiet paper-feel styling, IM Fell English italic for the sentence, chrome monospace for the chips. No floating FAB (the journal pen owns the bottom-right); the add affordance is a dashed button on the page body.
+- **`lib/storage-keys.ts`** — registered `STORAGE_KEYS.LIBRARY = 'library'`. Distinct from the historical `MEDIA_LOG` key removed in Phase 1 Step 5.
+- **`lib/settings-snapshot.ts`** — library added to `SETTINGS_STORES` so `/settings` export/import round-trips it alongside the Phase 1 eight. Label: `'library'`.
+- **`tests/settings-snapshot.test.ts`** — seeds four representative library entries (every kind, every impression, both link shapes, empty and full marks) and verifies the round-trip. The "Phase 1 eight" assertion became a "Phase 1 eight plus Phase 2 library" assertion.
+- **Nav wired:** `BottomNav.tsx`, `SideNav.tsx`, and `PageShell.tsx` edge-swipe order all updated from the six-item nav to the seven-item nav. `/library` sits between `/calendar` and `/notes` so the related-surfaces ordering (calendar → library → notes) reads left-to-right as "what I'm holding this week → what I read → what I'm writing." `/settings` stays off the nav.
+
+**Covenant-aware decisions (if you touch this surface, hold these):**
+
+- **No numeric ratings, no stars, no out-of-five.** COVENANT §10 forbids quality indicators and self-assessments. Mia's call was to resolve the rating question with option 1 (categorical care-language) + option 4 (two-axis loved/learned-from). Both shipped. If a future version adds a numeric score, that is a covenant breach and must not land.
+- **No elapsed time.** `loggedAt` exists for sort and month grouping only. It is never rendered as "X days ago" or "X ago" anywhere. Month labels come from `Intl.DateTimeFormat`, lowercased.
+- **No count of the library.** No "you have N books" anywhere. No badge on the nav. No summary line.
+- **Hard-day collapse is structural.** On a hard day the list is not hidden-to-protect-you; it is resting. Copy says so: "library, resting." — no "coming back later," no "try again tomorrow."
+- **Word audit.** The covenant §10 ratchet passes across the new surface. `impression` is not on the §10 list; `rating` is not used anywhere; no `score` / `completion` / `task` / `deadline` / `streak` in any file.
+
+**Verified on this branch (clean run, 2026-04-20):**
+
+- `npm run test`: **23 / 23** passed. Library round-trip coverage added to `tests/settings-snapshot.test.ts`; no new test files.
+- `npm run build`: succeeds with **21 routes**. `/library` ships at **4.15 kB** (First Load 137 kB). All Phase 1 surfaces unchanged in size.
+
+**Out of scope on this branch, deliberately:**
+
+- **No Garden coupling.** The `specimen` link-kind is accepted on read but not pickable from the form. The Garden step can light it up without changing the library store.
+- **No notes coupling.** Same story for the `note` link-kind. Notes re-skin step wires it up.
+- **No journal page validation.** If Mia enters a journal page number that doesn't exist yet, the link renders as "journal page 99" and clicking does nothing visible in this step. The journal drawer doesn't take a deep-link today; wiring that up is a small follow-up (Phase 2 Step 2a or part of the journal tear-out work).
+- **No wishlist integration.** The archived wishlist shape is distinct from library entries and stays archived.
+
+---
+
 ## Out of scope for Phase 2 Step 1 (feedstock for later steps)
 
-- **Notes surface / folder re-skin** → Phase 2 Step 2. The folder UI (~981 lines: `ProjectFolder`, `NoteCardItem`, `NoteCardStack`, `CaptureStack`, `FolderShelf`, `AddNoteSheet`) lives at **`_archive/components/folders/*`** post-Step-5a. Step 2's choice: restore from `_archive/` and re-skin (the salvage-line option), or rebuild against the garden's visual vocabulary from scratch. Either is acceptable — Step 5a archived rather than deleted specifically to preserve the option. The matching hooks (`useFolderSystem`, `useLocalEvents`, `useUserEvents`) and content shape (`content/folders.ts`) are also at `_archive/` ready to come back.
+- **Notes surface / folder re-skin** → Phase 2 Step 2. The folder UI (~981 lines: `ProjectFolder`, `NoteCardItem`, `NoteCardStack`, `CaptureStack`, `FolderShelf`, `AddNoteSheet`) lives at **`_archive/components/folders/*`** post-Step-5a. Step 2's choice: restore from `_archive/` and re-skin (the salvage-line option), or rebuild against the garden's visual vocabulary from scratch. Either is acceptable — Step 5a archived rather than deleted specifically to preserve the option. The matching hooks (`useFolderSystem`, `useLocalEvents`, `useUserEvents`) and content shape (`content/folders.ts`) are also at `_archive/` ready to come back. (Library landed on `claude/media-tracking-app-WGNnD` as a parallel Phase 2 Step 2 — notes re-skin slides to Phase 2 Step 3.)
 - **Custom ESLint rule `enforce-hard-day-awareness`** → Phase 2 Step 2 or 3. Earns its keep once garden + notes both ship. (The original handoff note said this would replace the `NoteCardStack.tsx` allowlist entry — that entry came out in Step 5a. The rule still earns its keep on garden + notes; the trigger is just no longer "shrinking the ratchet.")
 - **Slot activation dialogs + weekly review ritual** → Phase 2 Step 3 or 4. First mutation surface. Interacts with `lib/guardrails.ts` constants. **The weekly review surface is also where the Seedlings block lives** (see `SEEDLINGS.md`) — one new practice per week, chosen Sunday, held silently mid-week, reviewed as a three-way decision (`rooted` / `another week as a seedling` / `dormant`) at the next Sunday setup. Seedlings ship as one block inside the weekly review surface, never on `/today`, never with a mid-week nudge. Mia authors candidate practices in `content/mia.ts` when that step lands; Claude scaffolds types only.
 - **Tear-out interaction for the journal drawer** → Phase 2 Step 4 or later.

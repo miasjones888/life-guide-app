@@ -15,13 +15,14 @@ import JournalDrawer from '@/components/ui/JournalDrawer';
 // separate module for one string is dead weight.
 const systemVersionNote = 'Life Guide v1 — Phase 1.';
 
-// Primary tab order for swipe navigation. Mirrors the six-item nav:
-// edge-swipes move between Phase 1 surfaces in the same left-to-right
+// Primary tab order for swipe navigation. Mirrors the seven-item nav:
+// edge-swipes move between primary surfaces in the same left-to-right
 // order as the bottom nav.
 const PRIMARY_TABS = [
   '/today',
   '/garden',
   '/calendar',
+  '/library',
   '/notes',
   '/budget',
   '/field-report',

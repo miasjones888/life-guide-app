@@ -20,12 +20,13 @@ export interface StoreConfig {
   readonly label: string;
 }
 
-// The eight Phase 1 data stores called out in HANDOFF Step 4:
-// anchor, journal, budget, folders, wishlist, user events, local events,
-// hard-day mode.
+// The Phase 1 data stores called out in HANDOFF Step 4 plus the Phase 2
+// library store: anchor, journal, library, budget, folders, wishlist,
+// user events, local events, hard-day mode.
 export const SETTINGS_STORES: readonly StoreConfig[] = [
   { key: STORAGE_KEYS.ANCHOR, label: 'anchor' },
   { key: STORAGE_KEYS.JOURNAL, label: 'journal' },
+  { key: STORAGE_KEYS.LIBRARY, label: 'library' },
   { key: STORAGE_KEYS.BUDGET, label: 'budget' },
   { key: STORAGE_KEYS.FOLDERS, label: 'folders' },
   { key: STORAGE_KEYS.WISHLIST, label: 'wishlist' },
