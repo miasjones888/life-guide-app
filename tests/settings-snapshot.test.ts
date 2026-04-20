@@ -33,6 +33,56 @@ const SEEDS: Record<string, string> = {
     version: 1,
     state: { pages: ['first page', 'second page'], currentPageIndex: 1 },
   }),
+  [STORAGE_KEYS.LIBRARY]: JSON.stringify({
+    version: 1,
+    state: {
+      entries: [
+        // Book — full marks, journal-page link, full sentence + impression.
+        {
+          id: 'lib-1',
+          kind: 'book',
+          title: 'A Field Guide to Getting Lost',
+          sentence: 'wandered with it for weeks.',
+          impression: 'stayed-with-me',
+          movedMe: true,
+          learnedFrom: true,
+          link: { kind: 'journal', ref: '3' },
+          loggedAt: '2026-04-15T09:00:00Z',
+        },
+        // Film — minimum: title only, no sentence, no impression, no link.
+        {
+          id: 'lib-2',
+          kind: 'film',
+          title: 'something on a plane',
+          movedMe: false,
+          learnedFrom: false,
+          loggedAt: '2026-04-14T22:00:00Z',
+        },
+        // Series — set-down impression, external (free-text) link.
+        {
+          id: 'lib-3',
+          kind: 'series',
+          title: 'an old series',
+          sentence: 'fine, not for me right now.',
+          impression: 'set-down',
+          movedMe: false,
+          learnedFrom: false,
+          link: { kind: 'external', ref: 'blue notebook, p. 40' },
+          loggedAt: '2026-04-13T19:30:00Z',
+        },
+        // Liked + only the moved-me mark, no link.
+        {
+          id: 'lib-4',
+          kind: 'book',
+          title: 'something else',
+          impression: 'liked',
+          movedMe: true,
+          learnedFrom: false,
+          loggedAt: '2026-04-12T08:00:00Z',
+        },
+      ],
+    },
+  }),
   [STORAGE_KEYS.BUDGET]: JSON.stringify({
     version: 1,
     state: {
@@ -112,15 +162,15 @@ describe('/settings snapshot round-trip', () => {
     localStorage.clear();
   });
 
-  it('covers every Phase 1 store called out in HANDOFF', () => {
-    // Sanity: the eight stores HANDOFF Step 4 lists must be the eight
-    // stores the settings page exports. If this ever drifts, the
-    // covenant exit criterion drifts with it.
+  it('covers every store the snapshot must round-trip', () => {
+    // The Phase 1 eight plus the Phase 2 library store. If this ever
+    // drifts, the covenant exit criterion drifts with it.
     const labels = SETTINGS_STORES.map((s) => s.label).sort();
     expect(labels).toEqual(
       [
         'anchor',
         'journal',
+        'library',
         'budget',
         'folders',
         'wishlist',
@@ -149,6 +199,7 @@ describe('/settings snapshot round-trip', () => {
     // as "true", which JSON.parse accepts as the literal boolean true.
     expect(snapshot.stores[STORAGE_KEYS.ANCHOR]).toEqual(JSON.parse(SEEDS[STORAGE_KEYS.ANCHOR]));
     expect(snapshot.stores[STORAGE_KEYS.JOURNAL]).toEqual(JSON.parse(SEEDS[STORAGE_KEYS.JOURNAL]));
+    expect(snapshot.stores[STORAGE_KEYS.LIBRARY]).toEqual(JSON.parse(SEEDS[STORAGE_KEYS.LIBRARY]));
     expect(snapshot.stores[STORAGE_KEYS.BUDGET]).toEqual(JSON.parse(SEEDS[STORAGE_KEYS.BUDGET]));
     expect(snapshot.stores[STORAGE_KEYS.FOLDERS]).toEqual(JSON.parse(SEEDS[STORAGE_KEYS.FOLDERS]));
     expect(snapshot.stores[STORAGE_KEYS.WISHLIST]).toEqual(JSON.parse(SEEDS[STORAGE_KEYS.WISHLIST]));

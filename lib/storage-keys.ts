@@ -14,6 +14,10 @@ export const STORAGE_KEYS = {
   // The Phase 1 journal drawer — pages of free-form writing. Distinct
   // from any future structured entries store.
   JOURNAL: 'journal',
+  // The Phase 2 library — books, films, series Mia is reading or
+  // watching. Each entry is a small structured record (title, kind,
+  // one-sentence impression, two-axis marks, optional in-app link).
+  LIBRARY: 'library',
   // Budget — consumers archived under _archive/; key stays so the
   // /settings snapshot keeps round-tripping any legacy data on device.
   BUDGET: 'life-guide-budget',

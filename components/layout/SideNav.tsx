@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useHardDay } from '@/context/HardDayContext';
 
 /**
- * SideNav — 6-item primary nav, desktop.
+ * SideNav — 7-item primary nav, desktop.
  *
  * Mirrors BottomNav exactly. No "more" drawer, no secondary list.
  * /settings is reachable via URL, never from here.
@@ -14,6 +14,7 @@ const navItems = [
   { href: '/today', label: 'today', icon: '◉' },
   { href: '/garden', label: 'garden', icon: '❋' },
   { href: '/calendar', label: 'calendar', icon: '▦' },
+  { href: '/library', label: 'library', icon: '◫' },
   { href: '/notes', label: 'notes', icon: '▣' },
   { href: '/budget', label: 'budget', icon: '$' },
   { href: '/field-report', label: 'field report', icon: '≡' },

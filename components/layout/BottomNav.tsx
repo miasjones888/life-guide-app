@@ -4,16 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 /**
- * BottomNav — 6-item primary nav, mobile.
+ * BottomNav — 7-item primary nav, mobile.
  *
- * The six Phase 1 surfaces, exactly. No "more" drawer: if it is not in
- * the six, it is not in the nav. /settings is reachable by typing the
- * URL or linking from elsewhere, never from here.
+ * The Phase 1 six plus the Phase 2 library surface. No "more" drawer:
+ * if it is not in the seven, it is not in the nav. /settings is
+ * reachable by typing the URL or linking from elsewhere, never from
+ * here.
  */
 const primaryNav = [
   { href: '/today', label: 'today', icon: '◉' },
   { href: '/garden', label: 'garden', icon: '❋' },
   { href: '/calendar', label: 'calendar', icon: '▦' },
+  { href: '/library', label: 'library', icon: '◫' },
   { href: '/notes', label: 'notes', icon: '▣' },
   { href: '/budget', label: 'budget', icon: '$' },
   { href: '/field-report', label: 'field report', icon: '≡' },
